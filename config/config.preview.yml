@@ -1,0 +1,10 @@
+webauthn:
+  rpId: dev.accounts.karasu256.com
+  expectedOrigins:
+    - https://dev.accounts.karasu256.com
+    - https://dev.karasu256.com
+
+trustedOrigins:
+  - https://dev.accounts.karasu256.com
+  - https://dev.karasu256.com
+  - https://dev.qr.karasu256.com

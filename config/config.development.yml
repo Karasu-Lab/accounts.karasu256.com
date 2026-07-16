@@ -1,0 +1,9 @@
+webauthn:
+  rpId: localhost
+  expectedOrigins:
+    - http://localhost:3001
+
+trustedOrigins:
+  - http://localhost:3000
+  - http://localhost:3001
+  - http://localhost:3002
