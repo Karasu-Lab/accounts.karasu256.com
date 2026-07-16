@@ -1,0 +1,189 @@
+{
+  "Metadata": {
+    "siteTitle": "Karasu Lab",
+    "siteDescription": "Karasu Lab アカウントポータル",
+    "signIn": {
+      "title": "サインイン"
+    },
+    "signOut": {
+      "title": "サインアウト中"
+    },
+    "authCallback": {
+      "title": "サインイン処理中"
+    },
+    "resetPasswordConfirm": {
+      "title": "新しいパスワード"
+    }
+  },
+  "signIn": {
+    "title": "Karasu Lab にサインイン",
+    "tabs": {
+      "signIn": "サインイン",
+      "createAccount": "アカウント作成"
+    },
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "forgotPassword": "パスワードを忘れた場合",
+    "submit": "サインイン",
+    "signingIn": "サインイン中",
+    "createAccount": "アカウント作成",
+    "creatingAccount": "アカウント作成中",
+    "agreeToTerms": "<terms>利用規約</terms>に同意します",
+    "or": "または",
+    "error": {
+      "invalid-credential": "メールアドレスまたはパスワードが正しくありません",
+      "too-many-requests": "ログイン試行回数が多すぎます。しばらくしてからお試しください",
+      "user-disabled": "このアカウントは無効化されています",
+      "email-already-in-use": "このメールアドレスはすでに使用されています",
+      "weak-password": "パスワードが短すぎます",
+      "unknown": "エラーが発生しました。もう一度お試しください。"
+    }
+  },
+  "passkey": {
+    "signIn": "パスキーでサインイン",
+    "waiting": "パスキーを待機中",
+    "title": "パスキー",
+    "none": "パスキーが登録されていません。",
+    "remove": "パスキーを削除",
+    "removeConfirm": {
+      "title": "パスキーを削除しますか？",
+      "description": "「{name}」を削除します。この操作は取り消せません。",
+      "cancel": "キャンセル"
+    },
+    "name": "パスキー名",
+    "namePlaceholder": "例: MacBook Pro、iPhone 15",
+    "register": "パスキーを登録",
+    "registering": "登録中",
+    "registered": "パスキーを登録しました。",
+    "loadError": "パスキーの読み込みに失敗しました",
+    "error": {
+      "credential_not_found": "パスキーが見つかりませんでした。もう一度お試しください。",
+      "verification_failed": "パスキーの検証に失敗しました。もう一度お試しください。",
+      "user_not_found": "このアカウントは存在しません。別の方法でサインインしてください。",
+      "unknown": "パスキーでのサインインに失敗しました。もう一度お試しください。"
+    }
+  },
+  "settings": {
+    "title": "設定",
+    "sections": {
+      "profile": "プロフィール",
+      "security": "セキュリティ",
+      "connections": "アカウント連携",
+      "debug": "デバッグ"
+    },
+    "back": "戻る",
+    "backToApp": "karasu256.comへ戻る",
+    "signOut": "サインアウト",
+    "signingOut": "サインアウト中",
+    "accountSwitcher": {
+      "addAccount": "別のアカウントを追加",
+      "switchAccount": "このアカウントに切り替える",
+      "removeAccount": "このデバイスからこのアカウントを削除",
+      "switchingAccount": "アカウントを切り替えています。",
+      "switchAfterAdd": "追加後にアカウントを切り替える"
+    }
+  },
+  "profile": {
+    "title": "プロフィール",
+    "displayName": "表示名",
+    "changeIcon": "アイコンを変更",
+    "uploadIcon": "新しいアイコンをアップロード",
+    "useProviderIcon": "連携したアカウントのアイコン",
+    "deleteIcon": "アイコンを削除",
+    "uploadFailed": "アイコンのアップロードに失敗しました",
+    "iconChanged": "アイコンを変更しました",
+    "save": "保存",
+    "saving": "保存中",
+    "saved": "表示名を保存しました。",
+    "discard": "変更を破棄"
+  },
+  "security": {
+    "title": "セキュリティ",
+    "currentPassword": "現在のパスワード",
+    "newPassword": "新しいパスワード",
+    "changePassword": "パスワードを変更",
+    "changing": "変更中",
+    "passwordChanged": "パスワードを変更しました。",
+    "setPassword": "パスワードを設定",
+    "setting": "設定中",
+    "passwordSet": "パスワードを設定しました。",
+    "error": {
+      "wrong-password": "現在のパスワードが正しくありません。",
+      "requires-recent-login": "パスワードを変更するには再サインインが必要です。",
+      "weak-password": "パスワードが短すぎます。",
+      "unknown": "エラーが発生しました。もう一度お試しください。"
+    }
+  },
+  "connections": {
+    "title": "アカウント連携",
+    "link": "連携",
+    "unlink": "解除",
+    "linking": "連携中",
+    "unlinking": "解除中",
+    "cannotUnlink": "最後のサインイン方法は解除できません。",
+    "linked": "{provider} を連携しました。",
+    "error": {
+      "provider_already_linked": "このアカウントは別のユーザーに連携済みです。",
+      "missing_token": "認証に失敗しました。もう一度お試しください。",
+      "unknown": "エラーが発生しました。もう一度お試しください。",
+      "unable_to_link_account": "連携に失敗しました。もう一度お試しください。",
+      "email_doesn't_match": "連携しようとしたアカウントのメールアドレスが一致しません。",
+      "account_already_linked_to_different_user": "このアカウントは別のユーザーに連携済みです。",
+      "invalid_origin": "予期しないアクセス元からのリクエストのため、連携を開始できませんでした。もう一度お試しください。"
+    }
+  },
+  "debug": {
+    "title": "デバッグ",
+    "flagName": "フラグ名",
+    "flagValue": "現在値",
+    "unavailable": "機能フラグを取得できませんでした"
+  },
+  "dangerZone": {
+    "title": "危険な操作",
+    "deleteAccount": "アカウントを削除",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "deleting": "削除中",
+    "confirmPassword": "パスワードで確認",
+    "reauthRequired": "削除前に再認証が必要です。"
+  },
+  "oauthCallback": {
+    "redirecting": "リダイレクト中"
+  },
+  "oauthError": {
+    "title": "サインインに失敗しました",
+    "message": "アカウントの認証中にエラーが発生しました。もう一度お試しください。",
+    "account_not_linked": "このアカウントはまだ連携されていません。メール/パスワードでサインインしてから設定画面で連携してください。",
+    "user_not_found": "このアカウントは存在しません。別の方法でサインインしてください。",
+    "backToSignIn": "サインインに戻る",
+    "signup_disabled": "このプロバイダーはまだ連携されていません。メール/パスワードでサインインしてから設定画面で連携してください。"
+  },
+  "passwordStrength": {
+    "weak": "弱い",
+    "fair": "普通",
+    "good": "良い",
+    "strong": "強い"
+  },
+  "resetPassword": {
+    "title": "パスワードをリセット",
+    "sendLink": "リセットリンクを送信",
+    "sending": "送信中",
+    "sent": "{email} にリセットリンクを送信しました。受信トレイを確認してください。",
+    "sendError": "リセットリンクの送信に失敗しました。",
+    "backToSignIn": "サインインに戻る",
+    "verifying": "リンクを確認中",
+    "invalidToken": "このリンクは無効または期限切れです。",
+    "requestAgain": "リセットリンクを再送する",
+    "newPassword": "新しいパスワード",
+    "setPassword": "パスワードを設定",
+    "setting": "設定中",
+    "setDone": "パスワードを設定しました。サインインしてください。",
+    "setError": "パスワードの設定に失敗しました。"
+  },
+  "oauthConsent": {
+    "title": "連携を許可しますか？",
+    "description": "{name} が以下の情報へのアクセスを求めています。",
+    "accept": "許可する",
+    "deny": "拒否する"
+  }
+}
