@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   const { user, error } = await requireSession();
   if (error) return error;
 
-  const imageApiUrl = process.env.NEXT_PUBLIC_IMAGE_API_URL;
+  const imageApiUrl = process.env.CDN_URL;
   if (!imageApiUrl) {
     return NextResponse.json({ error: 'image_api_not_configured' }, { status: 500 });
   }
@@ -82,7 +82,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
-  const imageApiUrl = process.env.NEXT_PUBLIC_IMAGE_API_URL;
+  const imageApiUrl = process.env.CDN_URL;
   const cookieHeader = (await headers()).get('cookie');
 
   const previous = await getAdminAuth().getUser(user.id);
@@ -102,7 +102,7 @@ export async function DELETE() {
   const { user, error } = await requireSession();
   if (error) return error;
 
-  const imageApiUrl = process.env.NEXT_PUBLIC_IMAGE_API_URL;
+  const imageApiUrl = process.env.CDN_URL;
   const cookieHeader = (await headers()).get('cookie');
 
   const previous = await getAdminAuth().getUser(user.id);

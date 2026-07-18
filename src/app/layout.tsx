@@ -48,7 +48,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <R2StorageProvider imageApiUrl={process.env.NEXT_PUBLIC_IMAGE_API_URL!}>
+        <R2StorageProvider imageApiUrl={process.env.CDN_URL!}>
           <FeatureFlagsProvider flags={appFlags} schema={appFlagsSchema}>
             <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
             <Toaster />
