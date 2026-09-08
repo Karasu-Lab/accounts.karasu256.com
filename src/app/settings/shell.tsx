@@ -15,9 +15,10 @@ interface SettingsShellProps {
   children: React.ReactNode;
   /**
    * "Back to app" URL, read server-side verbatim from `ROOT_APP_URL` (see
-   * {@link getRootAppUrl}). That function throws when the env var is unset,
-   * so `SettingsLayout` never renders this shell with a guessed or missing
-   * URL.
+   * {@link getRootAppUrl}). That function throws when the env var is unset
+   * in production, so `SettingsLayout` never renders this shell with a
+   * guessed or missing URL in a deployed environment; outside production it
+   * falls back to the local dev root app URL instead.
    */
   appUrl: string;
 }
