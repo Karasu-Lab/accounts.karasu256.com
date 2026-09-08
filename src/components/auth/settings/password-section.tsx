@@ -69,7 +69,7 @@ export function PasswordSection({ hasPasswordProvider, onPasswordSet }: Password
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('security.title')}</p>
+      <p className="text-sm font-medium text-muted-foreground">{t('security.title')}</p>
       <form onSubmit={handleSubmit} className="space-y-3">
         {hasPasswordProvider && (
           <div className="space-y-1">

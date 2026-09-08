@@ -68,7 +68,7 @@ export function AccountCard() {
           <p className="text-sm text-muted-foreground break-all">{session.user.email ?? session.user.id}</p>
         </div>
         <Separator />
-        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Passkeys</p>
+        <p className="text-sm font-medium text-muted-foreground">Passkeys</p>
         <PasskeyList version={passkeyVersion} />
         {session.user.email && <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} />}
         <Separator />

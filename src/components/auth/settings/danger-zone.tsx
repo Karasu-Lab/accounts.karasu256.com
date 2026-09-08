@@ -44,7 +44,7 @@ export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-medium text-destructive uppercase tracking-wide">{t('dangerZone.title')}</p>
+      <p className="text-sm font-medium text-destructive">{t('dangerZone.title')}</p>
       {!confirming ? (
         <Button variant="outline" className="w-full text-destructive border-destructive hover:bg-destructive/5" onClick={() => setConfirming(true)}>
           {t('dangerZone.deleteAccount')}
