@@ -9,6 +9,9 @@ function getAdminApp(): App {
   const existing = getApps().find((a) => a.name === ADMIN_APP_NAME);
   if (existing) return existing;
   const { firebaseAdmin } = getServerConfig();
+  if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+    return initializeApp({ projectId: firebaseAdmin.projectId, databaseURL: firebaseAdmin.databaseURL }, ADMIN_APP_NAME);
+  }
   return initializeApp(
     {
       credential: cert({
