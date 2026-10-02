@@ -45,6 +45,7 @@ async function signInViaUi(page: Page, account: CreateTestAccountResult) {
  */
 async function addAccountViaApi(page: Page, account: CreateTestAccountResult): Promise<{ sessionToken: string }> {
   const res = await page.request.post('/api/auth/sign-in/email', {
+    headers: { Origin: 'http://localhost:3001' },
     data: { email: account.email, password: account.password },
   });
   expect(res.ok(), `failed to add account ${account.email}`).toBeTruthy();
