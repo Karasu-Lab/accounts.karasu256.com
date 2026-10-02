@@ -28,9 +28,9 @@ export function handlePreflight(request: NextRequest): NextResponse {
 }
 
 /** Wraps a route handler, adding CORS headers to its response for trusted cross-origin callers. */
-export function withCors(handler: (request: NextRequest) => Promise<Response>) {
-  return async (request: NextRequest) => {
-    const response = await handler(request);
+export function withCors<TArgs extends unknown[]>(handler: (request: NextRequest, ...args: TArgs) => Promise<Response>) {
+  return async (request: NextRequest, ...args: TArgs) => {
+    const response = await handler(request, ...args);
     const headers = corsHeaders(request.headers.get('origin'));
     for (const [key, value] of Object.entries(headers)) {
       response.headers.set(key, value);

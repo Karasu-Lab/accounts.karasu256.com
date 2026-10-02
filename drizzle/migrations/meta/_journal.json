@@ -8,6 +8,20 @@
       "when": 1783992993243,
       "tag": "0000_narrow_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790913821471,
+      "tag": "0001_drop_legacy_api_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790913829172,
+      "tag": "0002_scoped_api_key_permissions",
+      "breakpoints": true
     }
   ]
 }

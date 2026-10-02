@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { passkey } from '@better-auth/passkey';
+import { apiKey } from '@better-auth/api-key';
 import { oauthProvider } from '@better-auth/oauth-provider';
 import { jwt } from 'better-auth/plugins/jwt';
 import { multiSession } from 'better-auth/plugins';
@@ -31,6 +32,7 @@ export const auth = betterAuth({
       origin: webauthn.expectedOrigins,
     }),
     multiSession({ maximumSessions: 5 }),
+    apiKey({ defaultPrefix: 'ksk_', rateLimit: { enabled: false } }),
     nextCookies(),
   ],
 });

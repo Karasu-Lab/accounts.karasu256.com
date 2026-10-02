@@ -15,10 +15,12 @@
   "dependencies": {
     "@Hashibutogarasu/db": "workspace:*",
     "@Hashibutogarasu/flags": "workspace:*",
+    "@Hashibutogarasu/permissions": "workspace:*",
     "@Hashibutogarasu/types": "workspace:*",
     "@Hashibutogarasu/ui": "workspace:*",
     "@Hashibutogarasu/utils": "workspace:*",
     "@base-ui/react": "^1.6.0",
+    "@better-auth/api-key": "1.6.23",
     "@better-auth/core": "^1.6.23",
     "@better-auth/drizzle-adapter": "^1.6.23",
     "@better-auth/oauth-provider": "^1.6.23",
