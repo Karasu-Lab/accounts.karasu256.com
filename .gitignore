@@ -8,6 +8,7 @@ out/
 # Environment variables — everything ignored except the example template
 .env*
 !.env.example
+!.env.development
 
 # Debug logs
 npm-debug.log*
