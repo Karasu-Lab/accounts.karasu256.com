@@ -69,7 +69,8 @@
       "profile": "个人资料",
       "security": "安全",
       "connections": "账户关联",
-      "debug": "调试"
+      "debug": "调试",
+      "developer": "开发者"
     },
     "back": "返回",
     "backToApp": "返回karasu256.com",
@@ -81,6 +82,76 @@
       "removeAccount": "从此设备移除此账户",
       "switchingAccount": "正在切换账户。",
       "switchAfterAdd": "添加后切换到此账户"
+    },
+    "developer": {
+      "title": "开发者设置",
+      "oauthClients": "OAuth 客户端",
+      "apiKeys": "API 密钥",
+      "createClient": "创建 OAuth 客户端",
+      "editClient": "编辑 OAuth 客户端",
+      "createKey": "创建 API 密钥",
+      "noClients": "暂无 OAuth 客户端",
+      "noKeys": "暂无 API 密钥",
+      "edit": "编辑",
+      "delete": "删除",
+      "deleteConfirm": {
+        "title": "确认删除？",
+        "description": "这将永久删除「{name}」。此操作无法撤销。",
+        "cancel": "取消"
+      },
+      "created": "创建时间",
+      "lastUsed": "最近使用",
+      "neverUsed": "从未使用",
+      "callbackUri": "回调 URI",
+      "keyPrefix": "密钥前缀",
+      "dialog": {
+        "clientName": "客户端名称",
+        "callbackUris": "回调 URI",
+        "callbackUrisHelp": "每行一个 URI",
+        "icon": "图标",
+        "permissions": "权限",
+        "read": "读取",
+        "write": "写入",
+        "create": "创建",
+        "save": "保存",
+        "cancel": "取消",
+        "secretNotice": "此密钥仅显示一次，请妥善保存。",
+        "keyNotice": "此 API 密钥仅显示一次，请妥善保存。",
+        "keyName": "密钥名称",
+        "upload": "上传",
+        "uploading": "上传中",
+        "copySecret": "复制密钥",
+        "copyKey": "复制 API 密钥",
+        "done": "完成"
+      },
+      "menu": "菜单",
+      "testClient": "测试客户端",
+      "rotateSecret": "重新生成密钥",
+      "rotateSecretConfirm": {
+        "title": "重新生成客户端密钥？",
+        "description": "这将立即使「{name}」的当前密钥失效。所有使用该密钥的应用必须更新为新密钥。",
+        "confirm": "重新生成",
+        "cancel": "取消"
+      },
+      "test": {
+        "title": "测试 {name}",
+        "description": "在弹出窗口中打开授权页面。批准后，将交换授权码并验证结果。",
+        "run": "开始测试",
+        "runAgain": "重新运行",
+        "running": "正在交换令牌…",
+        "allPassed": "所有步骤均已通过",
+        "waitingForAuth": "正在等待您在弹出窗口中授权…",
+        "popupBlocked": "弹出窗口被阻止，请允许此网站的弹出窗口后重试。",
+        "popupClosed": "授权完成前弹出窗口已关闭。",
+        "noCallbackUri": "此客户端未注册回调 URI。",
+        "clientSecret": "客户端密钥",
+        "steps": {
+          "authorize": "在授权页面批准",
+          "access_token": "交换访问令牌",
+          "profile_read": "获取用户资料",
+          "profile_write": "将显示名称写回个人资料"
+        }
+      }
     }
   },
   "profile": {
@@ -185,5 +256,27 @@
     "description": "{name} 请求访问以下内容：",
     "accept": "允许",
     "deny": "拒绝"
+  },
+  "oauth": {
+    "errors": {
+      "invalid_grant": "授权码无效或已过期",
+      "invalid_client": "客户端凭据无效",
+      "insufficient_scope": "令牌没有所需权限",
+      "token_verification_failed": "令牌验证失败",
+      "access_denied": "访问被拒绝",
+      "network_error": "发生网络错误"
+    }
+  },
+  "permissions": {
+    "sections": {
+      "profile": {
+        "label": "个人资料",
+        "description": "读取和更新个人资料信息"
+      },
+      "images": {
+        "label": "图片",
+        "description": "上传和管理图片"
+      }
+    }
   }
 }

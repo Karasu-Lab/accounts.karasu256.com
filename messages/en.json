@@ -69,7 +69,8 @@
       "profile": "Profile",
       "security": "Security",
       "connections": "Connections",
-      "debug": "Debug"
+      "debug": "Debug",
+      "developer": "Developer"
     },
     "back": "Back",
     "backToApp": "Back to karasu256.com",
@@ -81,6 +82,76 @@
       "removeAccount": "Remove this account from this device",
       "switchingAccount": "Switching accounts.",
       "switchAfterAdd": "Switch to this account after adding"
+    },
+    "developer": {
+      "title": "Developer settings",
+      "oauthClients": "OAuth clients",
+      "apiKeys": "API keys",
+      "createClient": "Create OAuth client",
+      "editClient": "Edit OAuth client",
+      "createKey": "Create API key",
+      "noClients": "No OAuth clients",
+      "noKeys": "No API keys",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": {
+        "title": "Are you sure?",
+        "description": "This will permanently delete \"{name}\". This action cannot be undone.",
+        "cancel": "Cancel"
+      },
+      "created": "Created",
+      "lastUsed": "Last used",
+      "neverUsed": "Never used",
+      "callbackUri": "Callback URI",
+      "keyPrefix": "Key prefix",
+      "dialog": {
+        "clientName": "Client name",
+        "callbackUris": "Callback URIs",
+        "callbackUrisHelp": "One URI per line",
+        "icon": "Icon",
+        "permissions": "Permissions",
+        "read": "Read",
+        "write": "Write",
+        "create": "Create",
+        "save": "Save",
+        "cancel": "Cancel",
+        "secretNotice": "This secret will only be shown once. Store it in a safe place.",
+        "keyNotice": "This API key will only be shown once. Store it in a safe place.",
+        "keyName": "Key name",
+        "upload": "Upload",
+        "uploading": "Uploading",
+        "copySecret": "Copy secret",
+        "copyKey": "Copy API key",
+        "done": "Done"
+      },
+      "menu": "Menu",
+      "testClient": "Test client",
+      "rotateSecret": "Regenerate secret",
+      "rotateSecretConfirm": {
+        "title": "Regenerate client secret?",
+        "description": "This will immediately invalidate the current secret for \"{name}\". Any application using it must be updated with the new secret.",
+        "confirm": "Regenerate",
+        "cancel": "Cancel"
+      },
+      "test": {
+        "title": "Test {name}",
+        "description": "Opens the authorization page in a popup. After you approve, the dialog exchanges the code for a token and verifies the result.",
+        "run": "Start test",
+        "runAgain": "Run again",
+        "running": "Exchanging token…",
+        "allPassed": "All steps passed",
+        "waitingForAuth": "Waiting for you to authorize in the popup…",
+        "popupBlocked": "Popup was blocked. Allow popups for this site and try again.",
+        "popupClosed": "Popup was closed before authorization completed.",
+        "noCallbackUri": "No callback URI is registered for this client.",
+        "clientSecret": "Client secret",
+        "steps": {
+          "authorize": "Authorize on consent page",
+          "access_token": "Exchange for access token",
+          "profile_read": "Fetch profile",
+          "profile_write": "Write display name back to profile"
+        }
+      }
     }
   },
   "profile": {
@@ -185,5 +256,27 @@
     "description": "{name} is requesting access to the following:",
     "accept": "Allow",
     "deny": "Deny"
+  },
+  "oauth": {
+    "errors": {
+      "invalid_grant": "Invalid or expired authorization code",
+      "invalid_client": "Invalid client credentials",
+      "insufficient_scope": "The token does not have the required permissions",
+      "token_verification_failed": "Token verification failed",
+      "access_denied": "Access was denied",
+      "network_error": "A network error occurred"
+    }
+  },
+  "permissions": {
+    "sections": {
+      "profile": {
+        "label": "Profile",
+        "description": "Read and update profile information"
+      },
+      "images": {
+        "label": "Images",
+        "description": "Upload and manage images"
+      }
+    }
   }
 }
