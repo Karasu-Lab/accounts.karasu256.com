@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm turbo build --filter=accounts.karasu256.com",
+  "buildCommand": "cd ../.. && node apps/accounts.karasu256.com/scripts/migrate.mts && pnpm turbo build --filter=accounts.karasu256.com",
   "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
   "build": {
     "env": {
