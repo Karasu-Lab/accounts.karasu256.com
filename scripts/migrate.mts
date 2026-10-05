@@ -1,10 +1,19 @@
 import { spawnSync } from 'node:child_process';
 
+/** Compute endpoint of the production `main` Neon branch, which only production builds of `main` may migrate. */
+const PRODUCTION_NEON_ENDPOINT_ID = 'ep-dry-dream-adty8lfk';
+
+function isProductionDatabase(databaseUrl: string): boolean {
+  return new URL(databaseUrl).hostname.startsWith(`${PRODUCTION_NEON_ENDPOINT_ID}.`);
+}
+
 /**
- * Decides whether this Vercel build should apply migrations: only production
- * deployments of `main`, i.e. after `dev` has been merged into `main`.
+ * Decides whether this Vercel build should apply migrations: production
+ * deployments of `main`, and preview deployments, whose Neon branch is copied
+ * from production and therefore lacks migrations that have not reached `main` yet.
  */
 function shouldMigrate(env: NodeJS.ProcessEnv): boolean {
+  if (env.VERCEL_ENV === 'preview') return true;
   return env.VERCEL_ENV === 'production' && env.VERCEL_GIT_COMMIT_REF === 'main';
 }
 
@@ -16,9 +25,7 @@ function main(): void {
   const env = process.env;
 
   if (!shouldMigrate(env)) {
-    console.log(
-      `Skipping migrations (VERCEL_ENV=${env.VERCEL_ENV ?? ''}, ref=${env.VERCEL_GIT_COMMIT_REF ?? ''}, neon branch=${env.NEON_BRANCH_NAME ?? ''})`
-    );
+    console.log(`Skipping migrations (VERCEL_ENV=${env.VERCEL_ENV ?? ''}, ref=${env.VERCEL_GIT_COMMIT_REF ?? ''})`);
     return;
   }
 
@@ -27,7 +34,12 @@ function main(): void {
     process.exit(1);
   }
 
-  console.log(`Applying migrations to Neon branch ${env.NEON_BRANCH_NAME ?? 'main'}`);
+  if (env.VERCEL_ENV === 'preview' && isProductionDatabase(env.DATABASE_URL_UNPOOLED)) {
+    console.error('Preview deployment is connected to the production Neon branch; refusing to migrate');
+    process.exit(1);
+  }
+
+  console.log(`Applying migrations (VERCEL_ENV=${env.VERCEL_ENV}, ref=${env.VERCEL_GIT_COMMIT_REF ?? ''})`);
   const result = spawnSync('pnpm', ['--filter', 'accounts.karasu256.com', 'db:migrate:deploy'], {
     stdio: 'inherit',
     env: { ...env, DATABASE_URL: env.DATABASE_URL_UNPOOLED },
