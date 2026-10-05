@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { listActivePermissions } from '@/lib/api-keys';
+import { listActivePermissions } from '@/lib/api/api-client';
 import { requireSession } from '@/lib/api/require-session';
 import { handlePreflight, withCors } from '@/lib/auth/cors';
 

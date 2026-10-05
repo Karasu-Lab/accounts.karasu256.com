@@ -6,7 +6,7 @@ import { badRequest, unauthorized } from '@/lib/api/responses';
 const verifyBodySchema = z.object({ key: z.string().min(1) });
 
 /**
- * Verifies a raw API key for other apps' servers, returning its owner and the decimal bitmask of its granted permissions.
+ * Verifies a raw API key for api.karasu256.com, returning its owner and id.
  *
  * POST /api/api-keys/verify
  * Body: { key: string }
@@ -18,5 +18,5 @@ export async function POST(request: NextRequest) {
   const result = await verifyApiKey(parsed.data.key);
   if (!result) return unauthorized();
 
-  return NextResponse.json({ userId: result.userId, permissions: result.permissions.toString() });
+  return NextResponse.json({ userId: result.userId, keyId: result.keyId });
 }
