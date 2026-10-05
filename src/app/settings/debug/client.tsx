@@ -22,18 +22,20 @@ export function DebugClient({ apiMeta }: DebugClientProps) {
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">{t('debug.title')}</h1>
 
-      <section className="space-y-1">
+      <section className="space-y-3">
         <h2 className="text-lg font-medium">{t('debug.api.title')}</h2>
         {apiMeta === null ? (
           <p className="text-muted-foreground">{t('debug.api.unavailable')}</p>
         ) : (
           <>
-            <p className="text-sm">
-              {t('debug.api.host')}: <span className="font-mono">{apiMeta.apiUrl}</span>
-            </p>
-            <p className="text-sm">
-              {t('debug.api.branch')}: <span className="font-mono">{apiMeta.gitBranch}</span>
-            </p>
+            <section className="space-y-1">
+              <h3 className="text-sm font-medium">{t('debug.api.host')}</h3>
+              <p className="text-sm font-mono">{apiMeta.apiUrl}</p>
+            </section>
+            <section className="space-y-1">
+              <h3 className="text-sm font-medium">{t('debug.api.branch')}</h3>
+              <p className="text-sm font-mono">{apiMeta.gitBranch}</p>
+            </section>
           </>
         )}
       </section>
