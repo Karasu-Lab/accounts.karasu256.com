@@ -10,7 +10,13 @@
     "deploymentEnabled": {
       "**": false,
       "main": true,
-      "dev": true
+      "dev": true,
+      "feat/**": true,
+      "fix/**": true,
+      "claude/**": true,
+      "chore/**": true,
+      "docs/**": true,
+      "refactor/**": true
     }
   }
 }
