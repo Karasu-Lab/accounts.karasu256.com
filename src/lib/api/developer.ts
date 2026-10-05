@@ -1,5 +1,9 @@
+import type { ApiKeyCreated, ApiKeySummary, PermissionSummary } from '@Hashibutogarasu/api-permissions';
 import { ApiError } from '@Hashibutogarasu/utils/client';
 import { authClient, bridgeFirebaseSession } from '@/lib/auth/client';
+
+export type { ApiKeyCreated, ApiKeySummary };
+export type ApiKeyPermission = PermissionSummary;
 
 export interface OAuthClientSummary {
   client_id: string;
@@ -11,26 +15,6 @@ export interface OAuthClientSummary {
 
 export interface OAuthClientCreated extends OAuthClientSummary {
   client_secret: string;
-}
-
-export interface ApiKeyPermission {
-  publicId: string;
-  numericId: number;
-  resource: string;
-  action: string;
-}
-
-export interface ApiKeySummary {
-  id: string;
-  name: string | null;
-  start: string | null;
-  createdAt: string;
-  lastRequest: string | null;
-  permissions: ApiKeyPermission[];
-}
-
-export interface ApiKeyCreated extends ApiKeySummary {
-  key: string;
 }
 
 /**
