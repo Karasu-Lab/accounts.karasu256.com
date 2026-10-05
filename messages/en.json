@@ -266,5 +266,17 @@
       "access_denied": "Access was denied",
       "network_error": "A network error occurred"
     }
+  },
+  "permissions": {
+    "sections": {
+      "profile": {
+        "label": "Profile",
+        "description": "Read and update profile information"
+      },
+      "images": {
+        "label": "Images",
+        "description": "Upload and manage images"
+      }
+    }
   }
 }

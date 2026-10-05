@@ -266,5 +266,17 @@
       "access_denied": "アクセスが拒否されました",
       "network_error": "ネットワークエラーが発生しました"
     }
+  },
+  "permissions": {
+    "sections": {
+      "profile": {
+        "label": "プロフィール",
+        "description": "プロフィール情報の読み取り・更新"
+      },
+      "images": {
+        "label": "画像",
+        "description": "画像のアップロード・管理"
+      }
+    }
   }
 }

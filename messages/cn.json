@@ -266,5 +266,17 @@
       "access_denied": "访问被拒绝",
       "network_error": "发生网络错误"
     }
+  },
+  "permissions": {
+    "sections": {
+      "profile": {
+        "label": "个人资料",
+        "description": "读取和更新个人资料信息"
+      },
+      "images": {
+        "label": "图片",
+        "description": "上传和管理图片"
+      }
+    }
   }
 }
