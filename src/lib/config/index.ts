@@ -77,6 +77,14 @@ function getBranchPreviewOrigins(): { branchOrigin: string; deploymentOrigin?: s
 }
 
 /**
+ * Returns whether this process serves a preview deployment built from a branch
+ * other than `dev`, i.e. one backed by a Neon branch copied from production.
+ */
+export function isBranchPreviewDeployment(): boolean {
+  return getBranchPreviewOrigins() !== undefined;
+}
+
+/**
  * Returns the validated server configuration, merging `config/config.default.yml`
  * with the environment-specific config file (the latter overriding the
  * former) and server-only environment variables. Result is cached for the
