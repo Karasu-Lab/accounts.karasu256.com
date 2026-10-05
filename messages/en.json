@@ -207,7 +207,14 @@
     "title": "Debug",
     "flagName": "Flag name",
     "flagValue": "Current value",
-    "unavailable": "Could not load feature flags"
+    "unavailable": "Could not load feature flags",
+    "flagsTitle": "Feature flags",
+    "api": {
+      "title": "API",
+      "host": "Connected host",
+      "branch": "Branch",
+      "unavailable": "Could not load information from api.karasu256.com"
+    }
   },
   "dangerZone": {
     "title": "Danger zone",

@@ -207,7 +207,14 @@
     "title": "调试",
     "flagName": "标志名称",
     "flagValue": "当前值",
-    "unavailable": "无法获取功能标志"
+    "unavailable": "无法获取功能标志",
+    "flagsTitle": "功能标志",
+    "api": {
+      "title": "API",
+      "host": "连接的主机",
+      "branch": "分支",
+      "unavailable": "无法从 api.karasu256.com 获取信息"
+    }
   },
   "dangerZone": {
     "title": "危险操作",

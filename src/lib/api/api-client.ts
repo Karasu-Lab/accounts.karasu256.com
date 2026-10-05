@@ -19,6 +19,15 @@ async function readJson<T>(res: Response): Promise<T> {
   return (await res.json()) as T;
 }
 
+export interface ApiMeta {
+  apiUrl: string;
+  gitBranch: string;
+}
+
+export async function getApiMeta(): Promise<ApiMeta> {
+  return readJson(await fetch(apiUrl('/meta'), { cache: 'no-store' }));
+}
+
 export async function listActivePermissions(): Promise<PermissionSummary[]> {
   return readJson(await fetch(apiUrl('/permissions'), { cache: 'no-store' }));
 }

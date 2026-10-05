@@ -3,16 +3,42 @@
 import { useTranslations } from 'next-intl';
 import { Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@Hashibutogarasu/ui';
 import { useFeatureFlags } from '@Hashibutogarasu/flags/client';
+import type { ApiMeta } from '@/lib/api/api-client';
 import { appFlagsSchema } from '@/lib/flags';
 
-/** Displays the live value of this app's demo feature flags, sourced from Vercel Edge Config via `useFeatureFlags`. */
-export function DebugClient() {
+interface DebugClientProps {
+  apiMeta: ApiMeta | null;
+}
+
+/**
+ * Displays the live value of this app's demo feature flags, sourced from Vercel Edge Config via `useFeatureFlags`,
+ * and the API host and branch exactly as api.karasu256.com reports them, since it is the source of truth for both.
+ */
+export function DebugClient({ apiMeta }: DebugClientProps) {
   const t = useTranslations();
   const flags = useFeatureFlags<typeof appFlagsSchema>();
 
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">{t('debug.title')}</h1>
+
+      <section className="space-y-1">
+        <h2 className="text-lg font-medium">{t('debug.api.title')}</h2>
+        {apiMeta === null ? (
+          <p className="text-muted-foreground">{t('debug.api.unavailable')}</p>
+        ) : (
+          <>
+            <p className="text-sm">
+              {t('debug.api.host')}: <span className="font-mono">{apiMeta.apiUrl}</span>
+            </p>
+            <p className="text-sm">
+              {t('debug.api.branch')}: <span className="font-mono">{apiMeta.gitBranch}</span>
+            </p>
+          </>
+        )}
+      </section>
+
+      <h2 className="text-lg font-medium">{t('debug.flagsTitle')}</h2>
 
       {flags === null ? (
         <p className="text-muted-foreground">{t('debug.unavailable')}</p>

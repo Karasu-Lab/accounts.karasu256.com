@@ -207,7 +207,14 @@
     "title": "デバッグ",
     "flagName": "フラグ名",
     "flagValue": "現在値",
-    "unavailable": "機能フラグを取得できませんでした"
+    "unavailable": "機能フラグを取得できませんでした",
+    "flagsTitle": "機能フラグ",
+    "api": {
+      "title": "API",
+      "host": "接続先ホスト",
+      "branch": "ブランチ",
+      "unavailable": "api.karasu256.com から情報を取得できませんでした"
+    }
   },
   "dangerZone": {
     "title": "危険な操作",
