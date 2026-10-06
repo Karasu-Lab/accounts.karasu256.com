@@ -3,7 +3,7 @@
 # config.preview.yml, config.development.yml, config.production.yml).
 # Not read by the app.
 webauthn:
-  rpId: accounts.karasu256.com
+  rpId: karasu256.com
   rpName: Karasu Lab
   expectedOrigins:
     - https://accounts.karasu256.com
