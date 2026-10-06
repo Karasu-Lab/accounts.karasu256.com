@@ -86,6 +86,7 @@
     },
     "developer": {
       "title": "Developer settings",
+      "authBranch": "auth database branch",
       "oauthClients": "OAuth clients",
       "apiKeys": "API keys",
       "createClient": "Create OAuth client",
