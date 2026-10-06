@@ -1,4 +1,6 @@
-import { getSessionUser as getRemoteSessionUser } from '@Hashibutogarasu/utils/server';
+import { headers } from 'next/headers';
+import { getSessionCookie } from 'better-auth/cookies';
+import { buildSignedAuthRequest, sendSignedAuthRequest } from '@/lib/auth/remote';
 
 export interface SessionUser {
   id: string;
@@ -8,7 +10,15 @@ export interface SessionUser {
 }
 
 export async function getSessionUser(): Promise<SessionUser | null> {
-  const user = await getRemoteSessionUser(process.env.NEXT_PUBLIC_AUTH_URL, process.env.VERCEL_PROTECTION_BYPASS_SECRET);
-  if (!user) return null;
-  return { id: user.uid, email: user.email, name: user.name, image: user.image };
+  const requestHeaders = await headers();
+  if (!getSessionCookie(requestHeaders)) return null;
+
+  const res = await sendSignedAuthRequest(buildSignedAuthRequest('/api/auth/get-session', { cookie: requestHeaders.get('cookie') })).catch(
+    () => null
+  );
+  if (!res?.ok) return null;
+
+  const data = (await res.json()) as { user?: { id: string; email?: string | null; name?: string | null; image?: string | null } } | null;
+  if (!data?.user) return null;
+  return { id: data.user.id, email: data.user.email ?? null, name: data.user.name ?? null, image: data.user.image ?? null };
 }
