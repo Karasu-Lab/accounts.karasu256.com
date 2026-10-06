@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from '@Hashibutogarasu/ui';
-import { authClient } from '@/lib/auth/client';
+import { authClient, getSignInUrl } from '@/lib/auth/client';
+import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
 import { Skeleton, SettingsSidebarLayout, SwitchingAccountOverlay } from '@Hashibutogarasu/ui';
 import { SettingsSidebar } from '@/components/settings/settings-sidebar';
@@ -13,26 +14,12 @@ import { UserContext, type SettingsUser } from '@/components/settings/user-conte
 
 interface SettingsShellProps {
   children: React.ReactNode;
-  /**
-   * "Back to app" URL, read server-side verbatim from `ROOT_APP_URL` (see
-   * {@link getRootAppUrl}). That function throws when the env var is unset
-   * in production, so `SettingsLayout` never renders this shell with a
-   * guessed or missing URL in a deployed environment; outside production it
-   * falls back to the local dev root app URL instead.
-   */
   appUrl: string;
 }
 
 /**
- * Settings shell. Reads the better-auth session client-side via
- * `authClient.useSession()` and provides the authenticated user via
- * UserContext. Shows a generic skeleton in main content while the session
- * resolves, except on /settings/linking and /settings/profile, which always
- * render their children directly: /settings/linking so the provider buttons
- * can appear (disabled) without a skeleton, and /settings/profile so its
- * form is recognizable immediately, with `UserContext`'s `ready` flag false
- * (and a placeholder user) until the session resolves — see `ProfileSection`
- * for how it disables its own controls off of that flag.
+ * /settings/linking and /settings/profile skip the loading skeleton so their
+ * controls are recognizable immediately, rendered disabled until the session resolves.
  */
 export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   const router = useRouter();
@@ -42,7 +29,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
-  /** Tagged with the user it belongs to, so a switched-to account starts with no stale override (see {@link userOverride} below) without needing an effect. */
+  /** Tagged with its user so a switched-to account never inherits a stale override. */
   const [userOverrideState, setUserOverrideState] = useState<{ userId?: string; patch: Partial<SettingsUser> }>({ patch: {} });
 
   const isLinkingPage = pathname === '/settings/linking';
@@ -54,14 +41,14 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
       const result = await listAccounts();
       setAccounts(result.accounts.filter((a) => a.uid !== activeUid));
     } catch {
-      /* noop — account switcher is a non-critical enhancement */
+      /* The account switcher is non-critical, so a failed refresh keeps the current list. */
     }
   }, []);
 
   useEffect(() => {
     if (isPending) return;
     if (!session) {
-      router.replace('/');
+      window.location.replace(getSignInUrl(window.location.href));
       return;
     }
     const activeUid = session.user.id;
@@ -71,30 +58,34 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   }, [isPending, session, router]);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('addAccount') === '1') {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('addAccount') === '1') {
       setAddDialogOpen(true);
       router.replace(pathname);
     }
+    if (params.get('accountAdded') === '1') {
+      router.replace(pathname);
+      void completeAddAccount();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function completeAddAccount() {
+    const pending = takePendingAddAccount();
+    const { data: newSession } = await authClient.getSession();
+    if (!pending?.previousSessionToken || !newSession || pending.switchToNewAccount) {
+      await refetch();
+      await refreshAccounts(newSession?.user.id);
+      return;
+    }
+    await switchToSession(pending.previousSessionToken);
+  }
 
   async function handleSignOut() {
     await authClient.signOut();
   }
 
-  /**
-   * Activates the given session token, refetches the current session, and
-   * refreshes `accounts` against the uid the switch itself reports —
-   * rather than relying on `authClient.useSession()`'s `session` (a stale
-   * closure at call time) or on the `session`-watching effect above to
-   * eventually notice the change — so the just-activated account stops
-   * appearing as a switch target immediately, not after a follow-up render.
-   * Toggles {@link switchingAccount} around all of this to drive the
-   * overlay. Takes a token directly (rather than looking one up in
-   * `accounts`) so it can also be used to switch to an account that hasn't
-   * landed in `accounts` state yet, e.g. right after {@link AddAccountDialog}
-   * adds one.
-   */
+  /** Refreshes `accounts` against the uid the switch reports, since `session` is a stale closure here. */
   async function switchToSession(sessionToken: string) {
     setSwitchingAccount(true);
     try {
@@ -103,7 +94,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
       await refreshAccounts(result.uid);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
-      /** Resyncs `accounts` against the server so a stale/already-invalid entry that caused this failure doesn't linger and keep failing on retry. */
+      /** Resyncs so a stale entry that caused this failure doesn't keep failing on retry. */
       await refreshAccounts(session?.user.id);
     } finally {
       setSwitchingAccount(false);
@@ -121,16 +112,10 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
     if (!target) return;
     try {
       await removeAccount(target.sessionToken);
-      /**
-       * Awaited so the sidebar's remove button (whose spinner tracks this
-       * promise) doesn't flip back to its idle state until `accounts` has
-       * actually dropped this entry — otherwise it flashes re-enabled for a
-       * render or two before the list catches up.
-       */
+      /** Awaited so the remove button's spinner doesn't flash idle before the entry disappears. */
       await refreshAccounts(session?.user.id);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
-      /** Same self-heal as {@link switchToSession}'s catch — see there for why. */
       await refreshAccounts(session?.user.id);
     }
   }
@@ -209,13 +194,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
       >
         {renderContent()}
       </SettingsSidebarLayout>
-      <AddAccountDialog
-        open={addDialogOpen}
-        onOpenChange={setAddDialogOpen}
-        onAdded={(activeUid) => void refreshAccounts(activeUid)}
-        onSwitchAccount={switchToSession}
-        showSwitchAccountCheckBox
-      />
+      <AddAccountDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} showSwitchAccountCheckBox />
       <SwitchingAccountOverlay open={switchingAccount} message={t('settings.accountSwitcher.switchingAccount')} />
     </>
   );

@@ -81,7 +81,8 @@
       "switchAccount": "切换到此账户",
       "removeAccount": "从此设备移除此账户",
       "switchingAccount": "正在切换账户。",
-      "switchAfterAdd": "添加后切换到此账户"
+      "switchAfterAdd": "添加后切换到此账户",
+      "continueToSignIn": "继续登录"
     },
     "developer": {
       "title": "开发者设置",

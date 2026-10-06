@@ -7,8 +7,10 @@ webauthn:
   rpName: Karasu Lab
   expectedOrigins:
     - https://accounts.karasu256.com
+    - https://auth.karasu256.com
 
 trustedOrigins:
   - https://accounts.karasu256.com
+  - https://auth.karasu256.com
   - https://karasu256.com
   - https://qr.karasu256.com

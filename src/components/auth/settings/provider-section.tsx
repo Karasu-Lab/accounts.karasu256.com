@@ -75,10 +75,11 @@ export function ProviderSection({ providers, initialProviders }: ProviderSection
   async function handleLink(providerId: string) {
     setLoading(providerId);
     try {
+      const linkingUrl = `${window.location.origin}/settings/linking`;
       const { error } = await authClient.linkSocial({
         provider: providerId,
-        callbackURL: '/settings/linking',
-        errorCallbackURL: '/settings/linking',
+        callbackURL: linkingUrl,
+        errorCallbackURL: linkingUrl,
       });
       if (error) {
         const key = `connections.error.${error.code?.toLowerCase()}`;

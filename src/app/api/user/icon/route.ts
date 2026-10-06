@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
   const parsed = putBodySchema.safeParse(await request.json());
   if (!parsed.success) return badRequest();
 
-  const profile = await getProviderProfile(user.id, parsed.data.providerId);
+  const profile = await getProviderProfile(parsed.data.providerId);
   if (!profile || !profile.avatarUrl) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }

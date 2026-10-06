@@ -1,16 +1,14 @@
-import { headers } from 'next/headers';
-import { auth } from '@/lib/auth/server';
+import { getSessionUser as getRemoteSessionUser } from '@Hashibutogarasu/utils/server';
 
-/** The authenticated user, as returned by `auth.api.getSession`. */
-export type SessionUser = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>['user'];
+export interface SessionUser {
+  id: string;
+  email: string | null;
+  name: string | null;
+  image: string | null;
+}
 
-/**
- * Reads and verifies the better-auth session.
- * Returns the session's user when valid, or `null` when absent or invalid.
- *
- * Must only be called from Server Components or Route Handlers.
- */
 export async function getSessionUser(): Promise<SessionUser | null> {
-  const session = await auth.api.getSession({ headers: await headers() });
-  return session?.user ?? null;
+  const user = await getRemoteSessionUser(process.env.NEXT_PUBLIC_AUTH_URL, process.env.VERCEL_PROTECTION_BYPASS_SECRET);
+  if (!user) return null;
+  return { id: user.uid, email: user.email, name: user.name, image: user.image };
 }

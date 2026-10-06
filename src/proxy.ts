@@ -5,8 +5,8 @@ import { firebaseConfigSchema } from '@/lib/firebase/schema';
 /**
  * Next.js 16 proxy (formerly middleware) that:
  * 1. Validates all required Firebase environment variables on every request.
- * 2. Redirects unauthenticated requests away from /settings.
- * 3. Redirects authenticated requests away from the sign-in root (/).
+ * 2. Redirects unauthenticated requests for / and /settings to auth.karasu256.com's sign-in page.
+ * 3. Redirects authenticated requests for / to /settings.
  *
  * A request counts as authenticated if the better-auth session cookie is
  * present, checked via `getSessionCookie()` — this app no longer overrides
@@ -43,8 +43,11 @@ export function proxy(request: NextRequest): NextResponse {
     return NextResponse.redirect(new URL('/settings', request.url));
   }
 
-  if (!hasSession && pathname.startsWith('/settings')) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (!hasSession && (pathname === '/' || pathname.startsWith('/settings'))) {
+    const target = pathname === '/' ? new URL('/settings', request.url) : request.nextUrl;
+    const signIn = new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL);
+    signIn.searchParams.set('redirectTo', target.toString());
+    return NextResponse.redirect(signIn);
   }
 
   return NextResponse.next();

@@ -81,7 +81,8 @@
       "switchAccount": "Switch to this account",
       "removeAccount": "Remove this account from this device",
       "switchingAccount": "Switching accounts.",
-      "switchAfterAdd": "Switch to this account after adding"
+      "switchAfterAdd": "Switch to this account after adding",
+      "continueToSignIn": "Continue to sign in"
     },
     "developer": {
       "title": "Developer settings",

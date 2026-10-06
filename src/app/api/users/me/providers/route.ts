@@ -14,7 +14,7 @@ export async function GET() {
   if (error) return error;
 
   const providerIds = await getLinkedProviderIds(user.id);
-  const profiles = await Promise.all(providerIds.map((providerId) => getProviderProfile(user.id, providerId)));
+  const profiles = await Promise.all(providerIds.map((providerId) => getProviderProfile(providerId)));
 
   const result: Record<string, ProviderProfile> = {};
   providerIds.forEach((providerId, i) => {

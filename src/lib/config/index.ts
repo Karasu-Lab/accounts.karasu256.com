@@ -21,20 +21,11 @@ const envSchema = z.object({
     privateKey: z.string().min(1),
     databaseURL: z.string().url(),
   }),
-  resend: z.object({
-    apiKey: z.string().min(1),
-    fromEmail: z.string().email(),
-  }),
-  baseDomain: z.string().optional(),
 });
 
 export type ServerConfig = {
   webauthn: z.infer<typeof webauthnSchema>;
   firebaseAdmin: z.infer<typeof envSchema>['firebaseAdmin'];
-  resend: z.infer<typeof envSchema>['resend'];
-  baseDomain?: string;
-  authBaseURL?: string;
-  crossSubDomainCookies: boolean;
   trustedOrigins: string[];
 };
 
@@ -77,14 +68,6 @@ function getBranchPreviewOrigins(): { branchOrigin: string; deploymentOrigin?: s
 }
 
 /**
- * Returns whether this process serves a preview deployment built from a branch
- * other than `dev`, i.e. one backed by a Neon branch copied from production.
- */
-export function isBranchPreviewDeployment(): boolean {
-  return getBranchPreviewOrigins() !== undefined;
-}
-
-/**
  * Returns the validated server configuration, merging `config/config.default.yml`
  * with the environment-specific config file (the latter overriding the
  * former) and server-only environment variables. Result is cached for the
@@ -114,15 +97,8 @@ export function getServerConfig(): ServerConfig {
       privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
       databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     },
-    resend: {
-      apiKey: process.env.RESEND_API_KEY,
-      fromEmail: process.env.RESEND_FROM_EMAIL,
-    },
-    baseDomain: preview ? undefined : process.env.BASE_DOMAIN,
   });
 
-  const authBaseURL = preview ? preview.branchOrigin : process.env.BETTER_AUTH_URL;
-
-  cached = { webauthn, trustedOrigins, authBaseURL, crossSubDomainCookies: !preview, ...envData };
+  cached = { webauthn, trustedOrigins, ...envData };
   return cached;
 }

@@ -8,11 +8,11 @@ import { requireSession } from '@/lib/api/require-session';
  * GET /api/users/me/providers/[providerId]/details
  */
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ providerId: string }> }) {
-  const { user, error } = await requireSession();
+  const { error } = await requireSession();
   if (error) return error;
 
   const { providerId } = await params;
-  const profile = await getProviderProfile(user.id, providerId);
+  const profile = await getProviderProfile(providerId);
   if (!profile) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }

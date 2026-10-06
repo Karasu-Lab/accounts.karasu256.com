@@ -1,84 +1,39 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Separator, toast } from '@Hashibutogarasu/ui';
+import { Button, Checkbox, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Label } from '@Hashibutogarasu/ui';
 import { authClient } from '@/lib/auth/client';
-import { EmailPasswordForm } from '@/components/auth/email-password-form';
-import { PasskeySection } from '@/components/auth/passkey-section';
+import { savePendingAddAccount } from '@/lib/add-account';
 
 export interface AddAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /**
-   * Called after an account is successfully added, with the uid of the
-   * session left active (confirmed via a fresh `authClient.getSession()`
-   * call after switching back, not read off a caller-side session that may
-   * not have caught up yet), so the caller can refresh its account list
-   * against the account that is actually active.
-   */
-  onAdded?: (activeUid: string) => void;
-  /**
-   * Called with the session token of the newly added account when the user
-   * checked "switch to this account after adding". Should perform the same
-   * switch as the sidebar's own account switcher (including its overlay).
-   */
-  onSwitchAccount?: (sessionToken: string) => void | Promise<void>;
   /** Whether to show the "switch to this account after adding" checkbox. Defaults to `false`. */
   showSwitchAccountCheckBox?: boolean;
 }
 
 /**
- * Dialog for signing in to a second (or further) account without disturbing
- * the currently active session.
- *
- * better-auth's `multiSession` plugin already keeps every sign-in as an
- * additional device session (via a `_multi-<token>` cookie) instead of
- * replacing existing ones — a new sign-in just becomes the *active* one. So
- * this reuses the ordinary sign-in forms as-is, remembers which session was
- * active before the dialog opened, and switches back to it via
- * `authClient.multiSession.setActive()` once the new sign-in completes.
- *
- * When `showSwitchAccountCheckBox` is set and the user checks it, the newly
- * added account's session token (captured before switching back) is instead
- * handed to `onSwitchAccount` after the dialog closes, so the caller can
- * explicitly switch to it through the exact same path a manual switch from
- * the sidebar uses.
+ * Sends the user to auth.karasu256.com to sign in to another account. The
+ * previously active session is remembered so the settings shell can switch
+ * back to it on return, since `multiSession` makes every new sign-in active.
  */
-export function AddAccountDialog({ open, onOpenChange, onAdded, onSwitchAccount, showSwitchAccountCheckBox = false }: AddAccountDialogProps) {
+export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox = false }: AddAccountDialogProps) {
   const t = useTranslations();
-  const previousSessionToken = useRef<string | null>(null);
   const [switchToNewAccount, setSwitchToNewAccount] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    authClient.getSession().then(({ data }) => {
-      previousSessionToken.current = data?.session.token ?? null;
-    });
-  }, [open]);
+  async function handleContinue() {
+    setLoading(true);
+    const { data } = await authClient.getSession();
+    savePendingAddAccount({ previousSessionToken: data?.session.token ?? null, switchToNewAccount });
 
-  async function handleSignedIn() {
-    try {
-      const { data: newSession } = await authClient.getSession();
-      if (previousSessionToken.current) {
-        await authClient.multiSession.setActive({ sessionToken: previousSessionToken.current });
-      }
-      onOpenChange(false);
-      if (switchToNewAccount && newSession) {
-        await onSwitchAccount?.(newSession.session.token);
-      } else {
-        /**
-         * Read fresh rather than trusting `newSession` or the caller's own
-         * session state: after `setActive` reverts to the previous session,
-         * this is the only way to know for certain which account is active
-         * now, instead of assuming the revert above landed as expected.
-         */
-        const { data: activeSession } = await authClient.getSession();
-        if (activeSession) onAdded?.(activeSession.user.id);
-      }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-    }
+    const returnTo = new URL(window.location.pathname, window.location.origin);
+    returnTo.searchParams.set('accountAdded', '1');
+    const signIn = new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL);
+    signIn.searchParams.set('prompt', 'login');
+    signIn.searchParams.set('redirectTo', returnTo.toString());
+    window.location.assign(signIn.toString());
   }
 
   return (
@@ -87,14 +42,19 @@ export function AddAccountDialog({ open, onOpenChange, onAdded, onSwitchAccount,
         <DialogBackdrop />
         <DialogPopup>
           <DialogTitle>{t('settings.accountSwitcher.addAccount')}</DialogTitle>
-          <EmailPasswordForm
-            onSuccess={handleSignedIn}
-            showSwitchAccountCheckBox={showSwitchAccountCheckBox}
-            switchToNewAccount={switchToNewAccount}
-            onSwitchToNewAccountChange={setSwitchToNewAccount}
-          />
-          <Separator className="my-4" />
-          <PasskeySection onSuccess={handleSignedIn} />
+          <div className="space-y-4 pt-4">
+            {showSwitchAccountCheckBox && (
+              <div className="flex items-center gap-2">
+                <Checkbox id="switch-to-new-account" checked={switchToNewAccount} onCheckedChange={setSwitchToNewAccount} disabled={loading} />
+                <Label htmlFor="switch-to-new-account" className="font-normal text-sm">
+                  {t('settings.accountSwitcher.switchAfterAdd')}
+                </Label>
+              </div>
+            )}
+            <Button className="w-full" onClick={handleContinue} disabled={loading}>
+              {t('settings.accountSwitcher.continueToSignIn')}
+            </Button>
+          </div>
         </DialogPopup>
       </DialogPortal>
     </Dialog>

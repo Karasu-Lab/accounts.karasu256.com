@@ -2,7 +2,8 @@ import { and, desc, eq } from 'drizzle-orm';
 import { getDb } from '@Hashibutogarasu/db';
 import { apiKeys } from '@Hashibutogarasu/db/schema';
 import type { ApiKeyCreated, ApiKeySummary } from '@Hashibutogarasu/api-permissions';
-import { auth } from '@/lib/auth/server';
+import { MissingEnvError, vercelProtectionBypassHeaders } from '@Hashibutogarasu/utils/server';
+import { authUrl } from '@/lib/auth/remote';
 import { getGrantedPermissions, grantPermissions } from '@/lib/api/api-client';
 
 export { UnknownPermissionError } from '@Hashibutogarasu/api-permissions';
@@ -33,7 +34,7 @@ export async function listApiKeys(userId: string): Promise<ApiKeySummary[]> {
  * @throws {UnknownPermissionError} when any public id doesn't match an active permission.
  */
 export async function createApiKey(userId: string, name: string, permissionPublicIds: string[]): Promise<ApiKeyCreated> {
-  const created = await auth.api.createApiKey({ body: { name, userId } });
+  const created = await issueApiKey(userId, name);
 
   let permissions;
   try {
@@ -45,9 +46,9 @@ export async function createApiKey(userId: string, name: string, permissionPubli
 
   return {
     id: created.id,
-    name: created.name ?? null,
-    start: created.start ?? null,
-    createdAt: new Date(created.createdAt).toISOString(),
+    name: created.name,
+    start: created.start,
+    createdAt: created.createdAt,
     lastRequest: null,
     permissions,
     key: created.key,
@@ -63,9 +64,27 @@ export async function deleteApiKey(userId: string, apiKeyId: string): Promise<bo
   return deleted.length > 0;
 }
 
-/** Only key validity is checked here; api.karasu256.com resolves the key's permissions. */
-export async function verifyApiKey(key: string): Promise<{ userId: string; keyId: string } | null> {
-  const result = await auth.api.verifyApiKey({ body: { key } });
-  if (!result.valid || !result.key) return null;
-  return { userId: result.key.referenceId, keyId: result.key.id };
+interface IssuedApiKey {
+  id: string;
+  name: string | null;
+  start: string | null;
+  createdAt: string;
+  key: string;
+}
+
+async function issueApiKey(userId: string, name: string): Promise<IssuedApiKey> {
+  const secret = process.env.INTERNAL_API_SECRET;
+  if (!secret) throw new MissingEnvError('INTERNAL_API_SECRET');
+  const res = await fetch(authUrl('/api/internal/api-keys'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${secret}`,
+      ...vercelProtectionBypassHeaders(process.env.VERCEL_PROTECTION_BYPASS_SECRET),
+    },
+    body: JSON.stringify({ userId, name }),
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`auth.karasu256.com responded ${res.status} for ${res.url}`);
+  return (await res.json()) as IssuedApiKey;
 }
