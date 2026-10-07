@@ -1,8 +1,8 @@
 webauthn:
-  rpId: localhost
+  rpId: local.karasu256.com
   expectedOrigins:
-    - http://localhost:3001
-    - http://localhost:3004
+    - https://local-accounts.karasu256.com
+    - https://local-auth.karasu256.com
 
 trustedOrigins:
   - http://localhost:3000
