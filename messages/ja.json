@@ -86,7 +86,6 @@
     },
     "developer": {
       "title": "デベロッパー設定",
-      "authBranch": "auth の接続先ブランチ",
       "oauthClients": "OAuth クライアント",
       "apiKeys": "API キー",
       "createClient": "OAuth クライアントを作成",

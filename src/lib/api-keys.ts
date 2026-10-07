@@ -71,7 +71,7 @@ interface IssuedApiKey {
   key: string;
 }
 
-export function buildIssueApiKeyRequest(userId: string, name: string, options: { dbBranch?: string | null; timestamp?: number } = {}) {
+export function buildIssueApiKeyRequest(userId: string, name: string, options: { timestamp?: number } = {}) {
   return buildSignedAuthRequest('/api/internal/api-keys', { method: 'POST', body: JSON.stringify({ userId, name }), ...options });
 }
 

@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["DATABASE_URL", "NEON_BRANCH_NAME"]
+      "env": ["DATABASE_URL"]
     }
   }
 }

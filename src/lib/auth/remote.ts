@@ -12,16 +12,11 @@ export interface SignedAuthRequestOptions {
   body?: string;
   cookie?: string | null;
   origin?: string;
-  dbBranch?: string | null;
   timestamp?: number;
 }
 
 export function authUrl(path: string): string {
   return `${process.env.NEXT_PUBLIC_AUTH_URL ?? ''}${path}`;
-}
-
-export function getDbBranch(): string | null {
-  return process.env.VERCEL_ENV === 'preview' ? (process.env.NEON_BRANCH_NAME ?? null) : null;
 }
 
 export function buildSignedAuthRequest(path: string, options: SignedAuthRequestOptions = {}): SignedAuthRequest {
@@ -30,7 +25,6 @@ export function buildSignedAuthRequest(path: string, options: SignedAuthRequestO
 
   const method = options.method ?? 'GET';
   const url = authUrl(path);
-  const dbBranch = options.dbBranch === undefined ? getDbBranch() : options.dbBranch;
 
   return {
     method,
@@ -41,7 +35,7 @@ export function buildSignedAuthRequest(path: string, options: SignedAuthRequestO
       ...(options.cookie ? { cookie: options.cookie } : {}),
       ...(options.origin ? { origin: options.origin } : {}),
       ...vercelProtectionBypassHeaders(process.env.VERCEL_PROTECTION_BYPASS_SECRET),
-      ...signRequest({ secret, method, url, body: options.body, dbBranch, timestamp: options.timestamp }),
+      ...signRequest({ secret, method, url, body: options.body, timestamp: options.timestamp }),
     },
   };
 }
