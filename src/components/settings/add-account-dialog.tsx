@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Checkbox, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Label } from '@karasu-lab/ui';
+import { buildUri } from '@karasu-lab/utils/uri';
 import { authClient } from '@/lib/auth/client';
 import { savePendingAddAccount } from '@/lib/add-account';
 
@@ -28,12 +29,9 @@ export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox
     const { data } = await authClient.getSession();
     savePendingAddAccount({ previousSessionToken: data?.session.token ?? null, switchToNewAccount });
 
-    const returnTo = new URL(window.location.pathname, window.location.origin);
-    returnTo.searchParams.set('accountAdded', '1');
-    const signIn = new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL);
-    signIn.searchParams.set('prompt', 'login');
-    signIn.searchParams.set('redirectTo', returnTo.toString());
-    window.location.assign(signIn.toString());
+    const returnTo = buildUri(new URL(window.location.pathname, window.location.origin).toString(), { accountAdded: '1' });
+    const signIn = buildUri(new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL).toString(), { prompt: 'login', next: returnTo });
+    window.location.assign(signIn);
   }
 
   return (
