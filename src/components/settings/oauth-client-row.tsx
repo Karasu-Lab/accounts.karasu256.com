@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
   R2Image,
   SettingsItem,
-} from '@Hashibutogarasu/ui';
+} from '@karasu-lab/ui';
 import { groupScopesBySection, type OAuthClientSummary } from '@/lib/api/developer';
 
 interface OAuthClientRowProps {

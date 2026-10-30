@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getRootAppUrl } from '@Hashibutogarasu/utils/server';
+import { getRootAppUrl } from '@karasu-lab/utils/server';
 import { SettingsShell } from './shell';
 
 export async function generateMetadata(): Promise<Metadata> {

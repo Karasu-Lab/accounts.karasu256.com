@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { authClient } from '@/lib/auth/client';
-import { Button } from '@Hashibutogarasu/ui';
-import { Card, CardContent, CardHeader, CardTitle } from '@Hashibutogarasu/ui';
-import { Identicon } from '@Hashibutogarasu/ui';
-import { Separator } from '@Hashibutogarasu/ui';
-import { Skeleton } from '@Hashibutogarasu/ui';
+import { Button } from '@karasu-lab/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@karasu-lab/ui';
+import { Identicon } from '@karasu-lab/ui';
+import { Separator } from '@karasu-lab/ui';
+import { Skeleton } from '@karasu-lab/ui';
 import { PasskeyList } from './passkey-list';
 import { PasskeyCreateDialog } from './passkey-create-dialog';
 

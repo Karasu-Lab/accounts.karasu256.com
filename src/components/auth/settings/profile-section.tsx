@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { toast } from '@Hashibutogarasu/ui';
+import { toast } from '@karasu-lab/ui';
 import { authClient } from '@/lib/auth/client';
-import { hashFormData } from '@Hashibutogarasu/utils/client';
+import { hashFormData } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
-import { Input } from '@Hashibutogarasu/ui';
-import { Label } from '@Hashibutogarasu/ui';
+import { Input } from '@karasu-lab/ui';
+import { Label } from '@karasu-lab/ui';
 import { LoadingButton } from '@/components/ui/loading-button';
 import { ProfileIcon } from './profile-icon';
 

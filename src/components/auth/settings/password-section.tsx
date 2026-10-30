@@ -2,13 +2,13 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { toast } from '@Hashibutogarasu/ui';
+import { toast } from '@karasu-lab/ui';
 import { authClient } from '@/lib/auth/client';
 import { setPassword as setPasswordRequest } from '@/lib/api/set-password';
 import { useSettingsUser } from '@/components/settings/user-context';
-import { Button } from '@Hashibutogarasu/ui';
-import { Label } from '@Hashibutogarasu/ui';
-import { PasswordInput } from '@Hashibutogarasu/ui';
+import { Button } from '@karasu-lab/ui';
+import { Label } from '@karasu-lab/ui';
+import { PasswordInput } from '@karasu-lab/ui';
 import { LocalizedPasswordStrengthIndicator } from '@/components/auth/localized-password-strength-indicator';
 
 export interface PasswordSectionProps {

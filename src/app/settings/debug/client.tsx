@@ -1,8 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@Hashibutogarasu/ui';
-import { useFeatureFlags } from '@Hashibutogarasu/flags/client';
+import { Switch, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@karasu-lab/ui';
+import { useFeatureFlags } from '@karasu-lab/flags/client';
 import type { ApiMeta } from '@/lib/api/api-client';
 import { appFlagsSchema } from '@/lib/flags';
 

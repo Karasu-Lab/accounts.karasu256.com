@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button, Checkbox, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Label } from '@Hashibutogarasu/ui';
+import { Button, Checkbox, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Label } from '@karasu-lab/ui';
 import { authClient } from '@/lib/auth/client';
 import { savePendingAddAccount } from '@/lib/add-account';
 

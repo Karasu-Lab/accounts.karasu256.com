@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLink, faLinkSlash } from '@fortawesome/free-solid-svg-icons';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
-import { toast, SettingsAccordion, SettingsItem } from '@Hashibutogarasu/ui';
-import { unlinkProvider } from '@Hashibutogarasu/utils/client';
+import { toast, SettingsAccordion, SettingsItem } from '@karasu-lab/ui';
+import { unlinkProvider } from '@karasu-lab/utils/client';
 import { authClient } from '@/lib/auth/client';
 import { LoadingButton } from '@/components/ui/loading-button';
 

@@ -12,8 +12,8 @@ import {
   ContextMenuTrigger,
   UserAvatar,
   toast,
-} from '@Hashibutogarasu/ui';
-import { uploadUserIcon, deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@Hashibutogarasu/utils/client';
+} from '@karasu-lab/ui';
+import { uploadUserIcon, deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
 
 /** Formats a submenu entry as "user name (Provider)", falling back to just the provider name. */

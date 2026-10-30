@@ -16,7 +16,7 @@ import {
   Label,
   R2Image,
   useR2Storage,
-} from '@Hashibutogarasu/ui';
+} from '@karasu-lab/ui';
 import { updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
 
 interface EditOAuthClientDialogProps {

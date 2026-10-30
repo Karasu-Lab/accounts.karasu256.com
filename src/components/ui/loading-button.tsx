@@ -1,7 +1,7 @@
 'use client';
 
 import type { ComponentProps, ReactNode } from 'react';
-import { Button, Spinner } from '@Hashibutogarasu/ui';
+import { Button, Spinner } from '@karasu-lab/ui';
 
 interface LoadingButtonProps extends ComponentProps<typeof Button> {
   /** Whether the action this button triggers is in flight. */

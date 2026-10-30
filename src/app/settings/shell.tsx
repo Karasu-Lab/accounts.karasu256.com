@@ -3,11 +3,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { toast } from '@Hashibutogarasu/ui';
+import { toast } from '@karasu-lab/ui';
 import { authClient, getSignInUrl } from '@/lib/auth/client';
 import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
-import { Skeleton, SettingsSidebarLayout, SwitchingAccountOverlay } from '@Hashibutogarasu/ui';
+import { Skeleton, SettingsSidebarLayout, SwitchingAccountOverlay } from '@karasu-lab/ui';
 import { SettingsSidebar } from '@/components/settings/settings-sidebar';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';

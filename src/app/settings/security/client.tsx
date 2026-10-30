@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Separator, SettingsAccordion } from '@Hashibutogarasu/ui';
-import { listLinkedProviders, type ProviderProfile } from '@Hashibutogarasu/utils/client';
+import { Separator, SettingsAccordion } from '@karasu-lab/ui';
+import { listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { PasswordSection } from '@/components/auth/settings/password-section';
 import { PasskeyList } from '@/components/auth/passkey-list';
 import { PasskeyCreateDialog } from '@/components/auth/passkey-create-dialog';

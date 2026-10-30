@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { toast, ConfirmDialog, DeleteIconButton, SettingsItem, Skeleton, AnimatedList, AnimatedListItem } from '@Hashibutogarasu/ui';
+import { toast, ConfirmDialog, DeleteIconButton, SettingsItem, Skeleton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
 import { authClient } from '@/lib/auth/client';
 
 interface CredentialSummary {

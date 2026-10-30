@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle, Circle, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Spinner as DefaultSpinner } from '@Hashibutogarasu/ui';
+import { Spinner as DefaultSpinner } from '@karasu-lab/ui';
 import { useOAuthErrorMessage } from '@/lib/i18n/use-oauth-error-message';
-import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@Hashibutogarasu/ui';
+import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
 
 const STEP_LABELS = ['authorize', 'access_token', 'profile_read', 'profile_write'] as const;

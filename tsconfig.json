@@ -20,10 +20,10 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@Hashibutogarasu/ui": ["../../packages/ui/src/index.ts"],
-      "@Hashibutogarasu/utils/server": ["../../packages/utils/src/server/index.ts"],
-      "@Hashibutogarasu/utils/email": ["../../packages/utils/src/email/index.ts"],
-      "@Hashibutogarasu/utils/client": ["../../packages/utils/src/client/index.ts"]
+      "@karasu-lab/ui": ["../../packages/ui/src/index.ts"],
+      "@karasu-lab/utils/server": ["../../packages/utils/src/server/index.ts"],
+      "@karasu-lab/utils/email": ["../../packages/utils/src/email/index.ts"],
+      "@karasu-lab/utils/client": ["../../packages/utils/src/client/index.ts"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "**/*.mts"],

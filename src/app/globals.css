@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import '@Hashibutogarasu/ui/styles/base.css';
-@import '@Hashibutogarasu/ui/styles/sidebar-theme.css';
+@import '@karasu-lab/ui/styles/base.css';
+@import '@karasu-lab/ui/styles/sidebar-theme.css';
 
 html {
   font-size: 150%;

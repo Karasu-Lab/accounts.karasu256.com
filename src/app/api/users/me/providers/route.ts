@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getLinkedProviderIds } from '@Hashibutogarasu/db';
+import { getLinkedProviderIds } from '@karasu-lab/db';
 import { getProviderProfile, type ProviderProfile } from '@/lib/auth/provider-profile';
 import { requireSession } from '@/lib/api/require-session';
 

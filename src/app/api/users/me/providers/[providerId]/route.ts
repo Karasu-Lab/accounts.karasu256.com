@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq } from 'drizzle-orm';
-import { getDb } from '@Hashibutogarasu/db';
-import { accounts } from '@Hashibutogarasu/db/schema';
+import { getDb } from '@karasu-lab/db';
+import { accounts } from '@karasu-lab/db/schema';
 import { requireSession } from '@/lib/api/require-session';
 
 /**

@@ -1,5 +1,5 @@
-import type { ApiKeyCreated, ApiKeySummary, PermissionSummary } from '@Hashibutogarasu/api-permissions';
-import { ApiError } from '@Hashibutogarasu/utils/client';
+import type { ApiKeyCreated, ApiKeySummary, PermissionSummary } from '@karasu-lab/api-permissions';
+import { ApiError } from '@karasu-lab/utils/client';
 import { authClient, bridgeFirebaseSession } from '@/lib/auth/client';
 
 export type { ApiKeyCreated, ApiKeySummary };

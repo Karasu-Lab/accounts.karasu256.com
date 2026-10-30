@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, Shield, Link as LinkIcon, Code2, Bug } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { SettingsSidebar as UiSettingsSidebar, type SidebarNavItem, type SettingsSidebarUser } from '@Hashibutogarasu/ui';
+import { SettingsSidebar as UiSettingsSidebar, type SidebarNavItem, type SettingsSidebarUser } from '@karasu-lab/ui';
 
 const NAV_ITEMS_DEFS = [
   { href: '/settings/profile', icon: User, labelKey: 'settings.sections.profile' },

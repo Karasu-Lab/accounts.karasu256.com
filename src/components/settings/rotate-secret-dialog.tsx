@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input } from '@Hashibutogarasu/ui';
+import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input } from '@karasu-lab/ui';
 import { rotateOAuthClientSecret } from '@/lib/api/developer';
 
 interface RotateSecretDialogProps {

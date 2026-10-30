@@ -1,4 +1,4 @@
-import { ApiError } from '@Hashibutogarasu/utils/client';
+import { ApiError } from '@karasu-lab/utils/client';
 
 export interface AccountSummary {
   uid: string;

@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { deleteUploadedImage, uploadImage } from '@Hashibutogarasu/utils/server';
+import { deleteUploadedImage, uploadImage } from '@karasu-lab/utils/server';
 import { getAdminAuth } from '@/lib/firebase-admin';
 import { getLinkedFirebaseUid } from '@/lib/auth/firebase-uid';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
