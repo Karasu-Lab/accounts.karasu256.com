@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
+import { buildUriWithNext } from '@karasu-lab/utils/uri';
 import { firebaseConfigSchema } from '@/lib/firebase/schema';
 
 /**
@@ -58,8 +59,7 @@ export function proxy(request: NextRequest): NextResponse {
 
   if (!hasSession && (pathname === '/' || pathname.startsWith('/settings'))) {
     const target = pathname === '/' ? new URL('/settings', publicOrigin) : new URL(`${pathname}${search}`, publicOrigin);
-    const signIn = new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL);
-    signIn.searchParams.set('redirectTo', target.toString());
+    const signIn = buildUriWithNext(new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL).toString(), target.toString());
     return NextResponse.redirect(signIn);
   }
 
