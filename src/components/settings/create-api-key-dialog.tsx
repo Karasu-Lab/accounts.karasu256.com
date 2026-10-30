@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button, Checkbox, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@Hashibutogarasu/ui';
+import { Button, Checkbox, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
 import { createApiKey, listGrantablePermissions, type ApiKeyCreated, type ApiKeyPermission } from '@/lib/api/developer';
 
 interface CreateApiKeyDialogProps {

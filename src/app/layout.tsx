@@ -4,9 +4,9 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import './globals.css';
-import { R2StorageProvider, Toaster } from '@Hashibutogarasu/ui';
-import { geistSans, geistMono, notoSansJP } from '@Hashibutogarasu/ui/fonts';
-import { FeatureFlagsProvider } from '@Hashibutogarasu/flags/server';
+import { R2StorageProvider, Toaster } from '@karasu-lab/ui';
+import { geistSans, geistMono, notoSansJP } from '@karasu-lab/ui/fonts';
+import { FeatureFlagsProvider } from '@karasu-lab/flags/server';
 import { appFlags, appFlagsSchema } from '@/lib/flags';
 
 config.autoAddCss = false;

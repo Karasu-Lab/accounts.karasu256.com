@@ -1,5 +1,5 @@
-import { UnknownPermissionError, type PermissionSummary } from '@Hashibutogarasu/api-permissions';
-import { MissingEnvError, vercelProtectionBypassHeaders } from '@Hashibutogarasu/utils/server';
+import { UnknownPermissionError, type PermissionSummary } from '@karasu-lab/api-permissions';
+import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 
 function apiUrl(path: string): string {
   const base = process.env.API_URL;

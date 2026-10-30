@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getLinkedProviderIds } from '@Hashibutogarasu/db';
+import { getLinkedProviderIds } from '@karasu-lab/db';
 import { getSessionUser } from '@/lib/session-user';
 import { ProviderSectionClient } from './provider-section-client';
 

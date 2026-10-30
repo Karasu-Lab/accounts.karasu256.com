@@ -22,7 +22,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const buildTimeEnv: Record<string, string> = process.env.DATABASE_URL ? { DATABASE_URL: process.env.DATABASE_URL } : {};
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@Hashibutogarasu/db', '@Hashibutogarasu/ui', '@Hashibutogarasu/utils', '@Hashibutogarasu/flags'],
+  transpilePackages: ['@karasu-lab/db', '@karasu-lab/ui', '@karasu-lab/utils', '@karasu-lab/flags'],
   devIndicators: false,
   allowedDevOrigins: developmentTrustedHosts,
   env: buildTimeEnv,

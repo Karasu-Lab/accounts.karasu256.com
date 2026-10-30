@@ -1,11 +1,11 @@
 import { and, desc, eq } from 'drizzle-orm';
-import { getDb } from '@Hashibutogarasu/db';
-import { apiKeys } from '@Hashibutogarasu/db/schema';
-import type { ApiKeyCreated, ApiKeySummary } from '@Hashibutogarasu/api-permissions';
+import { getDb } from '@karasu-lab/db';
+import { apiKeys } from '@karasu-lab/db/schema';
+import type { ApiKeyCreated, ApiKeySummary } from '@karasu-lab/api-permissions';
 import { buildSignedAuthRequest, sendSignedAuthRequest } from '@/lib/auth/remote';
 import { getGrantedPermissions, grantPermissions } from '@/lib/api/api-client';
 
-export { UnknownPermissionError } from '@Hashibutogarasu/api-permissions';
+export { UnknownPermissionError } from '@karasu-lab/api-permissions';
 
 /** Returns the user's API keys with the permissions granted to each. */
 export async function listApiKeys(userId: string): Promise<ApiKeySummary[]> {

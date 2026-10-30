@@ -1,4 +1,4 @@
-import { locales, type Locale } from '@Hashibutogarasu/types';
+import { locales, type Locale } from '@karasu-lab/types';
 
 export { locales, type Locale };
 

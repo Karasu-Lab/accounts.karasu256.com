@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
-import { getDb } from '@Hashibutogarasu/db';
-import { firebaseUsers } from '@Hashibutogarasu/db/schema';
+import { getDb } from '@karasu-lab/db';
+import { firebaseUsers } from '@karasu-lab/db/schema';
 
 /**
  * Returns the Firebase UID linked to a better-auth user via the

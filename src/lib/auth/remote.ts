@@ -1,4 +1,4 @@
-import { MissingEnvError, signRequest, vercelProtectionBypassHeaders } from '@Hashibutogarasu/utils/server';
+import { MissingEnvError, signRequest, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 
 export interface SignedAuthRequest {
   method: string;

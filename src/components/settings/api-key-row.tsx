@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { DeleteIconButton, SettingsItem } from '@Hashibutogarasu/ui';
+import { DeleteIconButton, SettingsItem } from '@karasu-lab/ui';
 import type { ApiKeySummary } from '@/lib/api/developer';
 
 interface ApiKeyRowProps {
