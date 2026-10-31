@@ -75,15 +75,15 @@
     },
     "menu": {
       "descriptions": {
-        "profile": "更改显示名称和图标",
-        "security": "管理密码、通行密钥和危险操作",
-        "connections": "管理与外部账户的关联",
-        "authorizedApps": "查看已授权的应用并解除关联",
-        "developer": "管理 OAuth 客户端和 API 密钥",
-        "debug": "查看功能标志和 API 信息",
-        "addAccount": "使用其他账户登录以添加",
+        "profile": "编辑个人资料",
+        "security": "保护您的账户",
+        "connections": "关联外部账户",
+        "authorizedApps": "管理已授权的应用",
+        "developer": "管理开发者工具",
+        "debug": "显示诊断信息",
+        "addAccount": "添加其他账户",
         "backToApp": "前往 karasu256.com",
-        "signOut": "退出当前账户"
+        "signOut": "退出登录"
       }
     },
     "back": "返回",
