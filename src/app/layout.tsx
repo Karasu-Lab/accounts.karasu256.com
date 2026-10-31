@@ -21,6 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL('https://accounts.karasu256.com'),
     title: { default: siteTitle, template: '%s' },
     description: siteDescription,
+    icons: {
+      icon: '/icons/kara_su.png',
+      shortcut: '/icons/kara_su.png',
+      apple: '/icons/kara_su.png',
+    },
     openGraph: {
       title: siteTitle,
       description: siteDescription,
