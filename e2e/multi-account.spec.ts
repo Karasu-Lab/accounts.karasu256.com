@@ -60,10 +60,9 @@ async function addAccountViaApi(page: Page, account: CreateTestAccountResult): P
   return { sessionToken: token };
 }
 
-/** The settings menu at /settings, which hosts the account switcher items. */
-async function gotoSettingsMenu(page: Page) {
-  await page.goto('/settings');
-  await expect(page.getByRole('heading', { name: '設定' })).toBeVisible();
+/** The sidebar's account-switcher popup — scoped to avoid matching the same email shown in page content. */
+function sidebarFooter(page: Page) {
+  return page.locator('[data-slot="sidebar-footer"]');
 }
 
 test.describe('multi-account switching', () => {
@@ -89,30 +88,28 @@ test.describe('multi-account switching', () => {
 
   test('creates a test account and signs in', async ({ page }) => {
     await signInViaUi(page, accountA);
-    await gotoSettingsMenu(page);
-    await expect(page.getByRole('button', { name: 'サインアウト' })).toBeVisible();
+    await expect(sidebarFooter(page).getByText(accountA.email).first()).toBeVisible();
   });
 
   test('adds a second account and switches between them', async ({ page }) => {
     await signInViaUi(page, accountA);
-    await gotoSettingsMenu(page);
+    await expect(sidebarFooter(page).getByText(accountA.email).first()).toBeVisible();
 
-    await page.getByRole('button', { name: '別のアカウントを追加' }).click();
+    await sidebarFooter(page).getByText(accountA.email).first().click();
+    await page.getByText('別のアカウントを追加').click();
 
     await page.getByRole('dialog').getByRole('button', { name: 'サインインへ進む' }).click();
     await page.waitForURL(`${AUTH_URL}/sign-in?**`);
     expect(new URL(page.url()).searchParams.get('prompt')).toBe('login');
     await fillSignInForm(page, accountB);
-    /* Adding returns to the menu with the previous account active again
-       (the "switch after add" checkbox was left unchecked), so the new
-       account appears in the menu as a switchable item. */
-    await page.waitForURL((url) => url.pathname === '/settings');
+    await page.waitForURL('/settings/profile');
 
-    await expect(page.getByText(accountB.email).first()).toBeVisible({ timeout: 10000 });
+    await expect(sidebarFooter(page).getByText(accountA.email).first()).toBeVisible({ timeout: 10000 });
+    await sidebarFooter(page).getByText(accountA.email).first().click();
+    await expect(page.getByText(accountB.email).first()).toBeVisible();
     await page.getByText(accountB.email).first().click();
 
-    /* After switching, the previously active account is the switchable one. */
-    await expect(page.getByText(accountA.email).first()).toBeVisible({ timeout: 10000 });
+    await expect(sidebarFooter(page).getByText(accountB.email).first()).toBeVisible({ timeout: 10000 });
 
     const accountsRes = await page.request.get('/api/accounts');
     expect(accountsRes.ok()).toBeTruthy();

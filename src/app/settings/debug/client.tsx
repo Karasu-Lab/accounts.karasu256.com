@@ -20,6 +20,8 @@ export function DebugClient({ apiMeta }: DebugClientProps) {
 
   return (
     <div className="space-y-4">
+      <h1 className="text-xl font-semibold">{t('debug.title')}</h1>
+
       <section className="space-y-3">
         <h2 className="text-lg font-medium">{t('debug.api.title')}</h2>
         {apiMeta === null ? (
