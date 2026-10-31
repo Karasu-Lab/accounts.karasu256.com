@@ -54,10 +54,22 @@ function authApiBase(): string {
 }
 
 /**
+ * Encodes the client credentials as an HTTP Basic header value,
+ * form-url-encoding each part before joining, per RFC 6749 §2.3.1.
+ * Clients registered through the developer settings use
+ * `client_secret_basic`, and the token endpoint rejects any other
+ * authentication method for them with `invalid_client`.
+ */
+function basicAuthorization(clientId: string, clientSecret: string): string {
+  const encodePart = (value: string) => new URLSearchParams({ v: value }).toString().slice(2);
+  return `Basic ${btoa(`${encodePart(clientId)}:${encodePart(clientSecret)}`)}`;
+}
+
+/**
  * Dialog that tests the authorization flow for the given client by opening
  * the auth app's real authorization page in a popup window and exchanging
  * the resulting code at the auth API's `/oauth2/token` endpoint (PKCE
- * required). The popup lands on the auth app's test-callback confirmation
+ * required, with `client_secret_basic` client authentication). The popup lands on the auth app's test-callback confirmation
  * screen, which posts the code back here. The requested permissions are
  * checked and granted on the auth app's consent screen as part of the
  * real authorization — this dialog no longer performs a separate
@@ -115,12 +127,13 @@ export function OAuthClientTestDialog({
 
           const tokenRes = await fetch(`${authApiBase()}/api/auth/oauth2/token`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization: basicAuthorization(currentClient.client_id, secretRef.current),
+            },
             body: new URLSearchParams({
               grant_type: 'authorization_code',
               code,
-              client_id: currentClient.client_id,
-              client_secret: secretRef.current,
               redirect_uri: redirectUri,
               code_verifier: verifierRef.current,
               resource: `${window.location.origin}/api/auth`,
