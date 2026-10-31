@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   ContextMenu,
@@ -15,6 +15,12 @@ import {
 } from '@karasu-lab/ui';
 import { uploadUserIcon, deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
+
+/** Imperative handle of {@link ProfileIcon}, for callers that host the icon inside their own item row. */
+export interface ProfileIconHandle {
+  /** Opens the icon file picker, exactly as clicking the avatar does. */
+  openFilePicker: () => void;
+}
 
 /** Formats a submenu entry as "user name (Provider)", falling back to just the provider name. */
 function providerLabel(providerId: string, profile: ProviderProfile): string {
@@ -38,7 +44,7 @@ function providerLabel(providerId: string, profile: ProviderProfile): string {
  * and the linked-provider list isn't fetched, since that request requires
  * an authenticated session.
  */
-export function ProfileIcon() {
+export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_, ref) {
   const t = useTranslations();
   const { user, ready, updateUser } = useSettingsUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -96,6 +102,8 @@ export function ProfileIcon() {
     fileInputRef.current?.click();
   }
 
+  useImperativeHandle(ref, () => ({ openFilePicker }));
+
   return (
     <>
       <ContextMenu>
@@ -134,4 +142,4 @@ export function ProfileIcon() {
       />
     </>
   );
-}
+});

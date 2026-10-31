@@ -180,6 +180,8 @@
   "profile": {
     "title": "プロフィール",
     "displayName": "表示名",
+    "editDisplayName": "表示名を編集",
+    "icon": "アイコン",
     "changeIcon": "アイコンを変更",
     "uploadIcon": "新しいアイコンをアップロード",
     "useProviderIcon": "連携したアカウントのアイコン",
@@ -187,9 +189,8 @@
     "uploadFailed": "アイコンのアップロードに失敗しました",
     "iconChanged": "アイコンを変更しました",
     "save": "保存",
-    "saving": "保存中",
     "saved": "表示名を保存しました。",
-    "discard": "変更を破棄"
+    "cancel": "キャンセル"
   },
   "security": {
     "title": "セキュリティ",

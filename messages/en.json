@@ -180,6 +180,8 @@
   "profile": {
     "title": "Profile",
     "displayName": "Display name",
+    "editDisplayName": "Edit display name",
+    "icon": "Icon",
     "changeIcon": "Change icon",
     "uploadIcon": "Upload new icon",
     "useProviderIcon": "Use linked account's icon",
@@ -187,9 +189,8 @@
     "uploadFailed": "Failed to upload icon",
     "iconChanged": "Icon changed.",
     "save": "Save",
-    "saving": "Saving",
     "saved": "Display name saved.",
-    "discard": "Discard changes"
+    "cancel": "Cancel"
   },
   "security": {
     "title": "Security",

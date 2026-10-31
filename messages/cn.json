@@ -180,6 +180,8 @@
   "profile": {
     "title": "个人资料",
     "displayName": "显示名称",
+    "editDisplayName": "编辑显示名称",
+    "icon": "图标",
     "changeIcon": "更改图标",
     "uploadIcon": "上传新图标",
     "useProviderIcon": "使用关联账户的头像",
@@ -187,9 +189,8 @@
     "uploadFailed": "图标上传失败",
     "iconChanged": "图标已更改。",
     "save": "保存",
-    "saving": "保存中",
     "saved": "显示名称已保存。",
-    "discard": "放弃更改"
+    "cancel": "取消"
   },
   "security": {
     "title": "安全",
