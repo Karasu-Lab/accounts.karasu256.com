@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { buildIssueApiKeyRequest } from '@/lib/api-keys';
 import { buildSignedAuthRequest } from '@/lib/auth/remote';
 
 const bodySchema = z.discriminatedUnion('target', [
@@ -35,7 +34,13 @@ export async function POST(request: NextRequest) {
   const timestamp = timestampOffsetMs === undefined ? undefined : Date.now() + timestampOffsetMs;
 
   if (parsed.data.target === 'issue-api-key') {
-    return NextResponse.json(buildIssueApiKeyRequest(parsed.data.userId, parsed.data.name, { timestamp }));
+    return NextResponse.json(
+      buildSignedAuthRequest('/api/internal/api-keys', {
+        method: 'POST',
+        body: JSON.stringify({ userId: parsed.data.userId, name: parsed.data.name }),
+        timestamp,
+      })
+    );
   }
   return NextResponse.json(buildSignedAuthRequest('/api/auth/get-session', { cookie: request.headers.get('cookie'), timestamp }));
 }

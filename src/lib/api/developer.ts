@@ -57,58 +57,6 @@ export async function rotateOAuthClientSecret(clientId: string): Promise<{ clien
   return data as { client_secret: string };
 }
 
-/**
- * Lists the permissions that can be granted to an API key.
- *
- * @throws {ApiError} When the request fails with a non-ok HTTP status.
- */
-export async function listGrantablePermissions(): Promise<ApiKeyPermission[]> {
-  await bridgeFirebaseSession();
-  const res = await fetch('/api/permissions', { credentials: 'include' });
-  if (!res.ok) throw ApiError.fromResponse(res);
-  return res.json() as Promise<ApiKeyPermission[]>;
-}
-
-/**
- * Lists the current user's API keys.
- *
- * @throws {ApiError} When the request fails with a non-ok HTTP status.
- */
-export async function listApiKeys(): Promise<ApiKeySummary[]> {
-  await bridgeFirebaseSession();
-  const res = await fetch('/api/api-keys', { credentials: 'include' });
-  if (!res.ok) throw ApiError.fromResponse(res);
-  return res.json() as Promise<ApiKeySummary[]>;
-}
-
-/**
- * Issues an API key granted the permissions identified by `permissionPublicIds`.
- *
- * @throws {ApiError} When the request fails with a non-ok HTTP status.
- */
-export async function createApiKey(name: string, permissionPublicIds: string[]): Promise<ApiKeyCreated> {
-  await bridgeFirebaseSession();
-  const res = await fetch('/api/api-keys', {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, permissions: permissionPublicIds }),
-  });
-  if (!res.ok) throw ApiError.fromResponse(res);
-  return res.json() as Promise<ApiKeyCreated>;
-}
-
-/**
- * Deletes one of the current user's API keys.
- *
- * @throws {ApiError} When the request fails with a non-ok HTTP status.
- */
-export async function deleteApiKey(id: string): Promise<void> {
-  await bridgeFirebaseSession();
-  const res = await fetch(`/api/api-keys/${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
-  if (!res.ok && res.status !== 204) throw ApiError.fromResponse(res);
-}
-
 export interface PermissionSection {
   key: string;
   canRead: boolean;

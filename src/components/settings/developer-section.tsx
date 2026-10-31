@@ -4,12 +4,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { AnimatedList, Button, ConfirmDialog, SettingsAccordion, SettingsItem, Skeleton } from '@karasu-lab/ui';
-import { loadOAuthClients } from '@/lib/actions/developer';
+import { deleteApiKey, loadApiKeys, loadOAuthClients } from '@/lib/actions/developer';
 import {
-  deleteApiKey,
   deleteOAuthClient,
   groupScopesBySection,
-  listApiKeys,
   type ApiKeyCreated,
   type ApiKeySummary,
   type OAuthClientCreated,
@@ -72,7 +70,7 @@ export function DeveloperSection() {
   const reloadKeys = useCallback(async () => {
     setKeysState({ status: 'loading' });
     try {
-      const keys = await listApiKeys();
+      const keys = await loadApiKeys();
       setKeysState({ status: 'loaded', items: keys });
     } catch {
       setKeysState({ status: 'error' });
