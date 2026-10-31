@@ -118,8 +118,6 @@ export function DeveloperSection() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold">{t('settings.developer.title')}</h1>
-
       <SettingsAccordion
         title={t('settings.developer.oauthClients')}
         action={
