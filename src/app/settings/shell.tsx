@@ -10,6 +10,7 @@ import { authClient, getSignInUrl } from '@/lib/auth/client';
 import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
 import { Skeleton, SwitchingAccountOverlay } from '@karasu-lab/ui';
+import { cn } from '@/lib/utils';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
 import { SettingsMenuContext } from '@/components/settings/settings-menu-context';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';
@@ -27,7 +28,11 @@ interface SettingsShellProps {
  * There is no sidebar (drawer) and no drawer menu button: navigation
  * lives in the settings menu at `/settings`, and this shell only renders
  * a header carrying the current page's title — with a back link to the
- * menu on subpages — above the page content. The shell also provides the
+ * menu on subpages, in the slot the drawer menu button used to occupy —
+ * above the page content. The back button is only shown when needed
+ * (on subpages); its slot animates its width open and closed, so the
+ * title slides with it to a position clear of the button and animates
+ * back to its original position when the button is gone. The shell also provides the
  * menu page with the account actions the drawer used to host (switching
  * and removing accounts, adding an account, signing out) through
  * {@link SettingsMenuContext}.
@@ -44,6 +49,8 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   const [userOverrideState, setUserOverrideState] = useState<{ userId?: string; patch: Partial<SettingsUser> }>({ patch: {} });
 
   const isMenuPage = pathname === '/settings';
+  /** The back button replaces the drawer menu button and is shown only on subpages, where a way back to the menu is needed. */
+  const showBackButton = !isMenuPage;
   const isLinkingPage = pathname === '/settings/linking';
   const isProfilePage = pathname === '/settings/profile';
   const loading = isPending;
@@ -209,16 +216,32 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   return (
     <>
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-1 border-b border-border bg-background px-4">
-          {!isMenuPage && (
+        <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center border-b border-border bg-background px-4">
+          {/*
+           * The back button stays mounted and its slot animates between
+           * w-9 and w-0 (with a fade), so the title next to it slides
+           * smoothly instead of jumping: it shifts to a position clear
+           * of the button while the button is shown, and animates back
+           * to its original position when the button is not needed.
+           * While hidden the button is inert — no pointer events, no
+           * tab focus, and hidden from assistive technology.
+           */}
+          <div
+            aria-hidden={!showBackButton}
+            className={cn(
+              'flex shrink-0 items-center overflow-hidden transition-all duration-300 ease-in-out',
+              showBackButton ? 'w-9 opacity-100' : 'pointer-events-none w-0 opacity-0'
+            )}
+          >
             <Link
               href="/settings"
               aria-label={t('settings.back')}
+              tabIndex={showBackButton ? undefined : -1}
               className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <ChevronLeft className="size-5" />
             </Link>
-          )}
+          </div>
           <h1 className="truncate text-base font-semibold">{pageTitle}</h1>
         </header>
         <main className="min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">
