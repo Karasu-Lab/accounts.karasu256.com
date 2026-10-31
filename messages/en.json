@@ -93,6 +93,8 @@
       "editClient": "Edit OAuth client",
       "createKey": "Create API key",
       "noClients": "No OAuth clients",
+      "loadError": "Failed to load",
+      "retry": "Retry",
       "noKeys": "No API keys",
       "edit": "Edit",
       "delete": "Delete",

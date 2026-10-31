@@ -17,17 +17,6 @@ export interface OAuthClientCreated extends OAuthClientSummary {
   client_secret: string;
 }
 
-/**
- * Lists the OAuth clients owned by the current user, via
- * accounts.karasu256.com's better-auth OAuth authorization server.
- */
-export async function listOAuthClients(): Promise<OAuthClientSummary[]> {
-  await bridgeFirebaseSession();
-  const { data, error } = await authClient.oauth2.getClients();
-  if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
-  return (data ?? []) as OAuthClientSummary[];
-}
-
 export async function createOAuthClient(input: {
   client_name: string;
   redirect_uris: string[];
@@ -118,17 +107,6 @@ export async function deleteApiKey(id: string): Promise<void> {
   await bridgeFirebaseSession();
   const res = await fetch(`/api/api-keys/${encodeURIComponent(id)}`, { method: 'DELETE', credentials: 'include' });
   if (!res.ok && res.status !== 204) throw ApiError.fromResponse(res);
-}
-
-/**
- * Returns the catalog of OAuth scopes an OAuth client can request.
- *
- * @throws {ApiError} When the request fails with a non-ok HTTP status.
- */
-export async function getAvailableScopes(): Promise<string[]> {
-  const res = await fetch('/api/permissions/sections');
-  if (!res.ok) throw ApiError.fromResponse(res);
-  return res.json() as Promise<string[]>;
 }
 
 export interface PermissionSection {
