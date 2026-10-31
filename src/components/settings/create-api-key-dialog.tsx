@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Checkbox, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
-import { createApiKey, listGrantablePermissions, type ApiKeyCreated, type ApiKeyPermission } from '@/lib/api/developer';
+import { createApiKey, loadGrantablePermissions } from '@/lib/actions/developer';
+import type { ApiKeyCreated, ApiKeyPermission } from '@/lib/api/developer';
 
 interface CreateApiKeyDialogProps {
   open: boolean;
@@ -34,7 +35,7 @@ export function CreateApiKeyDialog({ open, onOpenChange, onCreated }: CreateApiK
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (open) listGrantablePermissions().then(setGrantable);
+    if (open) loadGrantablePermissions().then(setGrantable);
   }, [open]);
 
   function handleClose() {
