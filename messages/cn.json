@@ -213,9 +213,13 @@
     "title": "关联账户",
     "link": "关联",
     "unlink": "解除关联",
-    "linking": "关联中",
-    "unlinking": "解除中",
     "cannotUnlink": "无法删除最后一种登录方式。",
+    "notLinked": "未关联",
+    "unlinkConfirm": {
+      "title": "要取消关联吗",
+      "description": "将取消与 {provider} 的关联。",
+      "cancel": "取消"
+    },
     "linked": "已关联 {provider}。",
     "error": {
       "provider_already_linked": "此账户已关联至其他用户。",

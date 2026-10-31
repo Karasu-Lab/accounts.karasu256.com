@@ -21,6 +21,12 @@ export interface SettingsItemContainerProps {
    * `object-cover`); the icon background color still applies behind it.
    */
   iconImageSrc?: string;
+  /**
+   * Custom icon content shown in the tile instead of {@link icon}, for
+   * icon sets other than Lucide (for example a FontAwesome brand icon).
+   * Ignored when {@link iconImageSrc} is set.
+   */
+  iconNode?: React.ReactNode;
   /** CSS background color of the icon tile. Defaults to gray. */
   iconBackgroundColor?: string;
   /**
@@ -63,6 +69,7 @@ export function SettingsItemContainer({
   description,
   icon: Icon = Settings,
   iconImageSrc,
+  iconNode,
   iconBackgroundColor = DEFAULT_ICON_BACKGROUND_COLOR,
   arrowIcon: ArrowIcon = ChevronRight,
   href,
@@ -108,6 +115,8 @@ export function SettingsItemContainer({
         {iconImageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={iconImageSrc} alt="" className="size-full object-cover" />
+        ) : iconNode !== undefined ? (
+          <span className="flex items-center justify-center text-white">{iconNode}</span>
         ) : (
           <Icon className="size-4.5 text-white" />
         )}
