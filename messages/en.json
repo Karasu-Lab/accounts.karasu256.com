@@ -69,6 +69,7 @@
       "profile": "Profile",
       "security": "Security",
       "connections": "Connections",
+      "authorizedApps": "Authorized apps",
       "debug": "Debug",
       "developer": "Developer"
     },
@@ -202,6 +203,22 @@
       "email_doesn't_match": "The linked account's email address does not match.",
       "account_already_linked_to_different_user": "This account is already connected to another user.",
       "invalid_origin": "Could not start linking because the request came from an unexpected origin. Please try again."
+    }
+  },
+  "authorizedApps": {
+    "title": "Authorized apps",
+    "empty": "No authorized apps",
+    "clientId": "Client ID",
+    "authorizedAt": "Authorized on",
+    "permissions": "Approved permissions",
+    "noPermissions": "No approved permissions",
+    "revoke": "Disconnect",
+    "revoked": "Disconnected {name}.",
+    "revokeConfirm": {
+      "title": "Disconnect this app?",
+      "description": "Disconnecting {name} will revoke its access to your account.",
+      "confirm": "Disconnect",
+      "cancel": "Cancel"
     }
   },
   "debug": {
