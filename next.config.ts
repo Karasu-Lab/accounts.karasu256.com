@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withUi } from '@karasu-lab/ui/next';
 import { parse as parseYaml } from 'yaml';
 
 /**
@@ -28,4 +29,4 @@ const nextConfig: NextConfig = {
   env: buildTimeEnv,
 };
 
-export default withNextIntl(nextConfig);
+export default withUi(withNextIntl(nextConfig));
