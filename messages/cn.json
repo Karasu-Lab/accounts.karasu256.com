@@ -148,9 +148,7 @@
         "clientSecret": "客户端密钥",
         "steps": {
           "authorize": "在授权页面批准",
-          "access_token": "交换访问令牌",
-          "profile_read": "获取用户资料",
-          "profile_write": "将显示名称写回个人资料"
+          "access_token": "交换访问令牌"
         }
       }
     }

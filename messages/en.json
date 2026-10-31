@@ -148,9 +148,7 @@
         "clientSecret": "Client secret",
         "steps": {
           "authorize": "Authorize on consent page",
-          "access_token": "Exchange for access token",
-          "profile_read": "Fetch profile",
-          "profile_write": "Write display name back to profile"
+          "access_token": "Exchange for access token"
         }
       }
     }

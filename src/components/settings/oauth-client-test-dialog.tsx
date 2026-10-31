@@ -8,7 +8,7 @@ import { useOAuthErrorMessage } from '@/lib/i18n/use-oauth-error-message';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
 
-const STEP_LABELS = ['authorize', 'access_token', 'profile_read', 'profile_write'] as const;
+const STEP_LABELS = ['authorize', 'access_token'] as const;
 type StepLabel = (typeof STEP_LABELS)[number];
 type StepStatus = 'waiting' | 'running' | 'success' | 'error';
 
@@ -23,7 +23,6 @@ interface OAuthClientTestDialogProps {
   open: boolean;
   onOpenChange: (_open: boolean) => void;
   client: OAuthClientSummary;
-  resourceServerUrl: string;
   /** Overrides the default spinner shown while a step is in progress. */
   spinner?: React.ComponentType<{ className?: string }>;
 }
@@ -49,21 +48,28 @@ async function createPkcePair(): Promise<{ verifier: string; challenge: string }
   return { verifier, challenge: base64url(digest) };
 }
 
+/** The auth API's origin, which hosts the authorization server this test runs against. */
+function authApiBase(): string {
+  return (process.env.NEXT_PUBLIC_AUTH_API_URL ?? '').replace(/\/$/, '');
+}
+
 /**
- * Dialog that tests the full OAuth flow for the given client by opening this
- * app's real authorization page in a popup window, exchanging the resulting
- * code at its `/oauth2/token` endpoint (PKCE required), then calling the
- * resource server's `/api/profile` for read and write.
+ * Dialog that tests the authorization flow for the given client by opening
+ * the auth app's real authorization page in a popup window and exchanging
+ * the resulting code at the auth API's `/oauth2/token` endpoint (PKCE
+ * required). The popup lands on the auth app's test-callback confirmation
+ * screen, which posts the code back here. The requested permissions are
+ * checked and granted on the auth app's consent screen as part of the
+ * real authorization — this dialog no longer performs a separate
+ * permission check against a resource server.
  */
 export function OAuthClientTestDialog({
   open,
   onOpenChange,
   client,
-  resourceServerUrl,
   spinner: SpinnerComponent = DefaultSpinner,
 }: OAuthClientTestDialogProps) {
   const t = useTranslations();
-  const resourceServerUrlRef = useRef(resourceServerUrl);
   const [steps, setSteps] = useState<StepState[]>(makeInitialSteps);
   const [secret, setSecret] = useState('');
   const popupRef = useRef<Window | null>(null);
@@ -77,9 +83,6 @@ export function OAuthClientTestDialog({
   useEffect(() => {
     secretRef.current = secret;
   }, [secret]);
-  useEffect(() => {
-    resourceServerUrlRef.current = resourceServerUrl;
-  }, [resourceServerUrl]);
 
   const isRunning = steps.some((s) => s.status === 'running');
   const isWaitingForCode = steps[0].status === 'running';
@@ -110,7 +113,7 @@ export function OAuthClientTestDialog({
           const currentClient = clientRef.current;
           const redirectUri = currentClient.redirect_uris[0] ?? '';
 
-          const tokenRes = await fetch('/api/auth/oauth2/token', {
+          const tokenRes = await fetch(`${authApiBase()}/api/auth/oauth2/token`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
@@ -136,51 +139,15 @@ export function OAuthClientTestDialog({
           };
 
           setSteps((prev) =>
-            prev.map((s) => {
-              if (s.label === 'access_token')
-                return {
-                  ...s,
-                  status: 'success',
-                  data: { token: accessToken.slice(0, 12) + '…', expires_in: expiresIn },
-                };
-              if (s.label === 'profile_read') return { ...s, status: 'running' };
-              return s;
-            })
-          );
-
-          const bearerHeader = { Authorization: `Bearer ${accessToken}` };
-
-          const profileUrl = `${resourceServerUrlRef.current}/api/profile`;
-          const profileRes = await fetch(profileUrl, { headers: bearerHeader });
-          if (!profileRes.ok) {
-            const body = (await profileRes.json().catch(() => ({}))) as { error?: string };
-            setSteps(failStep('profile_read', body.error ?? 'token_verification_failed'));
-            return;
-          }
-
-          const profile = (await profileRes.json()) as { id: string; name: string | null };
-          setSteps((prev) =>
-            prev.map((s) => {
-              if (s.label === 'profile_read') return { ...s, status: 'success', data: { id: profile.id, name: profile.name ?? null } };
-              if (s.label === 'profile_write') return { ...s, status: 'running' };
-              return s;
-            })
-          );
-
-          const writeRes = await fetch(profileUrl, {
-            method: 'PATCH',
-            headers: { ...bearerHeader, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: profile.name }),
-          });
-          if (!writeRes.ok) {
-            const body = (await writeRes.json().catch(() => ({}))) as { error?: string };
-            setSteps(failStep('profile_write', body.error ?? 'token_verification_failed'));
-            return;
-          }
-
-          const updated = (await writeRes.json()) as { id: string; name: string | null };
-          setSteps((prev) =>
-            prev.map((s) => (s.label === 'profile_write' ? { ...s, status: 'success', data: { id: updated.id, name: updated.name ?? null } } : s))
+            prev.map((s) =>
+              s.label === 'access_token'
+                ? {
+                    ...s,
+                    status: 'success',
+                    data: { token: accessToken.slice(0, 12) + '…', expires_in: expiresIn },
+                  }
+                : s
+            )
           );
         } catch {
           setSteps((prev) => prev.map((s) => (s.status === 'running' ? { ...s, status: 'error', error: 'network_error' } : s)));
@@ -221,7 +188,7 @@ export function OAuthClientTestDialog({
     verifierRef.current = verifier;
 
     const url =
-      '/api/auth/oauth2/authorize?' +
+      `${authApiBase()}/api/auth/oauth2/authorize?` +
       new URLSearchParams({
         client_id: client.client_id,
         redirect_uri: redirectUri,

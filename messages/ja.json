@@ -148,9 +148,7 @@
         "clientSecret": "クライアントシークレット",
         "steps": {
           "authorize": "認可ページで承認",
-          "access_token": "アクセストークンへの交換",
-          "profile_read": "プロフィールの取得",
-          "profile_write": "表示名をプロフィールに書き戻す"
+          "access_token": "アクセストークンへの交換"
         }
       }
     }

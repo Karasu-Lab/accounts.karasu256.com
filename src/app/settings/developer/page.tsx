@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { getRootAppUrl } from '@karasu-lab/utils/server';
 import { DeveloperSection } from '@/components/settings/developer-section';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -10,10 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Developer settings page — manages OAuth clients and API keys. */
 export default async function DeveloperPage() {
-  const resourceServerUrl = await getRootAppUrl();
   return (
     <div className="space-y-6">
-      <DeveloperSection resourceServerUrl={resourceServerUrl} />
+      <DeveloperSection />
     </div>
   );
 }

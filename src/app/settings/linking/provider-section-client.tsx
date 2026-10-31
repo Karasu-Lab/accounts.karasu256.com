@@ -11,7 +11,13 @@ interface ProviderSectionClientProps {
   initialProviders: string[];
 }
 
-/** @returns ProviderSection loaded client-side only, with OAuth providers resolved via useMemo. */
+/**
+ * @returns ProviderSection loaded client-side only, with OAuth providers
+ * resolved via useMemo. The provider definitions are owned by the auth
+ * app; this linking screen overrides the `providers` property with only
+ * the social providers, so the OAuth test provider defined there is
+ * never shown here.
+ */
 export function ProviderSectionClient({ initialProviders }: ProviderSectionClientProps) {
   const providers = useMemo<Provider[]>(
     () => [

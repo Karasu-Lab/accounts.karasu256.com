@@ -27,16 +27,12 @@ import { RotateSecretDialog } from './rotate-secret-dialog';
 
 type PendingDelete = { type: 'client'; id: string; name: string } | { type: 'key'; id: string; name: string };
 
-interface DeveloperSectionProps {
-  resourceServerUrl: string;
-}
-
 /**
- * Developer settings section. Manages OAuth clients (backed by this app's
- * better-auth OAuth authorization server) and API keys, with collapsible
- * lists and creation/edit dialogs.
+ * Developer settings section. Manages OAuth clients (backed by the
+ * better-auth OAuth authorization server on the auth API) and API keys,
+ * with collapsible lists and creation/edit dialogs.
  */
-export function DeveloperSection({ resourceServerUrl }: DeveloperSectionProps) {
+export function DeveloperSection() {
   const t = useTranslations();
 
   const [loading, setLoading] = useState(true);
@@ -172,7 +168,6 @@ export function DeveloperSection({ resourceServerUrl }: DeveloperSectionProps) {
             if (!open) setTestingClient(null);
           }}
           client={testingClient}
-          resourceServerUrl={resourceServerUrl}
         />
       )}
       {editingClient && (
