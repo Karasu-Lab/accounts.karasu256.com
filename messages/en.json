@@ -75,15 +75,15 @@
     },
     "menu": {
       "descriptions": {
-        "profile": "Change your display name and icon",
-        "security": "Manage your password, passkeys, and danger zone",
-        "connections": "Manage links to external accounts",
-        "authorizedApps": "Review authorized apps and revoke their access",
-        "developer": "Manage OAuth clients and API keys",
-        "debug": "View feature flags and API information",
-        "addAccount": "Sign in with another account to add it",
+        "profile": "Edit your profile",
+        "security": "Protect your account",
+        "connections": "Link external accounts",
+        "authorizedApps": "Manage authorized apps",
+        "developer": "Manage developer tools",
+        "debug": "Show diagnostic information",
+        "addAccount": "Add another account",
         "backToApp": "Go to karasu256.com",
-        "signOut": "Sign out of the current account"
+        "signOut": "Sign out"
       }
     },
     "back": "Back",
