@@ -69,6 +69,7 @@
       "profile": "个人资料",
       "security": "安全",
       "connections": "账户关联",
+      "authorizedApps": "已授权的应用",
       "debug": "调试",
       "developer": "开发者"
     },
@@ -200,6 +201,22 @@
       "email_doesn't_match": "关联账户的邮箱地址不匹配。",
       "account_already_linked_to_different_user": "此账户已关联至其他用户。",
       "invalid_origin": "由于请求来源异常，无法开始关联。请重试。"
+    }
+  },
+  "authorizedApps": {
+    "title": "已授权的应用",
+    "empty": "暂无已授权的应用",
+    "clientId": "客户端 ID",
+    "authorizedAt": "授权日期",
+    "permissions": "已批准的权限",
+    "noPermissions": "暂无已批准的权限",
+    "revoke": "解除关联",
+    "revoked": "已解除 {name} 的关联。",
+    "revokeConfirm": {
+      "title": "解除此应用的关联？",
+      "description": "解除 {name} 的关联后，该应用将无法再访问您的账户。",
+      "confirm": "解除关联",
+      "cancel": "取消"
     }
   },
   "debug": {

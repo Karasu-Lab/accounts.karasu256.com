@@ -69,6 +69,7 @@
       "profile": "プロフィール",
       "security": "セキュリティ",
       "connections": "アカウント連携",
+      "authorizedApps": "認可したアプリ",
       "debug": "デバッグ",
       "developer": "デベロッパー"
     },
@@ -200,6 +201,22 @@
       "email_doesn't_match": "連携しようとしたアカウントのメールアドレスが一致しません。",
       "account_already_linked_to_different_user": "このアカウントは別のユーザーに連携済みです。",
       "invalid_origin": "予期しないアクセス元からのリクエストのため、連携を開始できませんでした。もう一度お試しください。"
+    }
+  },
+  "authorizedApps": {
+    "title": "認可したアプリ",
+    "empty": "認可したアプリはありません",
+    "clientId": "クライアント ID",
+    "authorizedAt": "認可日時",
+    "permissions": "承認した権限",
+    "noPermissions": "承認した権限はありません",
+    "revoke": "連携解除",
+    "revoked": "{name} の連携を解除しました",
+    "revokeConfirm": {
+      "title": "連携を解除しますか？",
+      "description": "{name} の連携を解除すると、このアプリはあなたのアカウントにアクセスできなくなります。",
+      "confirm": "連携解除",
+      "cancel": "キャンセル"
     }
   },
   "debug": {
