@@ -210,6 +210,14 @@
     "authorizedAt": "認可日時",
     "permissions": "承認した権限",
     "noPermissions": "承認した権限はありません",
+    "scopes": {
+      "openid": "OpenID Connect でサインインする",
+      "profile": "プロフィール情報を取得する",
+      "email": "メールアドレスを取得する",
+      "offline_access": "オフラインでアクセスする（リフレッシュトークン）",
+      "read:profile": "プロフィールを読み取る",
+      "write:profile": "プロフィールを更新する"
+    },
     "revoke": "連携解除",
     "revoked": "{name} の連携を解除しました",
     "revokeConfirm": {
