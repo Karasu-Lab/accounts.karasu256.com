@@ -22,6 +22,7 @@ import { OAuthClientRow } from './oauth-client-row';
 import { CreateApiKeyDialog } from './create-api-key-dialog';
 import { CreateOAuthClientDialog } from './create-oauth-client-dialog';
 import { EditOAuthClientDialog } from './edit-oauth-client-dialog';
+import { OAuthClientInfoDialog } from './oauth-client-info-dialog';
 import { OAuthClientTestDialog } from './oauth-client-test-dialog';
 import { RotateSecretDialog } from './rotate-secret-dialog';
 
@@ -41,6 +42,7 @@ export function DeveloperSection() {
   const [sections, setSections] = useState<PermissionSection[]>([]);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<OAuthClientSummary | null>(null);
+  const [infoClient, setInfoClient] = useState<OAuthClientSummary | null>(null);
   const [testingClient, setTestingClient] = useState<OAuthClientSummary | null>(null);
   const [rotatingClient, setRotatingClient] = useState<OAuthClientSummary | null>(null);
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
@@ -118,6 +120,7 @@ export function DeveloperSection() {
               <OAuthClientRow
                 key={c.client_id}
                 client={c}
+                onSelect={setInfoClient}
                 onTest={setTestingClient}
                 onEdit={setEditingClient}
                 onDelete={(clientId) => setPendingDelete({ type: 'client', id: clientId, name: c.client_name ?? c.client_id })}
@@ -161,6 +164,15 @@ export function DeveloperSection() {
       </SettingsAccordion>
 
       <CreateOAuthClientDialog open={clientDialogOpen} onOpenChange={setClientDialogOpen} sections={sections} onCreated={handleClientCreated} />
+      {infoClient && (
+        <OAuthClientInfoDialog
+          open={infoClient !== null}
+          onOpenChange={(open) => {
+            if (!open) setInfoClient(null);
+          }}
+          client={infoClient}
+        />
+      )}
       {testingClient && (
         <OAuthClientTestDialog
           open={testingClient !== null}
