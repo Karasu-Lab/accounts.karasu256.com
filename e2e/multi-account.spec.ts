@@ -63,7 +63,7 @@ async function addAccountViaApi(page: Page, account: CreateTestAccountResult): P
 /** The settings menu at /settings, which hosts the account switcher items. */
 async function gotoSettingsMenu(page: Page) {
   await page.goto('/settings');
-  await expect(page.getByRole('heading', { name: '設定' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'アカウント設定' })).toBeVisible();
 }
 
 test.describe('multi-account switching', () => {

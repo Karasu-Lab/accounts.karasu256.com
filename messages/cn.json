@@ -64,7 +64,7 @@
     }
   },
   "settings": {
-    "title": "设置",
+    "title": "账户设置",
     "sections": {
       "profile": "个人资料",
       "security": "安全",
