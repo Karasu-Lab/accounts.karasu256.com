@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AppWindow, Bug, Code2, ExternalLink, Link as LinkIcon, LogOut, Shield, User, UserPlus, X } from 'lucide-react';
+import { AppWindow, Bug, Code2, ExternalLink, Link as LinkIcon, LogOut, Pencil, Shield, User, UserPlus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { SettingsItemContainer, SettingsItemGroup } from './settings-item-container';
 import { useSettingsMenu } from './settings-menu-context';
@@ -18,10 +18,16 @@ import { useSettingsUser } from './user-context';
  * Groups are separated by a wide margin (`space-y-8` on the wrapper) so
  * each concern or category reads as its own block, while items inside a
  * group stay connected with no gap.
+ *
+ * At the very top sits a standalone account item (its own single-item
+ * group): its title is the account's name and its description is the
+ * email address, both taken from the session; its icon is the account's
+ * image when one is set; and its arrow is replaced with the edit pencil,
+ * since it leads to the profile editor.
  */
 export function SettingsMenu() {
   const t = useTranslations();
-  const { ready } = useSettingsUser();
+  const { user, ready } = useSettingsUser();
   const { appUrl, accounts, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
   const [removingUid, setRemovingUid] = useState<string | null>(null);
 
@@ -37,14 +43,21 @@ export function SettingsMenu() {
 
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8">
+      {ready && (
+        <SettingsItemGroup>
+          <SettingsItemContainer
+            href="/settings/profile"
+            icon={User}
+            iconImageSrc={user.image ?? undefined}
+            iconBackgroundColor="#2563eb"
+            title={user.name || user.email || user.id}
+            description={user.email}
+            arrowIcon={Pencil}
+          />
+        </SettingsItemGroup>
+      )}
+
       <SettingsItemGroup>
-        <SettingsItemContainer
-          href="/settings/profile"
-          icon={User}
-          iconBackgroundColor="#2563eb"
-          title={t('settings.sections.profile')}
-          description={t('settings.menu.descriptions.profile')}
-        />
         <SettingsItemContainer
           href="/settings/security"
           icon={Shield}

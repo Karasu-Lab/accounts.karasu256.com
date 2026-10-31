@@ -15,8 +15,20 @@ export interface SettingsItemContainerProps {
   description: string;
   /** Icon shown in the colored tile on the left. Defaults to the gear (`Settings`) icon. */
   icon?: LucideIcon;
+  /**
+   * Image shown in the tile instead of {@link icon}, for example an
+   * account's avatar. The image fills the tile (cropped with
+   * `object-cover`); the icon background color still applies behind it.
+   */
+  iconImageSrc?: string;
   /** CSS background color of the icon tile. Defaults to gray. */
   iconBackgroundColor?: string;
+  /**
+   * Icon shown on the right of an interactive item, in place of the
+   * default navigation arrow (`ChevronRight`) — for example the edit
+   * pencil (`Pencil`). Ignored when `trailing` is provided.
+   */
+  arrowIcon?: LucideIcon;
   /** When set, the whole item navigates to this destination. External (absolute) URLs render a plain anchor. */
   href?: string;
   /** When set (and no `href`), the whole item acts as a button invoking this handler. */
@@ -50,7 +62,9 @@ export function SettingsItemContainer({
   title,
   description,
   icon: Icon = Settings,
+  iconImageSrc,
   iconBackgroundColor = DEFAULT_ICON_BACKGROUND_COLOR,
+  arrowIcon: ArrowIcon = ChevronRight,
   href,
   onClick,
   trailing,
@@ -88,10 +102,15 @@ export function SettingsItemContainer({
 
       <span
         aria-hidden="true"
-        className="pointer-events-none flex size-8 shrink-0 items-center justify-center rounded-md"
+        className="pointer-events-none flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
         style={{ backgroundColor: iconBackgroundColor }}
       >
-        <Icon className="size-4.5 text-white" />
+        {iconImageSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={iconImageSrc} alt="" className="size-full object-cover" />
+        ) : (
+          <Icon className="size-4.5 text-white" />
+        )}
       </span>
       <span className="pointer-events-none min-w-0 flex-1">
         <span className="block truncate text-sm font-medium">{title}</span>
@@ -101,7 +120,7 @@ export function SettingsItemContainer({
       {trailing !== undefined ? (
         <span className="relative z-10 shrink-0">{trailing}</span>
       ) : isInteractive ? (
-        <ChevronRight aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+        <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
       ) : null}
     </div>
   );

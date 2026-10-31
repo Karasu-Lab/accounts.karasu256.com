@@ -66,7 +66,6 @@
   "settings": {
     "title": "账户设置",
     "sections": {
-      "profile": "个人资料",
       "security": "安全",
       "connections": "账户关联",
       "authorizedApps": "已授权的应用",
@@ -75,7 +74,6 @@
     },
     "menu": {
       "descriptions": {
-        "profile": "编辑个人资料",
         "security": "保护您的账户",
         "connections": "关联外部账户",
         "authorizedApps": "管理已授权的应用",
