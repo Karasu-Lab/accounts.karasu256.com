@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { Separator, SettingsAccordion } from '@karasu-lab/ui';
 import { listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { PasswordSection } from '@/components/auth/settings/password-section';
 import { PasskeyList } from '@/components/auth/passkey-list';
@@ -10,8 +8,13 @@ import { PasskeyCreateDialog } from '@/components/auth/passkey-create-dialog';
 import { DangerZone } from '@/components/auth/settings/danger-zone';
 import { useSettingsUser } from '@/components/settings/user-context';
 
+/**
+ * The security settings page, composed of editable settings items —
+ * the password item, the passkey items, and the danger zone item —
+ * with no skeletons: while data loads, the affected items render
+ * disabled instead.
+ */
 export function SecurityClient() {
-  const t = useTranslations();
   const { user } = useSettingsUser();
   const [passkeyVersion, setPasskeyVersion] = useState(0);
   const [linkedProviders, setLinkedProviders] = useState<Record<string, ProviderProfile>>({});
@@ -29,16 +32,12 @@ export function SecurityClient() {
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       <PasswordSection hasPasswordProvider={hasPasswordProvider} onPasswordSet={handlePasswordSet} />
-      <Separator />
-      <SettingsAccordion
-        title={t('passkey.title')}
-        action={user.email ? <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} /> : undefined}
-      >
-        <PasskeyList version={passkeyVersion} />
-      </SettingsAccordion>
-      <Separator />
+      <PasskeyList
+        version={passkeyVersion}
+        createAction={user.email ? <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} /> : undefined}
+      />
       <DangerZone hasPasswordProvider={hasPasswordProvider} />
     </div>
   );

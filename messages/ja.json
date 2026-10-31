@@ -194,6 +194,8 @@
   },
   "security": {
     "title": "セキュリティ",
+    "password": "パスワード",
+    "passwordNotSet": "未設定",
     "currentPassword": "現在のパスワード",
     "newPassword": "新しいパスワード",
     "changePassword": "パスワードを変更",

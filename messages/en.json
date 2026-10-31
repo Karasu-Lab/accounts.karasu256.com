@@ -194,6 +194,8 @@
   },
   "security": {
     "title": "Security",
+    "password": "Password",
+    "passwordNotSet": "Not set",
     "currentPassword": "Current password",
     "newPassword": "New password",
     "changePassword": "Change password",

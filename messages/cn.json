@@ -194,6 +194,8 @@
   },
   "security": {
     "title": "安全",
+    "password": "密码",
+    "passwordNotSet": "未设置",
     "currentPassword": "当前密码",
     "newPassword": "新密码",
     "changePassword": "更改密码",

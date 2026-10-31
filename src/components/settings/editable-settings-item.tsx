@@ -19,6 +19,13 @@ export interface EditableSettingsItemProps {
   /** Accessible label of the edit control. Defaults to {@link label}. */
   editLabel?: string;
   /**
+   * Custom content rendered at the right end instead of the edit icon
+   * (for example a delete or add button). Takes precedence over
+   * `onEdit`'s edit icon and cannot be combined with {@link pressable},
+   * whose press target would cover it.
+   */
+  trailing?: React.ReactNode;
+  /**
    * When true, the whole item is the press target and the edit icon is
    * shown as a visual marker only. Use this when the value is plain
    * content; leave it unset when the value itself is interactive (for
@@ -41,8 +48,8 @@ export interface EditableSettingsItemProps {
  * underline that marks it as an item, and shows an edit icon at the
  * right end that marks it as editable.
  */
-export function EditableSettingsItem({ label, value, onEdit, editLabel, pressable = false, disabled = false, className }: EditableSettingsItemProps) {
-  const isPressable = pressable && onEdit !== undefined;
+export function EditableSettingsItem({ label, value, onEdit, editLabel, trailing, pressable = false, disabled = false, className }: EditableSettingsItemProps) {
+  const isPressable = pressable && onEdit !== undefined && trailing === undefined;
 
   return (
     <div data-slot="editable-settings-item" className={cn('relative w-full border-b border-border', className)}>
@@ -60,8 +67,10 @@ export function EditableSettingsItem({ label, value, onEdit, editLabel, pressabl
           <p className="text-sm text-muted-foreground">{label}</p>
           <div className="text-base">{value}</div>
         </div>
-        {onEdit &&
-          (isPressable ? (
+        {trailing !== undefined ? (
+          <span className="relative z-10 shrink-0">{trailing}</span>
+        ) : onEdit ? (
+          isPressable ? (
             <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center text-muted-foreground">
               <Pencil className="size-4" />
             </span>
@@ -75,7 +84,8 @@ export function EditableSettingsItem({ label, value, onEdit, editLabel, pressabl
             >
               <Pencil className="size-4" />
             </button>
-          ))}
+          )
+        ) : null}
       </div>
     </div>
   );

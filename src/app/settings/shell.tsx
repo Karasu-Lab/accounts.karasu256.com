@@ -22,9 +22,10 @@ interface SettingsShellProps {
 }
 
 /**
- * /settings/linking, /settings/profile, and the /settings menu skip the
- * loading skeleton so their controls are recognizable immediately,
- * rendered disabled until the session resolves.
+ * /settings/linking, /settings/profile, /settings/security, and the
+ * /settings menu skip the loading skeleton so their controls are
+ * recognizable immediately, rendered disabled until the session
+ * resolves.
  *
  * There is no sidebar (drawer) and no drawer menu button: navigation
  * lives in the settings menu at `/settings`, and this shell only renders
@@ -56,6 +57,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   const showBackButton = !isMenuPage;
   const isLinkingPage = pathname === '/settings/linking';
   const isProfilePage = pathname === '/settings/profile';
+  const isSecurityPage = pathname === '/settings/security';
   const loading = isPending;
 
   /** Header title for the current settings page, keyed by its route. */
@@ -202,7 +204,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
     if (isLinkingPage) {
       return <>{children}</>;
     }
-    if (isMenuPage || isProfilePage) {
+    if (isMenuPage || isProfilePage || isSecurityPage) {
       return (
         <UserContext.Provider key={contextValue.ready ? contextValue.user.id : 'pending'} value={contextValue}>
           {children}

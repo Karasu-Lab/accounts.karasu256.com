@@ -7,6 +7,7 @@ import { authClient } from '@/lib/auth/client';
 import { Button } from '@karasu-lab/ui';
 import { Input } from '@karasu-lab/ui';
 import { Label } from '@karasu-lab/ui';
+import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 
 export interface DangerZoneProps {
   /** Whether the user has a `credential` (email/password) account. */
@@ -43,14 +44,17 @@ export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <p className="text-sm font-medium text-destructive">{t('dangerZone.title')}</p>
+    <div>
       {!confirming ? (
-        <Button variant="outline" className="w-full text-destructive border-destructive hover:bg-destructive/5" onClick={() => setConfirming(true)}>
-          {t('dangerZone.deleteAccount')}
-        </Button>
+        <EditableSettingsItem
+          label={t('dangerZone.title')}
+          value={<span className="text-destructive">{t('dangerZone.deleteAccount')}</span>}
+          onEdit={() => setConfirming(true)}
+          editLabel={t('dangerZone.deleteAccount')}
+          pressable
+        />
       ) : (
-        <form onSubmit={handleDelete} className="space-y-3">
+        <form onSubmit={handleDelete} className="space-y-3 border-b border-border py-3">
           {hasPasswordProvider ? (
             <div className="space-y-1">
               <Label htmlFor="confirm-password">{t('dangerZone.confirmPassword')}</Label>
