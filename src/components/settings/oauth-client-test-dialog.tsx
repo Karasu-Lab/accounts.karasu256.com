@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle, Circle, XCircle } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { CheckCircle, Circle, Copy, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Spinner as DefaultSpinner } from '@karasu-lab/ui';
+import { Spinner as DefaultSpinner, toast } from '@karasu-lab/ui';
 import { useOAuthErrorMessage } from '@/lib/i18n/use-oauth-error-message';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
@@ -73,7 +73,10 @@ function basicAuthorization(clientId: string, clientSecret: string): string {
  * screen, which posts the code back here. The requested permissions are
  * checked and granted on the auth app's consent screen as part of the
  * real authorization — this dialog no longer performs a separate
- * permission check against a resource server.
+ * permission check against a resource server. Every run also writes a
+ * debug log into the result field under the steps, copyable with the
+ * copy button, because the translated step errors alone do not say
+ * what actually happened.
  */
 export function OAuthClientTestDialog({
   open,
@@ -84,6 +87,7 @@ export function OAuthClientTestDialog({
   const t = useTranslations();
   const [steps, setSteps] = useState<StepState[]>(makeInitialSteps);
   const [secret, setSecret] = useState('');
+  const [resultLog, setResultLog] = useState('');
   const popupRef = useRef<Window | null>(null);
   const clientRef = useRef(client);
   const secretRef = useRef(secret);
@@ -101,16 +105,30 @@ export function OAuthClientTestDialog({
   const hasStarted = steps.some((s) => s.status !== 'waiting');
   const allPassed = hasStarted && !isRunning && steps.every((s) => s.status === 'success');
 
+  /**
+   * Appends one timestamped line to the debug log shown in the result
+   * field. The translated step errors alone do not say what happened —
+   * the log keeps the raw details (endpoints, HTTP status, and the
+   * server's error response including its error_description) so a
+   * failure can be diagnosed and copied out with the copy button. The
+   * client secret and the authorization code itself are never logged.
+   */
+  const appendLog = useCallback((line: string) => {
+    setResultLog((prev) => `${prev}${prev ? '\n' : ''}[${new Date().toLocaleTimeString()}] ${line}`);
+  }, []);
+
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (!event.data || (event.data as Record<string, unknown>).type !== 'oauth_test_callback') return;
 
-      const { code, error } = event.data as { type: string; code?: string; error?: string };
+      const { code, error, errorDescription } = event.data as { type: string; code?: string; error?: string; errorDescription?: string };
 
       if (error || !code) {
+        appendLog(`callback: error=${error ?? 'access_denied'}${errorDescription ? ` (${errorDescription})` : ''}`);
         setSteps(failStep('authorize', error ?? 'access_denied'));
         return;
       }
+      appendLog(`callback: authorization code received (${code.length} characters)`);
 
       setSteps((prev) =>
         prev.map((s) => {
@@ -125,6 +143,9 @@ export function OAuthClientTestDialog({
           const currentClient = clientRef.current;
           const redirectUri = currentClient.redirect_uris[0] ?? '';
 
+          appendLog(
+            `token request: POST ${authApiBase()}/api/auth/oauth2/token (grant_type=authorization_code, client authentication: client_secret_basic, PKCE S256)`
+          );
           const tokenRes = await fetch(`${authApiBase()}/api/auth/oauth2/token`, {
             method: 'POST',
             headers: {
@@ -141,7 +162,8 @@ export function OAuthClientTestDialog({
           });
 
           if (!tokenRes.ok) {
-            const body = (await tokenRes.json().catch(() => ({}))) as { error?: string };
+            const body = (await tokenRes.json().catch(() => ({}))) as { error?: string; error_description?: string };
+            appendLog(`token response: HTTP ${tokenRes.status} ${JSON.stringify(body)}`);
             setSteps(failStep('access_token', body.error ?? 'invalid_grant'));
             return;
           }
@@ -150,6 +172,7 @@ export function OAuthClientTestDialog({
             access_token: string;
             expires_in: number;
           };
+          appendLog(`token response: HTTP ${tokenRes.status} (access token issued, expires_in=${expiresIn})`);
 
           setSteps((prev) =>
             prev.map((s) =>
@@ -163,6 +186,7 @@ export function OAuthClientTestDialog({
             )
           );
         } catch {
+          appendLog('token request failed: network error');
           setSteps((prev) => prev.map((s) => (s.status === 'running' ? { ...s, status: 'error', error: 'network_error' } : s)));
         }
       })();
@@ -170,13 +194,14 @@ export function OAuthClientTestDialog({
 
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, []);
+  }, [appendLog]);
 
   useEffect(() => {
     if (!isWaitingForCode) return;
 
     const interval = setInterval(() => {
       if (!popupRef.current?.closed) return;
+      appendLog('authorize: popup closed before the callback arrived');
       setSteps((prev) => {
         if (prev[0].status !== 'running') return prev;
         return prev.map((s) => (s.label === 'authorize' ? { ...s, status: 'error', error: t('settings.developer.test.popupClosed') } : s));
@@ -184,17 +209,20 @@ export function OAuthClientTestDialog({
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isWaitingForCode, t]);
+  }, [isWaitingForCode, t, appendLog]);
 
   async function startTest() {
+    setResultLog('');
     const redirectUri = client.redirect_uris[0];
     if (!redirectUri) {
+      appendLog('authorize: no callback URI is registered for this client');
       setSteps((prev) =>
         prev.map((s) => (s.label === 'authorize' ? { ...s, status: 'error', error: t('settings.developer.test.noCallbackUri') } : s))
       );
       return;
     }
 
+    appendLog(`test started: client_id=${client.client_id}, scope=${client.scope ?? ''}`);
     setSteps(makeInitialSteps().map((s) => (s.label === 'authorize' ? { ...s, status: 'running' } : s)));
 
     const { verifier, challenge } = await createPkcePair();
@@ -212,8 +240,10 @@ export function OAuthClientTestDialog({
         code_challenge_method: 'S256',
       }).toString();
 
+    appendLog(`authorize request: GET ${url}`);
     const popup = window.open(url, 'oauth_test', 'popup=yes,width=520,height=640');
     if (!popup) {
+      appendLog('authorize: the popup was blocked by the browser');
       setSteps((prev) =>
         prev.map((s) => (s.label === 'authorize' ? { ...s, status: 'error', error: t('settings.developer.test.popupBlocked') } : s))
       );
@@ -226,6 +256,7 @@ export function OAuthClientTestDialog({
     popupRef.current?.close();
     popupRef.current = null;
     setSteps(makeInitialSteps());
+    setResultLog('');
   }
 
   function handleOpenChange(next: boolean) {
@@ -234,8 +265,14 @@ export function OAuthClientTestDialog({
       popupRef.current = null;
       setSteps(makeInitialSteps());
       setSecret('');
+      setResultLog('');
     }
     onOpenChange(next);
+  }
+
+  async function copyResult() {
+    await navigator.clipboard.writeText(resultLog);
+    toast.success(t('settings.developer.test.resultCopied'));
   }
 
   return (
@@ -263,6 +300,25 @@ export function OAuthClientTestDialog({
             ))}
             {allPassed && <p className="text-sm text-green-600 dark:text-green-400 font-medium pt-1">{t('settings.developer.test.allPassed')}</p>}
           </div>
+
+          {hasStarted && (
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="oauth-test-result">{t('settings.developer.test.result')}</Label>
+                <Button type="button" variant="ghost" size="sm" onClick={() => void copyResult()} disabled={!resultLog}>
+                  <Copy className="size-4" />
+                  {t('settings.developer.test.copyResult')}
+                </Button>
+              </div>
+              <textarea
+                id="oauth-test-result"
+                readOnly
+                value={resultLog}
+                rows={8}
+                className="w-full resize-none rounded-lg border border-input bg-transparent px-2.5 py-2 font-mono text-xs leading-relaxed"
+              />
+            </div>
+          )}
 
           <div className="flex justify-end gap-2">
             {isWaitingForCode ? (
