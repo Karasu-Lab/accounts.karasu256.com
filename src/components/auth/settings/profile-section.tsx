@@ -59,7 +59,6 @@ export function ProfileSection() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm font-medium text-muted-foreground">{t('profile.title')}</p>
       <div className="flex items-center gap-3">
         <ProfileIcon />
         <p className="text-sm text-muted-foreground break-all">{user.name ?? user.email ?? user.id}</p>
