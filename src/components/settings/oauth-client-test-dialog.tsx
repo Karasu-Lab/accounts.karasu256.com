@@ -144,7 +144,7 @@ export function OAuthClientTestDialog({
           const redirectUri = currentClient.redirect_uris[0] ?? '';
 
           appendLog(
-            `token request: POST ${authApiBase()}/api/auth/oauth2/token (grant_type=authorization_code, client authentication: client_secret_basic, PKCE S256)`
+            `token request: POST ${authApiBase()}/api/auth/oauth2/token (grant_type=authorization_code, client authentication: client_secret_basic, PKCE S256, resource=${authApiBase()}/api/auth/oauth2/userinfo)`
           );
           const tokenRes = await fetch(`${authApiBase()}/api/auth/oauth2/token`, {
             method: 'POST',
@@ -157,7 +157,12 @@ export function OAuthClientTestDialog({
               code,
               redirect_uri: redirectUri,
               code_verifier: verifierRef.current,
-              resource: `${window.location.origin}/api/auth`,
+              // The token's resource is the authorization server's own
+              // userinfo resource, which the server implicitly accepts.
+              // Accounts' own /api/auth is not a configured resource —
+              // the authorization part belongs to auth, and the server
+              // rejects an accounts resource with invalid_target.
+              resource: `${authApiBase()}/api/auth/oauth2/userinfo`,
             }).toString(),
           });
 
