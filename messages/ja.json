@@ -64,7 +64,7 @@
     }
   },
   "settings": {
-    "title": "設定",
+    "title": "アカウント設定",
     "sections": {
       "profile": "プロフィール",
       "security": "セキュリティ",

@@ -11,7 +11,7 @@ const DEFAULT_ICON_BACKGROUND_COLOR = '#8e8e93';
 export interface SettingsItemContainerProps {
   /** Item heading. Always shown. */
   title: string;
-  /** Supporting text shown under {@link title}. Always shown. */
+  /** Supporting text shown under {@link title}. Always shown in full: it wraps onto multiple lines instead of being truncated with an ellipsis. */
   description: string;
   /** Icon shown in the colored tile on the left. Defaults to the gear (`Settings`) icon. */
   icon?: LucideIcon;
@@ -95,7 +95,7 @@ export function SettingsItemContainer({
       </span>
       <span className="pointer-events-none min-w-0 flex-1">
         <span className="block truncate text-sm font-medium">{title}</span>
-        <span className="block truncate text-sm text-muted-foreground">{description}</span>
+        <span className="block text-sm text-muted-foreground">{description}</span>
       </span>
 
       {trailing !== undefined ? (

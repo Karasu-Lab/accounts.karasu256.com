@@ -64,7 +64,7 @@
     }
   },
   "settings": {
-    "title": "Settings",
+    "title": "Account settings",
     "sections": {
       "profile": "Profile",
       "security": "Security",

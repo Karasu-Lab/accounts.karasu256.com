@@ -22,7 +22,7 @@ test('signs in on auth, returns to settings, and signs out', async ({ page, requ
 
   /* Signing out lives in the settings menu at /settings, as a settings item. */
   await page.goto('/settings');
-  await expect(page.getByRole('heading', { name: '設定' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'アカウント設定' })).toBeVisible();
   await page.getByRole('button', { name: 'サインアウト' }).click();
   await page.waitForURL(`${AUTH_URL}/sign-in?**`);
 
