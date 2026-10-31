@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { toast, ConfirmDialog, DeleteIconButton, SettingsItem, Skeleton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
+import { toast, ConfirmDialog, DeleteIconButton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
 import { authClient } from '@/lib/auth/client';
+import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 
 interface CredentialSummary {
   id: string;
@@ -14,16 +15,21 @@ interface CredentialSummary {
 interface PasskeyListProps {
   /** Incrementing this value causes the list to re-fetch from the server. */
   version: number;
+  /** Action rendered at the right end of the section's header item, e.g. the register-passkey control. */
+  createAction?: React.ReactNode;
 }
 
 /**
  * Fetches and displays all passkey credentials for the signed-in user,
- * with a remove button for each entry.
+ * with a remove button for each entry, as editable settings items under
+ * a header item that carries the register control.
  *
- * Re-fetches whenever {@link PasskeyListProps.version} changes, which allows
- * the parent to trigger a refresh after a new registration.
+ * While the credentials load, only the header item is shown, disabled —
+ * the list is never replaced with skeleton rows. Re-fetches whenever
+ * {@link PasskeyListProps.version} changes, which allows the parent to
+ * trigger a refresh after a new registration.
  */
-export function PasskeyList({ version }: PasskeyListProps) {
+export function PasskeyList({ version, createAction }: PasskeyListProps) {
   const t = useTranslations();
   const [credentials, setCredentials] = useState<CredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,41 +82,31 @@ export function PasskeyList({ version }: PasskeyListProps) {
   }
 
   if (loading) {
-    return (
-      <AnimatedList className="space-y-2">
-        {[0, 1].map((i) => (
-          <li key={i}>
-            <SettingsItem className="flex items-center justify-between gap-4">
-              <Skeleton className="h-4 w-36" />
-              <Skeleton className="size-7 rounded-md" />
-            </SettingsItem>
-          </li>
-        ))}
-      </AnimatedList>
-    );
-  }
-
-  if (credentials.length === 0) {
-    return <p className="text-sm text-muted-foreground">{t('passkey.none')}</p>;
+    return <EditableSettingsItem label={t('passkey.title')} value="" disabled />;
   }
 
   return (
     <>
-      <AnimatedList className="space-y-2">
+      <EditableSettingsItem
+        label={t('passkey.title')}
+        value={credentials.length === 0 ? t('passkey.none') : ''}
+        trailing={createAction}
+      />
+      <AnimatedList>
         {credentials.map((cred) => (
           <AnimatedListItem key={cred.id} removing={removingIds.has(cred.id)} onRemoved={() => handleRemoved(cred.id)}>
-            <SettingsItem className="flex items-center justify-between gap-4">
-              <div className="min-w-0 space-y-0.5">
-                <p className="text-sm font-medium truncate">{cred.name}</p>
-                {cred.createdAt !== null && <p className="text-xs text-muted-foreground">{new Date(cred.createdAt).toLocaleDateString()}</p>}
-              </div>
-              <DeleteIconButton
-                size="icon-sm"
-                loading={deletingIds.has(cred.id)}
-                aria-label={t('passkey.remove')}
-                onClick={() => setPendingDelete(cred)}
-              />
-            </SettingsItem>
+            <EditableSettingsItem
+              label={cred.name}
+              value={cred.createdAt !== null ? new Date(cred.createdAt).toLocaleDateString() : ''}
+              trailing={
+                <DeleteIconButton
+                  size="icon-sm"
+                  loading={deletingIds.has(cred.id)}
+                  aria-label={t('passkey.remove')}
+                  onClick={() => setPendingDelete(cred)}
+                />
+              }
+            />
           </AnimatedListItem>
         ))}
       </AnimatedList>
