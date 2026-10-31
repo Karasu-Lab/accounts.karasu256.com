@@ -92,9 +92,10 @@ export function AuthorizedAppsClient() {
                     <p className="text-sm font-medium">{t('authorizedApps.permissions')}</p>
                     {app.scopes.length > 0 ? (
                       <ul className="list-disc space-y-0.5 pl-5 text-sm text-muted-foreground">
-                        {app.scopes.map((scope) => (
-                          <li key={scope}>{scope}</li>
-                        ))}
+                        {app.scopes.map((scope) => {
+                          const key = `authorizedApps.scopes.${scope}`;
+                          return <li key={scope}>{t.has(key) ? t(key) : scope}</li>;
+                        })}
                       </ul>
                     ) : (
                       <p className="text-sm text-muted-foreground">{t('authorizedApps.noPermissions')}</p>

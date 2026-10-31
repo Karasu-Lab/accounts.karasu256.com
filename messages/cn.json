@@ -147,6 +147,9 @@
         "popupClosed": "授权完成前弹出窗口已关闭。",
         "noCallbackUri": "此客户端未注册回调 URI。",
         "clientSecret": "客户端密钥",
+        "result": "调试信息",
+        "copyResult": "复制结果",
+        "resultCopied": "已复制结果",
         "steps": {
           "authorize": "在授权页面批准",
           "access_token": "交换访问令牌"
@@ -210,6 +213,14 @@
     "authorizedAt": "授权日期",
     "permissions": "已批准的权限",
     "noPermissions": "暂无已批准的权限",
+    "scopes": {
+      "openid": "使用 OpenID Connect 登录",
+      "profile": "读取您的个人资料信息",
+      "email": "读取您的电子邮箱地址",
+      "offline_access": "离线访问（刷新令牌）",
+      "read:profile": "读取个人资料",
+      "write:profile": "更新个人资料"
+    },
     "revoke": "解除关联",
     "revoked": "已解除 {name} 的关联。",
     "revokeConfirm": {
