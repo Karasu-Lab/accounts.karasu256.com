@@ -59,13 +59,6 @@ export function SettingsMenu() {
 
       <SettingsItemGroup>
         <SettingsItemContainer
-          href="/settings/profile"
-          icon={User}
-          iconBackgroundColor="#2563eb"
-          title={t('settings.sections.profile')}
-          description={t('settings.menu.descriptions.profile')}
-        />
-        <SettingsItemContainer
           href="/settings/security"
           icon={Shield}
           iconBackgroundColor="#16a34a"

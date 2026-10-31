@@ -66,7 +66,6 @@
   "settings": {
     "title": "Account settings",
     "sections": {
-      "profile": "Profile",
       "security": "Security",
       "connections": "Connections",
       "authorizedApps": "Authorized apps",
@@ -75,7 +74,6 @@
     },
     "menu": {
       "descriptions": {
-        "profile": "Edit your profile",
         "security": "Protect your account",
         "connections": "Link external accounts",
         "authorizedApps": "Manage authorized apps",
