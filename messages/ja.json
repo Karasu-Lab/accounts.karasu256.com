@@ -147,6 +147,9 @@
         "popupClosed": "認可が完了する前にポップアップが閉じられました。",
         "noCallbackUri": "このクライアントにはコールバック URI が登録されていません。",
         "clientSecret": "クライアントシークレット",
+        "result": "デバッグ情報",
+        "copyResult": "結果をコピー",
+        "resultCopied": "結果をコピーしました",
         "steps": {
           "authorize": "認可ページで承認",
           "access_token": "アクセストークンへの交換"

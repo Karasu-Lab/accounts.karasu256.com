@@ -147,6 +147,9 @@
         "popupClosed": "Popup was closed before authorization completed.",
         "noCallbackUri": "No callback URI is registered for this client.",
         "clientSecret": "Client secret",
+        "result": "Debug info",
+        "copyResult": "Copy result",
+        "resultCopied": "Result copied",
         "steps": {
           "authorize": "Authorize on consent page",
           "access_token": "Exchange for access token"

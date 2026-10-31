@@ -147,6 +147,9 @@
         "popupClosed": "授权完成前弹出窗口已关闭。",
         "noCallbackUri": "此客户端未注册回调 URI。",
         "clientSecret": "客户端密钥",
+        "result": "调试信息",
+        "copyResult": "复制结果",
+        "resultCopied": "已复制结果",
         "steps": {
           "authorize": "在授权页面批准",
           "access_token": "交换访问令牌"
