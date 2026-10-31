@@ -42,6 +42,8 @@ export function AuthorizedAppsClient() {
 
   return (
     <div className="space-y-6">
+      <h1 className="text-xl font-semibold">{t('authorizedApps.title')}</h1>
+
       {apps === null ? (
         <AnimatedList className="space-y-3">
           {[0, 1].map((i) => (
