@@ -17,7 +17,8 @@ interface ConsentRecord {
   id: string;
   clientId: string;
   scopes: string[];
-  createdAt: string;
+  /** Typed as a Date by the client; serialized as a string on the wire. */
+  createdAt: Date;
 }
 
 interface PublicClient {
@@ -48,7 +49,7 @@ export async function listAuthorizedApps(): Promise<AuthorizedApp[]> {
         clientName: pub?.client_name,
         logoUri: pub?.logo_uri,
         scopes: consent.scopes ?? [],
-        createdAt: consent.createdAt,
+        createdAt: new Date(consent.createdAt).toISOString(),
       };
     })
   );
