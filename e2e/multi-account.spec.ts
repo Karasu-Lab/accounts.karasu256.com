@@ -90,14 +90,15 @@ test.describe('multi-account switching', () => {
   test('creates a test account and signs in', async ({ page }) => {
     await signInViaUi(page, accountA);
     await gotoSettingsMenu(page);
-    await expect(page.getByRole('button', { name: 'サインアウト' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'アカウントメニュー' })).toBeVisible();
   });
 
   test('adds a second account and switches between them', async ({ page }) => {
     await signInViaUi(page, accountA);
     await gotoSettingsMenu(page);
 
-    await page.getByRole('button', { name: '別のアカウントを追加' }).click();
+    await page.getByRole('button', { name: 'アカウントメニュー' }).click();
+    await page.getByRole('menuitem', { name: '別のアカウントを追加' }).click();
 
     await page.getByRole('dialog').getByRole('button', { name: 'サインインへ進む' }).click();
     await page.waitForURL(`${AUTH_URL}/sign-in?**`);
@@ -105,14 +106,16 @@ test.describe('multi-account switching', () => {
     await fillSignInForm(page, accountB);
     /* Adding returns to the menu with the previous account active again
        (the "switch after add" checkbox was left unchecked), so the new
-       account appears in the menu as a switchable item. */
+       account appears in the header account menu as a switchable item. */
     await page.waitForURL((url) => url.pathname === '/settings');
 
-    await expect(page.getByText(accountB.email).first()).toBeVisible({ timeout: 10000 });
-    await page.getByText(accountB.email).first().click();
+    await page.getByRole('button', { name: 'アカウントメニュー' }).click();
+    await expect(page.getByRole('menuitem', { name: accountB.email })).toBeVisible({ timeout: 10000 });
+    await page.getByRole('menuitem', { name: accountB.email }).click();
 
     /* After switching, the previously active account is the switchable one. */
-    await expect(page.getByText(accountA.email).first()).toBeVisible({ timeout: 10000 });
+    await page.getByRole('button', { name: 'アカウントメニュー' }).click();
+    await expect(page.getByRole('menuitem', { name: accountA.email })).toBeVisible({ timeout: 10000 });
 
     const accountsRes = await page.request.get('/api/accounts');
     expect(accountsRes.ok()).toBeTruthy();

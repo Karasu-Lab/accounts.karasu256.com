@@ -20,10 +20,11 @@ test('signs in on auth, returns to settings, and signs out', async ({ page, requ
   await page.getByRole('button', { name: 'サインイン', exact: true }).click();
   await page.waitForURL('/settings/profile');
 
-  /* Signing out lives in the settings menu at /settings, as a settings item. */
+  /* Signing out lives in the account menu opened from the header's account icon. */
   await page.goto('/settings');
   await expect(page.getByRole('heading', { name: 'アカウント設定' })).toBeVisible();
-  await page.getByRole('button', { name: 'サインアウト' }).click();
+  await page.getByRole('button', { name: 'アカウントメニュー' }).click();
+  await page.getByRole('menuitem', { name: 'サインアウト' }).click();
   await page.waitForURL(`${AUTH_URL}/sign-in?**`);
 
   const sessionRes = await page.request.get(`${AUTH_API_URL}/api/auth/get-session`);

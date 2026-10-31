@@ -12,6 +12,7 @@ import { listAccounts, switchAccount, removeAccount, type AccountSummary } from 
 import { Skeleton, SwitchingAccountOverlay } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
+import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
 import { SettingsMenuContext } from '@/components/settings/settings-menu-context';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';
 
@@ -32,7 +33,9 @@ interface SettingsShellProps {
  * above the page content. The back button is only shown when needed
  * (on subpages); its slot animates its width open and closed, so the
  * title slides with it to a position clear of the button and animates
- * back to its original position when the button is gone. The shell also provides the
+ * back to its original position when the button is gone. At the header's
+ * right end sits the account icon, which opens the account menu the
+ * drawer used to host. The shell also provides the
  * menu page with the account actions the drawer used to host (switching
  * and removing accounts, adding an account, signing out) through
  * {@link SettingsMenuContext}.
@@ -185,6 +188,16 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
     [appUrl, accounts, session?.user.id]
   );
 
+  /** Active account shown as the header account menu's icon, following optimistic profile updates. */
+  const headerUser = session
+    ? {
+        uid: contextValue.user.id,
+        displayName: contextValue.user.name,
+        email: contextValue.user.email,
+        photoURL: contextValue.user.image ?? null,
+      }
+    : null;
+
   function renderContent() {
     if (isLinkingPage) {
       return <>{children}</>;
@@ -243,6 +256,17 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
             </Link>
           </div>
           <h1 className="truncate text-base font-semibold">{pageTitle}</h1>
+          <div className="ml-auto flex shrink-0 items-center pl-4">
+            <HeaderAccountMenu
+              user={headerUser}
+              appUrl={appUrl}
+              onSignOut={handleSignOut}
+              accounts={accounts}
+              onSwitchAccount={handleSwitchAccount}
+              onAddAccount={() => setAddDialogOpen(true)}
+              onRemoveAccount={handleRemoveAccount}
+            />
+          </div>
         </header>
         <main className="min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">
           <SettingsMenuContext.Provider value={menuContextValue}>{renderContent()}</SettingsMenuContext.Provider>
