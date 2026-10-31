@@ -27,6 +27,13 @@ export interface SettingsItemContainerProps {
    * Ignored when {@link iconImageSrc} is set.
    */
   iconNode?: React.ReactNode;
+  /**
+   * Small badge content overlaid on the icon tile's bottom-right corner
+   * (for example a provider's brand icon over a linked account's
+   * avatar), so the tile's main content can be replaced without losing
+   * what the badge identifies.
+   */
+  iconBadge?: React.ReactNode;
   /** CSS background color of the icon tile. Defaults to gray. */
   iconBackgroundColor?: string;
   /**
@@ -70,6 +77,7 @@ export function SettingsItemContainer({
   icon: Icon = Settings,
   iconImageSrc,
   iconNode,
+  iconBadge,
   iconBackgroundColor = DEFAULT_ICON_BACKGROUND_COLOR,
   arrowIcon: ArrowIcon = ChevronRight,
   href,
@@ -107,18 +115,24 @@ export function SettingsItemContainer({
         <button type="button" aria-label={title} onClick={onClick} className={cn(overlayClassName, 'cursor-pointer')} />
       ) : null}
 
-      <span
-        aria-hidden="true"
-        className="pointer-events-none flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
-        style={{ backgroundColor: iconBackgroundColor }}
-      >
-        {iconImageSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={iconImageSrc} alt="" className="size-full object-cover" />
-        ) : iconNode !== undefined ? (
-          <span className="flex items-center justify-center text-white">{iconNode}</span>
-        ) : (
-          <Icon className="size-4.5 text-white" />
+      <span aria-hidden="true" className="pointer-events-none relative shrink-0">
+        <span
+          className="flex size-8 items-center justify-center overflow-hidden rounded-md"
+          style={{ backgroundColor: iconBackgroundColor }}
+        >
+          {iconImageSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={iconImageSrc} alt="" className="size-full object-cover" />
+          ) : iconNode !== undefined ? (
+            <span className="flex items-center justify-center text-white">{iconNode}</span>
+          ) : (
+            <Icon className="size-4.5 text-white" />
+          )}
+        </span>
+        {iconBadge !== undefined && (
+          <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
+            {iconBadge}
+          </span>
         )}
       </span>
       <span className="pointer-events-none min-w-0 flex-1">

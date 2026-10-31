@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link2, LoaderCircle, Unlink } from 'lucide-react';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
@@ -10,7 +9,8 @@ import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
 import { authClient } from '@/lib/auth/client';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
-import { SettingsItemContainer, SettingsItemGroup } from '@/components/settings/settings-item-container';
+import { SettingsItemGroup } from '@/components/settings/settings-item-container';
+import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
 import { cn } from '@/lib/utils';
 
 export interface Provider {
@@ -38,11 +38,12 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
 
 /**
  * Displays linked OAuth providers with link/unlink controls, as
- * settings item containers (no accordion).
+ * {@link LinkedSettingsItem}s in a settings item group (no accordion).
  *
  * A linked provider's item shows the linked account's name as its title
  * and its email address as its description, with the account's avatar
- * in the icon tile. The item itself never responds to taps; the only
+ * in the icon tile and the provider's icon as a small badge on the
+ * avatar's bottom-right corner. The item itself never responds to taps; the only
  * action is the icon button at its right end — an unlink icon for a
  * linked provider, which opens an unlink confirmation, and a link icon
  * for a provider that is not linked yet.
@@ -152,12 +153,12 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
           const profile = profiles[provider.id] ?? null;
           const isLoading = loading === provider.id;
           return (
-            <SettingsItemContainer
+            <LinkedSettingsItem
               key={provider.id}
-              title={profile ? (profile.name ?? profile.email ?? provider.label) : provider.label}
-              description={profile ? (profile.email ?? '') : t('connections.notLinked')}
-              iconNode={<FontAwesomeIcon icon={provider.icon} className="size-4" />}
-              iconImageSrc={profile?.avatarUrl ?? undefined}
+              providerLabel={provider.label}
+              providerIcon={provider.icon}
+              profile={profile}
+              notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
                 profile ? (
