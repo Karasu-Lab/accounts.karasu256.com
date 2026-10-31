@@ -73,6 +73,19 @@
       "debug": "デバッグ",
       "developer": "デベロッパー"
     },
+    "menu": {
+      "descriptions": {
+        "profile": "表示名とアイコンを変更します",
+        "security": "パスワード、パスキー、危険な操作を管理します",
+        "connections": "外部アカウントとの連携を管理します",
+        "authorizedApps": "認可したアプリを確認し、連携を解除します",
+        "developer": "OAuth クライアントと API キーを管理します",
+        "debug": "機能フラグと API の情報を確認します",
+        "addAccount": "別のアカウントでサインインして追加します",
+        "backToApp": "karasu256.com へ移動します",
+        "signOut": "現在のアカウントからサインアウトします"
+      }
+    },
     "back": "戻る",
     "backToApp": "karasu256.comへ戻る",
     "signOut": "サインアウト",
