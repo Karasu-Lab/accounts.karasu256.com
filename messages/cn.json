@@ -93,6 +93,8 @@
       "editClient": "编辑 OAuth 客户端",
       "createKey": "创建 API 密钥",
       "noClients": "暂无 OAuth 客户端",
+      "loadError": "加载失败",
+      "retry": "重试",
       "noKeys": "暂无 API 密钥",
       "edit": "编辑",
       "delete": "删除",

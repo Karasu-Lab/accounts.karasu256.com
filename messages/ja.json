@@ -93,6 +93,8 @@
       "editClient": "OAuth クライアントを編集",
       "createKey": "API キーを作成",
       "noClients": "OAuth クライアントがありません",
+      "loadError": "読み込みに失敗しました",
+      "retry": "再試行",
       "noKeys": "API キーがありません",
       "edit": "編集",
       "delete": "削除",

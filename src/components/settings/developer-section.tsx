@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { AnimatedList, Button, ConfirmDialog, SettingsAccordion, SettingsItem, Skeleton } from '@karasu-lab/ui';
+import { loadOAuthClients } from '@/lib/actions/developer';
 import {
   deleteApiKey,
   deleteOAuthClient,
-  getAvailableScopes,
   groupScopesBySection,
   listApiKeys,
-  listOAuthClients,
   type ApiKeyCreated,
   type ApiKeySummary,
   type OAuthClientCreated,
@@ -29,16 +28,26 @@ import { RotateSecretDialog } from './rotate-secret-dialog';
 type PendingDelete = { type: 'client'; id: string; name: string } | { type: 'key'; id: string; name: string };
 
 /**
+ * Load state of one settings list. Loading, failed, and loaded (which
+ * may still be empty) are distinct states so the UI can switch its
+ * display explicitly instead of guessing from a shared flag.
+ */
+type ListState<T> = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; items: T[] };
+
+/**
  * Developer settings section. Manages OAuth clients (backed by the
  * better-auth OAuth authorization server on the auth API) and API keys,
- * with collapsible lists and creation/edit dialogs.
+ * with collapsible lists and creation/edit dialogs. The OAuth clients
+ * load through the `loadOAuthClients` server action, separately from
+ * the API keys, and each list tracks its own loading / error / loaded
+ * state so "still loading", "failed", and "loaded but empty" render
+ * distinctly.
  */
 export function DeveloperSection() {
   const t = useTranslations();
 
-  const [loading, setLoading] = useState(true);
-  const [clients, setClients] = useState<OAuthClientSummary[]>([]);
-  const [keys, setKeys] = useState<ApiKeySummary[]>([]);
+  const [clientsState, setClientsState] = useState<ListState<OAuthClientSummary>>({ status: 'loading' });
+  const [keysState, setKeysState] = useState<ListState<ApiKeySummary>>({ status: 'loading' });
   const [sections, setSections] = useState<PermissionSection[]>([]);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<OAuthClientSummary | null>(null);
@@ -48,34 +57,64 @@ export function DeveloperSection() {
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
 
-  useEffect(() => {
-    void Promise.all([
-      listOAuthClients().then(setClients),
-      listApiKeys().then(setKeys),
-      getAvailableScopes().then((scopes) => setSections(groupScopesBySection(scopes))),
-    ]).finally(() => setLoading(false));
+  /** OAuth clients load through the server action, independently of the API keys. */
+  const reloadClients = useCallback(async () => {
+    setClientsState({ status: 'loading' });
+    try {
+      const { clients, scopes } = await loadOAuthClients();
+      setSections(groupScopesBySection(scopes));
+      setClientsState({ status: 'loaded', items: clients });
+    } catch {
+      setClientsState({ status: 'error' });
+    }
   }, []);
 
+  const reloadKeys = useCallback(async () => {
+    setKeysState({ status: 'loading' });
+    try {
+      const keys = await listApiKeys();
+      setKeysState({ status: 'loaded', items: keys });
+    } catch {
+      setKeysState({ status: 'error' });
+    }
+  }, []);
+
+  useEffect(() => {
+    void reloadClients();
+  }, [reloadClients]);
+
+  useEffect(() => {
+    void reloadKeys();
+  }, [reloadKeys]);
+
+  function updateClients(update: (_prev: OAuthClientSummary[]) => OAuthClientSummary[]) {
+    setClientsState((prev) => (prev.status === 'loaded' ? { status: 'loaded', items: update(prev.items) } : prev));
+  }
+
+  function updateKeys(update: (_prev: ApiKeySummary[]) => ApiKeySummary[]) {
+    setKeysState((prev) => (prev.status === 'loaded' ? { status: 'loaded', items: update(prev.items) } : prev));
+  }
+
   function handleClientCreated(client: OAuthClientCreated) {
-    setClients((prev) => [client, ...prev]);
+    updateClients((prev) => [client, ...prev]);
   }
 
   function handleClientUpdated(updated: OAuthClientSummary) {
-    setClients((prev) => prev.map((c) => (c.client_id === updated.client_id ? updated : c)));
+    updateClients((prev) => prev.map((c) => (c.client_id === updated.client_id ? updated : c)));
   }
 
   function handleKeyCreated(key: ApiKeyCreated) {
-    setKeys((prev) => [key, ...prev]);
+    updateKeys((prev) => [key, ...prev]);
   }
 
   async function confirmDelete() {
     if (!pendingDelete) return;
     if (pendingDelete.type === 'client') {
       await deleteOAuthClient(pendingDelete.id);
-      setClients((prev) => prev.filter((c) => c.client_id !== pendingDelete.id));
+      updateClients((prev) => prev.filter((c) => c.client_id !== pendingDelete.id));
     } else {
       await deleteApiKey(pendingDelete.id);
-      setKeys((prev) => prev.filter((k) => k.id !== pendingDelete.id));
+      updateKeys((prev) => prev.filter((k) => k.id !== pendingDelete.id));
     }
   }
 
@@ -92,7 +131,7 @@ export function DeveloperSection() {
         }
       >
         <div className="mt-2 space-y-2">
-          {loading ? (
+          {clientsState.status === 'loading' ? (
             <AnimatedList className="space-y-2">
               {[0, 1].map((i) => (
                 <li key={i}>
@@ -102,7 +141,6 @@ export function DeveloperSection() {
                       <div className="space-y-1.5">
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-48" />
-                        <Skeleton className="h-5 w-16 rounded-full" />
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
@@ -113,10 +151,17 @@ export function DeveloperSection() {
                 </li>
               ))}
             </AnimatedList>
-          ) : clients.length === 0 ? (
+          ) : clientsState.status === 'error' ? (
+            <div className="flex items-center gap-3 py-2">
+              <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
+              <Button variant="ghost" size="sm" onClick={() => void reloadClients()}>
+                {t('settings.developer.retry')}
+              </Button>
+            </div>
+          ) : clientsState.items.length === 0 ? (
             <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noClients')}</p>
           ) : (
-            clients.map((c) => (
+            clientsState.items.map((c) => (
               <OAuthClientRow
                 key={c.client_id}
                 client={c}
@@ -140,7 +185,7 @@ export function DeveloperSection() {
         }
       >
         <div className="mt-2 space-y-2">
-          {loading ? (
+          {keysState.status === 'loading' ? (
             <AnimatedList className="space-y-2">
               {[0, 1].map((i) => (
                 <li key={i}>
@@ -155,10 +200,17 @@ export function DeveloperSection() {
                 </li>
               ))}
             </AnimatedList>
-          ) : keys.length === 0 ? (
+          ) : keysState.status === 'error' ? (
+            <div className="flex items-center gap-3 py-2">
+              <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
+              <Button variant="ghost" size="sm" onClick={() => void reloadKeys()}>
+                {t('settings.developer.retry')}
+              </Button>
+            </div>
+          ) : keysState.items.length === 0 ? (
             <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noKeys')}</p>
           ) : (
-            keys.map((k) => <ApiKeyRow key={k.id} apiKey={k} onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })} />)
+            keysState.items.map((k) => <ApiKeyRow key={k.id} apiKey={k} onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })} />)
           )}
         </div>
       </SettingsAccordion>
