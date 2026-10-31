@@ -9,7 +9,7 @@ import { toast } from '@karasu-lab/ui';
 import { authClient, getSignInUrl } from '@/lib/auth/client';
 import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
-import { Skeleton, SwitchingAccountOverlay } from '@karasu-lab/ui';
+import { ProgressBar, Skeleton, SwitchingAccountOverlay } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
 import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
@@ -36,7 +36,9 @@ interface SettingsShellProps {
  * title slides with it to a position clear of the button and animates
  * back to its original position when the button is gone. At the header's
  * right end sits the account icon, which opens the account menu the
- * drawer used to host. The shell also provides the
+ * drawer used to host. Attached to the header's bottom edge is a
+ * progress bar that is shown while the session is loading and hidden
+ * once it has loaded. The shell also provides the
  * menu page with the account actions the drawer used to host (switching
  * and removing accounts, adding an account, signing out) through
  * {@link SettingsMenuContext}.
@@ -268,6 +270,24 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
               onAddAccount={() => setAddDialogOpen(true)}
               onRemoveAccount={handleRemoveAccount}
             />
+          </div>
+          {/*
+           * Loading progress bar, attached to the bottom edge of the
+           * header: it is shown while the session is loading and hidden
+           * once loading finishes, fading between the two states. The
+           * bar itself is the shadcn ProgressBar, swept across its track
+           * as an indeterminate indicator.
+           */}
+          <div
+            aria-hidden={!loading}
+            className={cn('absolute inset-x-0 top-full transition-opacity duration-300', loading ? 'opacity-100' : 'pointer-events-none opacity-0')}
+          >
+            <div className="h-0.5 overflow-hidden">
+              <ProgressBar
+                value={1}
+                className={cn('h-full w-1/3 rounded-none bg-transparent', loading && 'animate-[progress-indeterminate_1.2s_ease-in-out_infinite]')}
+              />
+            </div>
           </div>
         </header>
         <main className="min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">

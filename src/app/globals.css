@@ -5,3 +5,15 @@
 html {
   font-size: 150%;
 }
+
+/* Indeterminate sweep for the settings header's progress bar: the bar
+   is one third of its track, so it enters from -100% of its own width
+   and leaves at 300%. */
+@keyframes progress-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
