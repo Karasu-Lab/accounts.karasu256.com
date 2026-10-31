@@ -3,7 +3,6 @@
 import { KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
-  Badge,
   Button,
   DropdownMenu,
   DropdownMenuItem,
@@ -15,10 +14,11 @@ import {
   R2Image,
   SettingsItem,
 } from '@karasu-lab/ui';
-import { groupScopesBySection, type OAuthClientSummary } from '@/lib/api/developer';
+import type { OAuthClientSummary } from '@/lib/api/developer';
 
 interface OAuthClientRowProps {
   client: OAuthClientSummary;
+  onSelect: (_client: OAuthClientSummary) => void;
   onTest: (_client: OAuthClientSummary) => void;
   onEdit: (_client: OAuthClientSummary) => void;
   onDelete: (_clientId: string) => void;
@@ -26,18 +26,19 @@ interface OAuthClientRowProps {
 }
 
 /**
- * Displays a single OAuth client row with icon, name, redirect URIs,
- * scope badges, a dedicated edit button, and a three-dot menu for
- * additional actions (test, delete).
+ * Displays a single OAuth client row with icon, name, and redirect
+ * URIs, a dedicated edit button, and a three-dot menu for additional
+ * actions (test, delete). Selecting the row itself opens the client
+ * information dialog, which shows the client's scopes in consent
+ * screen format — the row no longer summarizes scopes into proprietary
+ * chips (e.g. "Profile R/W").
  */
-export function OAuthClientRow({ client, onTest, onEdit, onDelete, onRotateSecret }: OAuthClientRowProps) {
+export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret }: OAuthClientRowProps) {
   const t = useTranslations();
-
-  const grantedSections = groupScopesBySection(client.scope?.split(' ') ?? []);
 
   return (
     <SettingsItem className="flex items-start justify-between gap-4">
-      <div className="flex items-start gap-3 min-w-0">
+      <button type="button" onClick={() => onSelect(client)} className="flex min-w-0 flex-1 items-start gap-3 text-left">
         {client.logo_uri && <R2Image src={client.logo_uri} alt="" width={32} height={32} className="rounded size-8 shrink-0 object-cover" />}
         <div className="min-w-0 space-y-1">
           <p className="text-sm font-medium truncate">{client.client_name}</p>
@@ -48,19 +49,8 @@ export function OAuthClientRow({ client, onTest, onEdit, onDelete, onRotateSecre
               </p>
             ))}
           </div>
-          <div className="flex flex-wrap gap-1">
-            {grantedSections.map((s) => {
-              const suffix = s.canRead && s.canWrite ? ' R/W' : s.canWrite ? ' W' : ' R';
-              return (
-                <Badge key={s.key} variant="secondary" className="text-xs">
-                  {t(`permissions.sections.${s.key}.label`)}
-                  {suffix}
-                </Badge>
-              );
-            })}
-          </div>
         </div>
-      </div>
+      </button>
 
       <div className="flex items-center gap-1 shrink-0">
         <Button size="icon" variant="ghost" aria-label={t('settings.developer.edit')} onClick={() => onEdit(client)}>

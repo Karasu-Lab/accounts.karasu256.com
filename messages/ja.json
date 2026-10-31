@@ -128,6 +128,10 @@
       },
       "menu": "メニュー",
       "testClient": "クライアントをテスト",
+      "clientInfo": {
+        "requesting": "{name} は以下の権限を要求しています。",
+        "noScopes": "要求する権限はありません"
+      },
       "rotateSecret": "シークレットを再生成",
       "rotateSecretConfirm": {
         "title": "クライアントシークレットを再生成しますか？",

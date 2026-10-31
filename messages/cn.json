@@ -128,6 +128,10 @@
       },
       "menu": "菜单",
       "testClient": "测试客户端",
+      "clientInfo": {
+        "requesting": "{name} 正在请求以下权限。",
+        "noScopes": "未请求任何权限"
+      },
       "rotateSecret": "重新生成密钥",
       "rotateSecretConfirm": {
         "title": "重新生成客户端密钥？",
