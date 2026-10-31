@@ -1,6 +1,6 @@
 {
-  "buildCommand": "cd ../.. && node apps/accounts.karasu256.com/scripts/migrate.mts && pnpm turbo build --filter=accounts.karasu256.com",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "node scripts/migrate.mts && pnpm build",
+  "installCommand": "printf '//npm.pkg.github.com/:_authToken=%s\n' \"$NODE_AUTH_TOKEN\" >> \"$HOME/.npmrc\" && pnpm install --no-frozen-lockfile",
   "build": {
     "env": {
       "ENABLE_EXPERIMENTAL_COREPACK": "1"
