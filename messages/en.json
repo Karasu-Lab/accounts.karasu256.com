@@ -210,6 +210,14 @@
     "authorizedAt": "Authorized on",
     "permissions": "Approved permissions",
     "noPermissions": "No approved permissions",
+    "scopes": {
+      "openid": "Sign in with OpenID Connect",
+      "profile": "Read your profile information",
+      "email": "Read your email address",
+      "offline_access": "Access while you are offline (refresh token)",
+      "read:profile": "Read your profile",
+      "write:profile": "Update your profile"
+    },
     "revoke": "Disconnect",
     "revoked": "Disconnected {name}.",
     "revokeConfirm": {
