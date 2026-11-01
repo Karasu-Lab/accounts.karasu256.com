@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from '@karasu-lab/ui';
-import { authClient, getSignInUrl } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
+import { buildSignInUrl } from '@/lib/auth/client-config';
 import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
 import { SwitchingAccountOverlay } from '@karasu-lab/ui';
@@ -49,6 +50,7 @@ interface SettingsSessionProviderProps {
  * then redirects to sign-in.
  */
 export function SettingsSessionProvider({ children, appUrl, initialUser }: SettingsSessionProviderProps) {
+  const { authClient, config } = useAuthClient();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
@@ -95,7 +97,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       if (!initialUser) {
         /* Neither the server render nor the client session found a
            signed-in account: this visit is genuinely signed out. */
-        window.location.replace(getSignInUrl(window.location.href));
+        window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
         return;
       }
       /* The server resolved an account for this very page from the
@@ -156,7 +158,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
          session no longer redirects on its own when the server had
          resolved an account for the page (see the session effect), so
          the sign-out itself sends the browser to sign-in. */
-      window.location.replace(getSignInUrl(window.location.href));
+      window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
     } catch (err) {
       setSigningOut(false);
       toast.error(err instanceof Error ? err.message : String(err));

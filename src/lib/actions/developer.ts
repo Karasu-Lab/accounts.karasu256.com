@@ -27,7 +27,7 @@ export interface OAuthClientsData {
  */
 export async function loadOAuthClients(): Promise<OAuthClientsData> {
   const cookieHeader = (await cookies()).toString();
-  const authApiBase = (process.env.NEXT_PUBLIC_AUTH_API_URL ?? '').replace(/\/$/, '');
+  const authApiBase = (process.env.AUTH_API_URL ?? '').replace(/\/$/, '');
 
   const [clientsRes, scopes] = await Promise.all([
     fetch(`${authApiBase}/api/auth/oauth2/get-clients`, {
@@ -47,8 +47,8 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
 
 /** The base URL of the auth API, which owns API key processing. */
 function authApiBase(): string {
-  const base = process.env.NEXT_PUBLIC_AUTH_API_URL;
-  if (!base) throw new Error('NEXT_PUBLIC_AUTH_API_URL is not configured');
+  const base = process.env.AUTH_API_URL;
+  if (!base) throw new Error('AUTH_API_URL is not configured');
   return base.replace(/\/$/, '');
 }
 

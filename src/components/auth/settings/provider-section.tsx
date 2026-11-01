@@ -7,7 +7,7 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
@@ -55,6 +55,7 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
  * passkeys and no `credential` (email/password) account.
  */
 export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
+  const { authClient } = useAuthClient();
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();

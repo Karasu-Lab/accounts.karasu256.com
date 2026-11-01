@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Checkbox, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle, Label } from '@karasu-lab/ui';
 import { buildUri } from '@karasu-lab/utils/uri';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { savePendingAddAccount } from '@/lib/add-account';
 
 export interface AddAccountDialogProps {
@@ -20,6 +20,7 @@ export interface AddAccountDialogProps {
  * back to it on return, since `multiSession` makes every new sign-in active.
  */
 export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox = false }: AddAccountDialogProps) {
+  const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const [switchToNewAccount, setSwitchToNewAccount] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox
     savePendingAddAccount({ previousSessionToken: data?.session.token ?? null, switchToNewAccount });
 
     const returnTo = buildUri(new URL(window.location.pathname, window.location.origin).toString(), { accountAdded: '1' });
-    const signIn = buildUri(new URL('/sign-in', process.env.NEXT_PUBLIC_AUTH_URL).toString(), { prompt: 'login', next: returnTo });
+    const signIn = buildUri(new URL('/sign-in', config.authUrl).toString(), { prompt: 'login', next: returnTo });
     window.location.assign(signIn);
   }
 

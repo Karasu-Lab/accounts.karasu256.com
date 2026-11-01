@@ -5,6 +5,7 @@ import { CheckCircle, Circle, Copy, XCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Spinner as DefaultSpinner, toast } from '@karasu-lab/ui';
 import { useOAuthErrorMessage } from '@/lib/i18n/use-oauth-error-message';
+import { useAuthClient } from '@/lib/auth/client';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
 
@@ -48,9 +49,9 @@ async function createPkcePair(): Promise<{ verifier: string; challenge: string }
   return { verifier, challenge: base64url(digest) };
 }
 
-/** The auth API's origin, which hosts the authorization server this test runs against. */
-function authApiBase(): string {
-  return (process.env.NEXT_PUBLIC_AUTH_API_URL ?? '').replace(/\/$/, '');
+/** The auth API's origin, trailing slash removed, which hosts the authorization server this test runs against. */
+function authApiBase(authApiUrl: string): string {
+  return authApiUrl.replace(/\/$/, '');
 }
 
 /**
@@ -84,6 +85,7 @@ export function OAuthClientTestDialog({
   client,
   spinner: SpinnerComponent = DefaultSpinner,
 }: OAuthClientTestDialogProps) {
+  const { config } = useAuthClient();
   const t = useTranslations();
   const [steps, setSteps] = useState<StepState[]>(makeInitialSteps);
   const [secret, setSecret] = useState('');
@@ -144,9 +146,9 @@ export function OAuthClientTestDialog({
           const redirectUri = currentClient.redirect_uris[0] ?? '';
 
           appendLog(
-            `token request: POST ${authApiBase()}/api/auth/oauth2/token (grant_type=authorization_code, client authentication: client_secret_basic, PKCE S256, resource=${authApiBase()}/api/auth/oauth2/userinfo)`
+            `token request: POST ${authApiBase(config.authApiUrl)}/api/auth/oauth2/token (grant_type=authorization_code, client authentication: client_secret_basic, PKCE S256, resource=${authApiBase(config.authApiUrl)}/api/auth/oauth2/userinfo)`
           );
-          const tokenRes = await fetch(`${authApiBase()}/api/auth/oauth2/token`, {
+          const tokenRes = await fetch(`${authApiBase(config.authApiUrl)}/api/auth/oauth2/token`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
@@ -162,7 +164,7 @@ export function OAuthClientTestDialog({
               // Accounts' own /api/auth is not a configured resource —
               // the authorization part belongs to auth, and the server
               // rejects an accounts resource with invalid_target.
-              resource: `${authApiBase()}/api/auth/oauth2/userinfo`,
+              resource: `${authApiBase(config.authApiUrl)}/api/auth/oauth2/userinfo`,
             }).toString(),
           });
 
@@ -234,7 +236,7 @@ export function OAuthClientTestDialog({
     verifierRef.current = verifier;
 
     const url =
-      `${authApiBase()}/api/auth/oauth2/authorize?` +
+      `${authApiBase(config.authApiUrl)}/api/auth/oauth2/authorize?` +
       new URLSearchParams({
         client_id: client.client_id,
         redirect_uri: redirectUri,

@@ -74,12 +74,16 @@ vi.mock('next/navigation', () => ({
 
 /* The client-side session never resolves during server rendering. */
 vi.mock('@/lib/auth/client', () => ({
-  authClient: {
-    useSession: () => ({ data: null, isPending: true, refetch: async () => {} }),
-    getSession: async () => ({ data: null }),
-    signOut: async () => {},
-  },
-  getSignInUrl: (url: string) => url,
+  AuthClientProvider: ({ children }: { children: unknown }) => children,
+  useAuthClient: () => ({
+    authClient: {
+      useSession: () => ({ data: null, isPending: true, refetch: async () => {} }),
+      getSession: async () => ({ data: null }),
+      signOut: async () => {},
+    },
+    bridgeFirebaseSession: async () => {},
+    config: { authApiUrl: 'https://api-auth.karasu256.com', authUrl: 'https://auth.karasu256.com' },
+  }),
 }));
 
 vi.mock('@/lib/api/accounts', () => ({
@@ -124,7 +128,7 @@ describe('settings initial page server rendering', () => {
     /* The accounts deployment signs with its own value, which does not
        match the auth API's — the reported production condition. */
     vi.stubEnv('INTERNAL_API_SECRET', 'accounts-side-secret');
-    vi.stubEnv('NEXT_PUBLIC_AUTH_API_URL', 'https://api-auth.karasu256.com');
+    vi.stubEnv('AUTH_API_URL', 'https://api-auth.karasu256.com');
     vi.stubGlobal('fetch', vi.fn(authApiStub));
   });
 

@@ -75,8 +75,8 @@ function authServicesStub(url: string): Promise<Response> {
 describe('linking page linked-state judgment', () => {
   beforeEach(() => {
     requestCookie.value = 'better-auth.session_token=test-session-token';
-    vi.stubEnv('NEXT_PUBLIC_AUTH_API_URL', 'https://api-auth.karasu256.com');
-    vi.stubEnv('NEXT_PUBLIC_AUTH_URL', 'https://auth.karasu256.com');
+    vi.stubEnv('AUTH_API_URL', 'https://api-auth.karasu256.com');
+    vi.stubEnv('AUTH_URL', 'https://auth.karasu256.com');
     vi.stubGlobal('fetch', vi.fn(authServicesStub));
   });
 

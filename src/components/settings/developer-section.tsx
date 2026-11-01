@@ -14,6 +14,7 @@ import {
   type OAuthClientSummary,
   type PermissionSection,
 } from '@/lib/api/developer';
+import { useAuthClient } from '@/lib/auth/client';
 import { ApiKeyRow } from './api-key-row';
 import { OAuthClientRow } from './oauth-client-row';
 import { SettingsItemGroup } from './settings-item-container';
@@ -44,6 +45,7 @@ type ListState<T> = { status: 'loading' } | { status: 'error' } | { status: 'loa
  * distinctly.
  */
 export function DeveloperSection() {
+  const auth = useAuthClient();
   const t = useTranslations();
 
   const [clientsState, setClientsState] = useState<ListState<OAuthClientSummary>>({ status: 'loading' });
@@ -110,7 +112,7 @@ export function DeveloperSection() {
   async function confirmDelete() {
     if (!pendingDelete) return;
     if (pendingDelete.type === 'client') {
-      await deleteOAuthClient(pendingDelete.id);
+      await deleteOAuthClient(auth, pendingDelete.id);
       updateClients((prev) => prev.filter((c) => c.client_id !== pendingDelete.id));
     } else {
       await deleteApiKey(pendingDelete.id);
