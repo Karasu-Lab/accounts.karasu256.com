@@ -7,6 +7,7 @@ import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
 import { listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp } from '@/lib/api/authorized-apps';
 import { SettingsItemContainer, SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { AuthorizedAppInfoDialog } from '@/components/settings/authorized-app-info-dialog';
+import { useReportLoading } from '@/components/settings/loading-context';
 
 /**
  * Load state of the authorized apps list. Loading, failed, and loaded
@@ -25,10 +26,16 @@ const APP_ICON_BACKGROUND_COLOR = '#ea580c';
  * app's information dialog — its client ID, authorization date, and
  * the permissions the user approved for it, in consent screen format —
  * which also carries the control that revokes the authorization.
+ *
+ * The list's loading is reported through the common loading interface,
+ * so the shell presents it with the shared centered spinner; the
+ * screen itself renders nothing extra for the loading state. A failed
+ * load and an empty loaded list keep their own displays here.
  */
 export function AuthorizedAppsClient() {
   const t = useTranslations();
   const [state, setState] = useState<ListState>({ status: 'loading' });
+  useReportLoading('authorized-apps', state.status === 'loading');
   const [infoApp, setInfoApp] = useState<AuthorizedApp | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [pendingRevoke, setPendingRevoke] = useState<AuthorizedApp | null>(null);
