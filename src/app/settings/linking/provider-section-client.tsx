@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { faGoogle, faGithub, faMicrosoft, faXbox } from '@fortawesome/free-brands-svg-icons';
+import { faCube } from '@fortawesome/free-solid-svg-icons';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { useReportLoading } from '@/components/settings/loading-context';
@@ -48,6 +49,7 @@ export function ProviderSectionClient({ initialProfiles }: ProviderSectionClient
       { id: 'github', label: 'GitHub', icon: faGithub },
       { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft },
       { id: 'xbox', label: 'Xbox', icon: faXbox, accountProviderId: 'xbox' },
+      { id: 'minecraft', label: 'Minecraft', icon: faCube, textureAvatar: true, accountProviderId: 'xbox' },
     ],
     []
   );
