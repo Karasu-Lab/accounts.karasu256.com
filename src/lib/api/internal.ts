@@ -2,12 +2,15 @@ import { MissingEnvError } from '@karasu-lab/utils/server';
 
 /**
  * Service-to-service calls to api.karasu256.com's internal endpoints,
- * which own this app's former direct database access: the linked
- * providers and the Firebase user link. This app holds no database
+ * which own this app's former direct database access and all Firebase
+ * access: the linked providers, the Firebase user link and the
+ * Firebase profile photo. This app holds no database or Firebase
  * configuration of its own anymore; the API is the single place that
- * reads and writes the database. Calls carry the shared internal
- * secret, and the user named in each path is the one this app has
- * already authenticated through its session.
+ * reads and writes the database and the only holder of the Firebase
+ * service account, whose private key and the Firebase app ID are the
+ * trust anchors for Firebase. Calls carry the shared internal secret,
+ * and the user named in each path is the one this app has already
+ * authenticated through its session.
  */
 function internalUrl(path: string): string {
   const base = process.env.API_URL;
@@ -48,10 +51,23 @@ export async function fetchUnlinkProvider(userId: string, providerId: string): P
   return true;
 }
 
-/** Returns the Firebase UID linked to the user, or null when not linked, as the API reports it. */
-export async function fetchLinkedFirebaseUid(userId: string): Promise<string | null> {
-  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/firebase-uid`);
+export interface FirebasePhotoResult {
+  /** Whether the user has a linked Firebase user whose photo was updated. */
+  linked: boolean;
+  /** The photo URL the Firebase user had before this update, for cleaning up the replaced image. */
+  previousPhotoURL: string | null;
+}
+
+/**
+ * Sets the user's Firebase profile photo through the API, which alone
+ * holds the Firebase credentials. Passing null clears the photo.
+ */
+export async function fetchSetFirebasePhoto(userId: string, photoURL: string | null): Promise<FirebasePhotoResult> {
+  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/firebase-photo`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ photoURL }),
+  });
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
-  const { firebaseUid } = (await res.json()) as { firebaseUid: string | null };
-  return firebaseUid;
+  return (await res.json()) as FirebasePhotoResult;
 }
