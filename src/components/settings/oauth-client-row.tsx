@@ -1,20 +1,10 @@
 'use client';
 
-import { KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
+import { Code2, KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuPopup,
-  DropdownMenuPortal,
-  DropdownMenuPositioner,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  R2Image,
-  SettingsItem,
-} from '@karasu-lab/ui';
+import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
+import { SettingsItemContainer } from './settings-item-container';
 
 interface OAuthClientRowProps {
   client: OAuthClientSummary;
@@ -23,72 +13,74 @@ interface OAuthClientRowProps {
   onEdit: (_client: OAuthClientSummary) => void;
   onDelete: (_clientId: string) => void;
   onRotateSecret: (_client: OAuthClientSummary) => void;
+  /** Forwarded from {@link SettingsItemGroup}: true when another item sits directly above this one. */
+  hasItemAbove?: boolean;
+  /** Forwarded from {@link SettingsItemGroup}: true when another item sits directly below this one. */
+  hasItemBelow?: boolean;
 }
 
+/** Icon tile color of the developer items, matching the developer entry in the settings menu. */
+const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
+
 /**
- * Displays a single OAuth client row with icon, name, and redirect
- * URIs, a dedicated edit button, and a three-dot menu for additional
- * actions (test, delete). Selecting the row itself opens the client
- * information dialog, which shows the client's scopes in consent
- * screen format — the row no longer summarizes scopes into proprietary
- * chips (e.g. "Profile R/W").
+ * A single OAuth client as a settings item: the client's logo in the
+ * icon tile (or the developer icon when it has none), its name as the
+ * title, and its redirect URIs as the description. A dedicated edit
+ * button and a three-dot menu for additional actions (test, rotate
+ * secret, delete) sit at the right end. Selecting the item itself
+ * opens the client information dialog, which shows the client's
+ * scopes in consent screen format — the item no longer summarizes
+ * scopes into proprietary chips (e.g. "Profile R/W").
  */
-export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret }: OAuthClientRowProps) {
+export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret, hasItemAbove, hasItemBelow }: OAuthClientRowProps) {
   const t = useTranslations();
 
   return (
-    <SettingsItem className="flex items-start justify-between gap-4">
-      <button type="button" onClick={() => onSelect(client)} className="flex min-w-0 flex-1 items-start gap-3 text-left">
-        {client.logo_uri && <R2Image src={client.logo_uri} alt="" width={32} height={32} className="rounded size-8 shrink-0 object-cover" />}
-        <div className="min-w-0 space-y-1">
-          <p className="text-sm font-medium truncate">{client.client_name}</p>
-          <div className="space-y-0.5">
-            {client.redirect_uris.map((uri) => (
-              <p key={uri} className="text-xs text-muted-foreground truncate font-mono">
-                {uri}
-              </p>
-            ))}
-          </div>
-        </div>
-      </button>
+    <SettingsItemContainer
+      title={client.client_name ?? client.client_id}
+      description={client.redirect_uris.join(' ')}
+      icon={Code2}
+      iconImageSrc={client.logo_uri ?? undefined}
+      iconBackgroundColor={DEVELOPER_ICON_BACKGROUND_COLOR}
+      onClick={() => onSelect(client)}
+      hasItemAbove={hasItemAbove}
+      hasItemBelow={hasItemBelow}
+      trailing={
+        <span className="flex items-center gap-1">
+          <Button size="icon" variant="ghost" aria-label={t('settings.developer.edit')} onClick={() => onEdit(client)}>
+            <Pencil className="size-4" />
+          </Button>
 
-      <div className="flex items-center gap-1 shrink-0">
-        <Button size="icon" variant="ghost" aria-label={t('settings.developer.edit')} onClick={() => onEdit(client)}>
-          <Pencil className="size-4" />
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button size="icon" variant="ghost" aria-label={t('settings.developer.menu')}>
-                <MoreHorizontal className="size-4" />
-              </Button>
-            }
-          />
-          <DropdownMenuPortal>
-            <DropdownMenuPositioner align="end" side="bottom" sideOffset={4}>
-              <DropdownMenuPopup>
-                <DropdownMenuItem onClick={() => onTest(client)}>
-                  <Play className="size-4" />
-                  {t('settings.developer.testClient')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onRotateSecret(client)}>
-                  <KeyRound className="size-4" />
-                  {t('settings.developer.rotateSecret')}
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive focus:text-destructive hover:text-destructive"
-                  onClick={() => onDelete(client.client_id)}
-                >
-                  <Trash2 className="size-4" />
-                  {t('settings.developer.delete')}
-                </DropdownMenuItem>
-              </DropdownMenuPopup>
-            </DropdownMenuPositioner>
-          </DropdownMenuPortal>
-        </DropdownMenu>
-      </div>
-    </SettingsItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button size="icon" variant="ghost" aria-label={t('settings.developer.menu')}>
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              }
+            />
+            <DropdownMenuPortal>
+              <DropdownMenuPositioner align="end" side="bottom" sideOffset={4}>
+                <DropdownMenuPopup>
+                  <DropdownMenuItem onClick={() => onTest(client)}>
+                    <Play className="size-4" />
+                    {t('settings.developer.testClient')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onRotateSecret(client)}>
+                    <KeyRound className="size-4" />
+                    {t('settings.developer.rotateSecret')}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-destructive focus:text-destructive hover:text-destructive" onClick={() => onDelete(client.client_id)}>
+                    <Trash2 className="size-4" />
+                    {t('settings.developer.delete')}
+                  </DropdownMenuItem>
+                </DropdownMenuPopup>
+              </DropdownMenuPositioner>
+            </DropdownMenuPortal>
+          </DropdownMenu>
+        </span>
+      }
+    />
   );
 }

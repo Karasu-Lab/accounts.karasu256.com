@@ -253,7 +253,10 @@
       "description": "解除 {name} 的关联后，该应用将无法再访问您的账户。",
       "confirm": "解除关联",
       "cancel": "取消"
-    }
+    },
+    "loadError": "加载失败",
+    "retry": "重试",
+    "done": "完成"
   },
   "debug": {
     "title": "调试",

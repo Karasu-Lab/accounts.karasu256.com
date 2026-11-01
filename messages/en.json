@@ -253,7 +253,10 @@
       "description": "Disconnecting {name} will revoke its access to your account.",
       "confirm": "Disconnect",
       "cancel": "Cancel"
-    }
+    },
+    "loadError": "Failed to load",
+    "retry": "Retry",
+    "done": "Done"
   },
   "debug": {
     "title": "Debug",
