@@ -45,7 +45,7 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
   google: '#4285f4',
   github: '#24292f',
   microsoft: '#00adef',
-  minecraft: '#6a9c3f',
+  xbox: '#107c10',
 };
 
 /**
