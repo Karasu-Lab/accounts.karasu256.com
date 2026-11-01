@@ -41,8 +41,8 @@ interface SettingsSessionProviderProps {
  * the first load is covered by the server-resolved account when there
  * is one, so loading is reported only for the waits the server render
  * does not cover — the first load without a server-resolved account,
- * and any later refetch (as happens while switching accounts or
- * completing an added account).
+ * any later refetch (as happens while switching accounts or
+ * completing an added account), and the sign-out.
  *
  * When there is no server-resolved user (no valid session cookie) the
  * provider falls back to waiting for the client-side session, which
@@ -56,6 +56,8 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  useReportLoading('sign-out', signingOut);
   /** Tagged with its user so a switched-to account never inherits a stale override. */
   const [userOverrideState, setUserOverrideState] = useState<{ userId?: string; patch: Partial<SettingsUser> }>({ patch: {} });
 
@@ -116,7 +118,19 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   }
 
   async function handleSignOut() {
-    await authClient.signOut();
+    // The wait — the sign-out call, the session refetch it triggers
+    // and the redirect to sign-in that follows — is reported through
+    // the common loading interface, and the shell presents it with
+    // the sign-out container overlaid. The state is cleared only when
+    // the sign-out itself fails; on success the page navigates away
+    // with the overlay still up.
+    setSigningOut(true);
+    try {
+      await authClient.signOut();
+    } catch (err) {
+      setSigningOut(false);
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
   }
 
   /** Refreshes `accounts` against the uid the switch reports, since `session` is a stale closure here. */

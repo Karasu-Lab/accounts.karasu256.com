@@ -5,10 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Spinner } from '@karasu-lab/ui';
+import { LoadingView, Spinner } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
-import { LoadingProvider, useIsLoading } from '@/components/settings/loading-context';
+import { LoadingProvider, useIsLoading, useIsLoadingKey } from '@/components/settings/loading-context';
 import { SettingsSessionProvider } from '@/components/settings/session-provider';
 import { useSettingsMenu } from '@/components/settings/settings-menu-context';
 import { UserContext, useSettingsUser } from '@/components/settings/user-context';
@@ -59,6 +59,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
   const userContext = useSettingsUser();
   const { appUrl, accounts, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
   const isLoading = useIsLoading();
+  const signingOut = useIsLoadingKey('sign-out');
 
   const isMenuPage = pathname === '/settings';
   /** The back button replaces the drawer menu button and is shown only on subpages, where a way back to the menu is needed. */
@@ -135,7 +136,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
           </UserContext.Provider>
           {isLoading && (
             <div className="absolute inset-0 z-40 flex items-center justify-center bg-background/60">
-              <Spinner className="size-8" />
+              {signingOut ? <LoadingView message={t('settings.signingOut')} /> : <Spinner className="size-8" />}
             </div>
           )}
         </main>
