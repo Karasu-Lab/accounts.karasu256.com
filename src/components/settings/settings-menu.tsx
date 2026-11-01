@@ -53,6 +53,7 @@ export function SettingsMenu() {
             title={user.name || user.email || user.id}
             description={user.email}
             arrowIcon={Pencil}
+            autoFitText
           />
         </SettingsItemGroup>
       )}
@@ -108,7 +109,7 @@ export function SettingsMenu() {
               description={
                 account.displayName && account.email ? account.email : t('settings.accountSwitcher.switchAccount')
               }
-              onClick={() => void onSwitchAccount(account.uid)}
+              onClick={() => onSwitchAccount(account.uid)}
               trailing={
                 <button
                   type="button"
@@ -140,7 +141,7 @@ export function SettingsMenu() {
             iconBackgroundColor="#dc2626"
             title={t('settings.signOut')}
             description={t('settings.menu.descriptions.signOut')}
-            onClick={() => void onSignOut()}
+            onClick={() => onSignOut()}
           />
         </SettingsItemGroup>
       )}
