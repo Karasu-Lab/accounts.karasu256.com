@@ -98,8 +98,7 @@ vi.mock('@/components/settings/header-account-menu', () => ({
 
 vi.mock('@karasu-lab/ui', () => ({
   toast: { error: () => {}, success: () => {} },
-  ProgressBar: () => null,
-  Skeleton: () => null,
+  Spinner: () => null,
   SwitchingAccountOverlay: () => null,
 }));
 
