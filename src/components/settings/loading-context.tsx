@@ -11,8 +11,9 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
  * here under its own key with {@link useReportLoading}, instead of
  * inventing its own indicator. The shell reads the aggregate with
  * {@link useIsLoading} and presents the single shared presentation
- * for it: a spinner at the center of the screen. No screen shows a
- * skeleton or its own loading placeholder for reported loading.
+ * for it: a spinner overlaid at the center of the content area.
+ * No screen shows a skeleton or its own loading placeholder for
+ * reported loading.
  */
 const LoadingReportContext = createContext<((key: string, loading: boolean) => void) | null>(null);
 const LoadingStateContext = createContext(false);

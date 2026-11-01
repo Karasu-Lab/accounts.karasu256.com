@@ -35,9 +35,9 @@ interface SettingsShellProps {
  * serves the screens' account data and actions, and loading across
  * all of them is managed through the common loading interface
  * ({@link LoadingProvider}). While any reported loading is in
- * progress, the shell shows a spinner at the center of the screen;
- * the content itself always renders — there is no skeleton and no
- * per-screen loading placeholder in the shell.
+ * progress, the shell overlays a spinner at the center of the content
+ * area; the content itself always renders — there is no skeleton and
+ * no per-screen loading placeholder in the shell.
  *
  * The page subtree is keyed by the resolved account, so switching
  * accounts remounts the screen instead of carrying the previous
@@ -129,17 +129,17 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
             />
           </div>
         </header>
-        <main className="min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">
+        <main className="relative min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">
           <UserContext.Provider key={userContext.ready ? userContext.user.id : 'pending'} value={userContext}>
             {children}
           </UserContext.Provider>
+          {isLoading && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center bg-background/60">
+              <Spinner className="size-8" />
+            </div>
+          )}
         </main>
       </div>
-      {isLoading && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-background/60">
-          <Spinner className="size-8" />
-        </div>
-      )}
     </>
   );
 }
