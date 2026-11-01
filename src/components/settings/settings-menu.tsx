@@ -11,7 +11,7 @@ import { useSettingsUser } from './user-context';
  * The settings menu shown at `/settings`, built entirely from
  * {@link SettingsItemContainer}s. It carries everything the abolished
  * sidebar (drawer) used to host: the section navigation (now grouped by
- * category, with a description and an icon per item), the other accounts
+ * category, with an icon per item), the other accounts
  * on this device with switching and removal, adding an account, going
  * back to the root app, and signing out.
  *
@@ -64,21 +64,18 @@ export function SettingsMenu() {
           icon={Shield}
           iconBackgroundColor="#16a34a"
           title={t('settings.sections.security')}
-          description={t('settings.menu.descriptions.security')}
         />
         <SettingsItemContainer
           href="/settings/linking"
           icon={LinkIcon}
           iconBackgroundColor="#9333ea"
           title={t('settings.sections.connections')}
-          description={t('settings.menu.descriptions.connections')}
         />
         <SettingsItemContainer
           href="/settings/authorized-apps"
           icon={AppWindow}
           iconBackgroundColor="#ea580c"
           title={t('settings.sections.authorizedApps')}
-          description={t('settings.menu.descriptions.authorizedApps')}
         />
       </SettingsItemGroup>
 
@@ -88,7 +85,6 @@ export function SettingsMenu() {
           icon={Code2}
           iconBackgroundColor="#475569"
           title={t('settings.sections.developer')}
-          description={t('settings.menu.descriptions.developer')}
         />
         <SettingsItemContainer
           href="/settings/debug"
@@ -106,9 +102,7 @@ export function SettingsMenu() {
               key={account.uid}
               icon={User}
               title={account.displayName ?? account.email ?? account.uid}
-              description={
-                account.displayName && account.email ? account.email : t('settings.accountSwitcher.switchAccount')
-              }
+              description={account.displayName && account.email ? account.email : undefined}
               onClick={() => onSwitchAccount(account.uid)}
               trailing={
                 <button
@@ -127,21 +121,18 @@ export function SettingsMenu() {
             icon={UserPlus}
             iconBackgroundColor="#2563eb"
             title={t('settings.accountSwitcher.addAccount')}
-            description={t('settings.menu.descriptions.addAccount')}
-            onClick={onAddAccount}
+              onClick={onAddAccount}
           />
           <SettingsItemContainer
             icon={ExternalLink}
             title={t('settings.backToApp')}
-            description={t('settings.menu.descriptions.backToApp')}
-            href={appUrl}
+              href={appUrl}
           />
           <SettingsItemContainer
             icon={LogOut}
             iconBackgroundColor="#dc2626"
             title={t('settings.signOut')}
-            description={t('settings.menu.descriptions.signOut')}
-            onClick={() => onSignOut()}
+              onClick={() => onSignOut()}
           />
         </SettingsItemGroup>
       )}

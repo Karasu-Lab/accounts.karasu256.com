@@ -74,14 +74,7 @@
     },
     "menu": {
       "descriptions": {
-        "security": "保护您的账户",
-        "connections": "关联外部账户",
-        "authorizedApps": "管理已授权的应用",
-        "developer": "管理开发者工具",
-        "debug": "显示诊断信息",
-        "addAccount": "添加其他账户",
-        "backToApp": "前往 karasu256.com",
-        "signOut": "退出登录"
+        "debug": "显示诊断信息"
       }
     },
     "accountMenu": "账户菜单",
@@ -91,7 +84,6 @@
     "signingOut": "退出登录中",
     "accountSwitcher": {
       "addAccount": "添加其他账户",
-      "switchAccount": "切换到此账户",
       "removeAccount": "从此设备移除此账户",
       "switchingAccount": "正在切换账户。",
       "switchAfterAdd": "添加后切换到此账户",

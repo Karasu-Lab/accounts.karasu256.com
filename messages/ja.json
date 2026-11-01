@@ -74,14 +74,7 @@
     },
     "menu": {
       "descriptions": {
-        "security": "アカウントを保護します",
-        "connections": "外部アカウントを連携します",
-        "authorizedApps": "認可したアプリを管理します",
-        "developer": "開発者向けツールを管理します",
-        "debug": "診断情報を表示します",
-        "addAccount": "別のアカウントを追加します",
-        "backToApp": "karasu256.com へ移動します",
-        "signOut": "サインアウトします"
+        "debug": "診断情報を表示します"
       }
     },
     "accountMenu": "アカウントメニュー",
@@ -91,7 +84,6 @@
     "signingOut": "サインアウト中",
     "accountSwitcher": {
       "addAccount": "別のアカウントを追加",
-      "switchAccount": "このアカウントに切り替える",
       "removeAccount": "このデバイスからこのアカウントを削除",
       "switchingAccount": "アカウントを切り替えています。",
       "switchAfterAdd": "追加後にアカウントを切り替える",

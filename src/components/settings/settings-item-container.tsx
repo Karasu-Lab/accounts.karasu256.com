@@ -12,8 +12,15 @@ const DEFAULT_ICON_BACKGROUND_COLOR = '#8e8e93';
 export interface SettingsItemContainerProps {
   /** Item heading. Always shown in full: by default it wraps onto multiple lines instead of being truncated with an ellipsis. */
   title: string;
-  /** Supporting text shown under {@link title}. Always shown in full: it wraps onto multiple lines instead of being truncated with an ellipsis. */
-  description: string;
+  /**
+   * Supporting text shown under {@link title}. Always shown in full: it
+   * wraps onto multiple lines instead of being truncated with an
+   * ellipsis. Optional — most items carry none: a description is only
+   * for information the title does not already convey (a value, a
+   * state, or what an unclearly named item holds), never a restatement
+   * of the item's own name or action.
+   */
+  description?: string;
   /**
    * Whether the title and description shrink their font size to fit on
    * one line instead of wrapping. Off by default: the texts wrap (long
@@ -218,7 +225,9 @@ export function SettingsItemContainer({
       </span>
       <span className="pointer-events-none min-w-0 flex-1">
         <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
-        <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
+        {description !== undefined && (
+          <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
+        )}
       </span>
 
       {trailing !== undefined ? (
