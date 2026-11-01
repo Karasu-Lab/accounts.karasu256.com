@@ -54,8 +54,10 @@ interface SettingsShellProps {
  * back to its original position when the button is gone. At the header's
  * right end sits the account icon, which opens the account menu the
  * drawer used to host. Attached to the header's bottom edge is a
- * progress bar that is shown while the session is loading and hidden
- * once it has loaded. The shell also provides the
+ * progress bar for client-side loading: the first load is covered by
+ * the server-resolved account, so the bar appears for later loading
+ * (transitions such as account switching refetches), and for the first
+ * load only when there is no server-resolved account. The shell also provides the
  * menu page with the account actions the drawer used to host (switching
  * and removing accounts, adding an account, signing out) through
  * {@link SettingsMenuContext}.
@@ -79,6 +81,20 @@ export function SettingsShell({ children, appUrl, initialUser }: SettingsShellPr
   const isSecurityPage = pathname === '/settings/security';
   /** With a server-resolved initial user there is nothing to wait for: the account is already loaded. */
   const loading = isPending && !initialUser;
+  /**
+   * Whether the client session has finished loading at least once.
+   * The header progress bar is the indicator for client-side loading
+   * after that point (a refetch while switching accounts or completing
+   * an added account): the first load is already covered by the
+   * server-resolved user, so the bar stays hidden for it and appears
+   * only for later transitions. Without a server-resolved user the
+   * first load is not covered, and the bar shows for it as well.
+   */
+  const [sessionLoadedOnce, setSessionLoadedOnce] = useState(false);
+  useEffect(() => {
+    if (!isPending) setSessionLoadedOnce(true);
+  }, [isPending]);
+  const showProgressBar = isPending && (sessionLoadedOnce || !initialUser);
 
   /** Header title for the current settings page, keyed by its route. */
   const pageTitle = useMemo(() => {
@@ -304,19 +320,21 @@ export function SettingsShell({ children, appUrl, initialUser }: SettingsShellPr
           </div>
           {/*
            * Loading progress bar, attached to the bottom edge of the
-           * header: it is shown while the session is loading and hidden
-           * once loading finishes, fading between the two states. The
-           * bar itself is the shadcn ProgressBar, swept across its track
-           * as an indeterminate indicator.
+           * header: it is shown while the client session is loading
+           * past the first, server-covered load (transitions such as
+           * account switching refetches) and hidden once loading
+           * finishes, fading between the two states. The bar itself is
+           * the shadcn ProgressBar, swept across its track as an
+           * indeterminate indicator.
            */}
           <div
-            aria-hidden={!loading}
-            className={cn('absolute inset-x-0 top-full transition-opacity duration-300', loading ? 'opacity-100' : 'pointer-events-none opacity-0')}
+            aria-hidden={!showProgressBar}
+            className={cn('absolute inset-x-0 top-full transition-opacity duration-300', showProgressBar ? 'opacity-100' : 'pointer-events-none opacity-0')}
           >
             <div className="h-0.5 overflow-hidden">
               <ProgressBar
                 value={1}
-                className={cn('h-full w-1/3 rounded-none bg-transparent', loading && 'animate-[progress-indeterminate_1.2s_ease-in-out_infinite]')}
+                className={cn('h-full w-1/3 rounded-none bg-transparent', showProgressBar && 'animate-[progress-indeterminate_1.2s_ease-in-out_infinite]')}
               />
             </div>
           </div>
