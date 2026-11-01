@@ -34,6 +34,20 @@ interface ProviderSectionProps {
 const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
   google: '#4285f4',
   github: '#24292f',
+  microsoft: '#00adef',
+  minecraft: '#6a9c3f',
+};
+
+/**
+ * Providers derived from another provider's link, keyed by the
+ * provider shown in the row: Minecraft has no OAuth flow of its own —
+ * it is derived from the linked Microsoft account through the Xbox
+ * Live chain — so its link and unlink actions act on the Microsoft
+ * link, and it never counts as an independent sign-in method when the
+ * last-provider unlink guard is judged.
+ */
+const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
+  minecraft: 'microsoft',
 };
 
 /**
@@ -109,7 +123,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     };
   }, []);
 
-  const linkedProviders = providers.filter((provider) => profiles[provider.id]);
+  const linkedProviders = providers.filter((provider) => profiles[provider.id] && !DERIVED_PROVIDER_SOURCES[provider.id]);
   const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
 
   async function handleLink(providerId: string) {
@@ -117,7 +131,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     try {
       const linkingUrl = `${window.location.origin}/settings/linking`;
       const { error } = await authClient.linkSocial({
-        provider: providerId,
+        provider: DERIVED_PROVIDER_SOURCES[providerId] ?? providerId,
         callbackURL: linkingUrl,
         errorCallbackURL: linkingUrl,
       });
@@ -135,8 +149,21 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
   async function handleUnlink(providerId: string) {
     setLoading(providerId);
     try {
-      await unlinkProvider(providerId);
-      setProfiles((prev) => ({ ...prev, [providerId]: null }));
+      const sourceProviderId = DERIVED_PROVIDER_SOURCES[providerId];
+      await unlinkProvider(sourceProviderId ?? providerId);
+      setProfiles((prev) => {
+        const next = { ...prev, [providerId]: null };
+        // Unlinking a derived provider removes the link it derives
+        // from, so the source provider and every provider derived
+        // from it lose their profiles at the same time.
+        if (sourceProviderId) {
+          next[sourceProviderId] = null;
+          for (const [derivedId, source] of Object.entries(DERIVED_PROVIDER_SOURCES)) {
+            if (source === sourceProviderId) next[derivedId] = null;
+          }
+        }
+        return next;
+      });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     } finally {
@@ -156,6 +183,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
           return (
             <LinkedSettingsItem
               key={provider.id}
+              providerId={provider.id}
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
