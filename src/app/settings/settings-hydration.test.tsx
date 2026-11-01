@@ -109,7 +109,7 @@ describe('settings initial page profile item across hydration', () => {
 
     /* Hydration, while the client session is still pending. */
     await act(async () => {
-      root = hydrateRoot(container, element);
+      root = hydrateRoot(container!, element);
     });
     expect(container.innerHTML).toContain('test@example.com');
 
