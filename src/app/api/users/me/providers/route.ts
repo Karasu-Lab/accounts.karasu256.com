@@ -4,6 +4,16 @@ import { getProviderProfile, type ProviderProfile } from '@/lib/auth/provider-pr
 import { requireSession } from '@/lib/api/require-session';
 
 /**
+ * Providers derived from a linked Microsoft account, registered on
+ * this endpoint next to the providers that hold an account row of
+ * their own: `xbox` (the Xbox Live profile) and `minecraft` (the
+ * Minecraft profile, present only when the account owns the game).
+ * Neither has a row in the linked-provider list; each is included
+ * exactly when the auth API resolves a profile for it.
+ */
+const MICROSOFT_DERIVED_PROVIDER_IDS = ['xbox', 'minecraft'];
+
+/**
  * Returns the third-party providers linked to the authenticated user, keyed
  * by provider ID and including each provider's current profile.
  *
@@ -20,6 +30,14 @@ export async function GET() {
   providerIds.forEach((providerId, i) => {
     result[providerId] = profiles[i] ?? { name: null, email: null, avatarUrl: null };
   });
+
+  if (providerIds.includes('microsoft')) {
+    const derivedProfiles = await Promise.all(MICROSOFT_DERIVED_PROVIDER_IDS.map((providerId) => getProviderProfile(providerId)));
+    MICROSOFT_DERIVED_PROVIDER_IDS.forEach((providerId, i) => {
+      const profile = derivedProfiles[i];
+      if (profile) result[providerId] = profile;
+    });
+  }
 
   return NextResponse.json(result);
 }

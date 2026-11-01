@@ -91,6 +91,8 @@ describe('linking page linked-state judgment', () => {
     expect((element.props as { initialProfiles: unknown }).initialProfiles).toEqual({
       google: null,
       github: githubProfile,
+      microsoft: null,
+      minecraft: null,
     });
   });
 

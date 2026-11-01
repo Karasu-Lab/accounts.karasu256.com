@@ -4,8 +4,14 @@ import { getLinkedProviderProfile, type ProviderProfile } from '@/lib/auth/linke
 import { getSessionUser } from '@/lib/session-user';
 import { ProviderSectionClient } from './provider-section-client';
 
-/** The social providers shown on the linking page (kept in step with the definitions in `provider-section-client`). */
-const SOCIAL_PROVIDER_IDS = ['google', 'github'];
+/**
+ * The providers shown on the linking page (kept in step with the
+ * definitions in `provider-section-client`). `minecraft` is derived
+ * from the Microsoft link rather than linked on its own: its profile
+ * resolves exactly when the Microsoft account behind it owns
+ * Minecraft.
+ */
+const PROVIDER_IDS = ['google', 'github', 'microsoft', 'minecraft'];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -21,8 +27,8 @@ export default async function LinkingPage() {
   const sessionUser = await getSessionUser();
   const initialProfiles: Record<string, ProviderProfile | null> = {};
   if (sessionUser) {
-    const profiles = await Promise.all(SOCIAL_PROVIDER_IDS.map((providerId) => getLinkedProviderProfile(providerId)));
-    SOCIAL_PROVIDER_IDS.forEach((providerId, i) => {
+    const profiles = await Promise.all(PROVIDER_IDS.map((providerId) => getLinkedProviderProfile(providerId)));
+    PROVIDER_IDS.forEach((providerId, i) => {
       initialProfiles[providerId] = profiles[i];
     });
   }

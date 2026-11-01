@@ -2,7 +2,8 @@
 
 import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
-import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faGoogle, faGithub, faMicrosoft } from '@fortawesome/free-brands-svg-icons';
+import { faCube } from '@fortawesome/free-solid-svg-icons';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { useReportLoading } from '@/components/settings/loading-context';
@@ -46,6 +47,8 @@ export function ProviderSectionClient({ initialProfiles }: ProviderSectionClient
     () => [
       { id: 'google', label: 'Google', icon: faGoogle },
       { id: 'github', label: 'GitHub', icon: faGithub },
+      { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft },
+      { id: 'minecraft', label: 'Minecraft', icon: faCube },
     ],
     []
   );
