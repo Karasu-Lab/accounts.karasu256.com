@@ -87,7 +87,12 @@
       "removeAccount": "このデバイスからこのアカウントを削除",
       "switchingAccount": "アカウントを切り替えています。",
       "switchAfterAdd": "追加後にアカウントを切り替える",
-      "continueToSignIn": "サインインへ進む"
+      "continueToSignIn": "サインインへ進む",
+      "sameAccount": {
+        "title": "同じアカウントは追加できません",
+        "description": "既にアクティブなアカウントと同じアカウントでサインインしたため、アカウントは追加されませんでした。アクティブなアカウントはそのままです。",
+        "close": "閉じる"
+      }
     },
     "developer": {
       "title": "デベロッパー設定",

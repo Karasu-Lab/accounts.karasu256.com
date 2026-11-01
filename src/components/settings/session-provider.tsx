@@ -10,6 +10,7 @@ import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
 import { SwitchingAccountOverlay } from '@karasu-lab/ui';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
+import { SameAccountDialog } from '@/components/settings/same-account-dialog';
 import { SettingsMenuContext } from '@/components/settings/settings-menu-context';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';
 import { useReportLoading } from '@/components/settings/loading-context';
@@ -57,6 +58,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   const { data: session, isPending, refetch } = authClient.useSession();
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [sameAccountDialogOpen, setSameAccountDialogOpen] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   useReportLoading('sign-out', signingOut);
@@ -136,6 +138,19 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   async function completeAddAccount() {
     const pending = takePendingAddAccount();
     const { data: newSession } = await authClient.getSession();
+    if (pending?.previousUserId && newSession && newSession.user.id === pending.previousUserId) {
+      /* The account signed in with is the one that was already active.
+         `multiSession` replaced that account's previous session when it
+         signed in again, so the remembered session token no longer names
+         a device session and switching back to it would fail. The same
+         account cannot be added: resolve the active account as it now
+         stands and leave it active, refresh the account list against it
+         (so no duplicate entry appears), and tell the user what happened. */
+      await refetch();
+      await refreshAccounts(newSession.user.id);
+      setSameAccountDialogOpen(true);
+      return;
+    }
     if (!pending?.previousSessionToken || !newSession || pending.switchToNewAccount) {
       await refetch();
       await refreshAccounts(newSession?.user.id);
@@ -252,6 +267,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
         <SettingsMenuContext.Provider value={menuContextValue}>{children}</SettingsMenuContext.Provider>
       </UserContext.Provider>
       <AddAccountDialog open={addDialogOpen} onOpenChange={setAddDialogOpen} showSwitchAccountCheckBox />
+      {sameAccountDialogOpen && <SameAccountDialog open={sameAccountDialogOpen} onOpenChange={setSameAccountDialogOpen} />}
       <SwitchingAccountOverlay open={switchingAccount} message={t('settings.accountSwitcher.switchingAccount')} />
     </>
   );

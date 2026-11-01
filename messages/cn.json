@@ -87,7 +87,12 @@
       "removeAccount": "从此设备移除此账户",
       "switchingAccount": "正在切换账户。",
       "switchAfterAdd": "添加后切换到此账户",
-      "continueToSignIn": "继续登录"
+      "continueToSignIn": "继续登录",
+      "sameAccount": {
+        "title": "无法添加相同的账户",
+        "description": "您登录的账户与已激活的账户相同，因此未添加账户，已激活的账户保持不变。",
+        "close": "关闭"
+      }
     },
     "developer": {
       "title": "开发者设置",
