@@ -13,10 +13,14 @@ interface LoadingButtonProps extends ComponentProps<typeof Button> {
 /**
  * {@link Button} that swaps its leading icon for a {@link Spinner} while
  * `loading` is true, so callers don't have to inline that ternary themselves.
+ *
+ * While `loading` is true the button is always disabled, so an action
+ * that is already in flight can never be triggered twice by repeated
+ * clicks, even if the caller forgot to pass `disabled`.
  */
-export function LoadingButton({ loading, icon, children, ...props }: LoadingButtonProps) {
+export function LoadingButton({ loading, icon, children, disabled, ...props }: LoadingButtonProps) {
   return (
-    <Button {...props}>
+    <Button {...props} disabled={loading || disabled}>
       {loading ? <Spinner /> : icon}
       {children}
     </Button>
