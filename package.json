@@ -9,11 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:e2e": "playwright test",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate:dev": "dotenv -e .env.development.local -- drizzle-kit migrate",
-    "db:migrate:prod": "dotenv -e .env.production -- drizzle-kit migrate",
-    "db:migrate:deploy": "drizzle-kit migrate"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@karasu-lab/api-permissions": "0.1.0-4efb331",
@@ -60,8 +56,6 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "dotenv-cli": "^11.0.0",
-    "drizzle-kit": "^0.30.6",
     "jsdom": "^26.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
