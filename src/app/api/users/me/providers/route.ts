@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getLinkedProviderIds } from '@karasu-lab/db';
+import { fetchLinkedProviderIds } from '@/lib/api/internal';
 import { getProviderProfile, type ProviderProfile } from '@/lib/auth/provider-profile';
 import { requireSession } from '@/lib/api/require-session';
 
@@ -13,7 +13,7 @@ export async function GET() {
   const { user, error } = await requireSession();
   if (error) return error;
 
-  const providerIds = await getLinkedProviderIds(user.id);
+  const providerIds = await fetchLinkedProviderIds(user.id);
   const profiles = await Promise.all(providerIds.map((providerId) => getProviderProfile(providerId)));
 
   const result: Record<string, ProviderProfile> = {};

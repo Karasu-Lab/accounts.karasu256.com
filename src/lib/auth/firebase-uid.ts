@@ -1,18 +1,13 @@
-import { eq } from 'drizzle-orm';
-import { getDb } from '@karasu-lab/db';
-import { firebaseUsers } from '@karasu-lab/db/schema';
+import { fetchLinkedFirebaseUid } from '@/lib/api/internal';
 
 /**
- * Returns the Firebase UID linked to a better-auth user via the
- * `firebase_user` table, or null when the user is not linked yet. Sign-in
- * does not depend on this link; callers must treat null as "no Firebase
- * user to talk to" and skip Firebase-side work.
+ * Returns the Firebase UID linked to a better-auth user, or null when
+ * the user is not linked yet. The link lives in the database, whose
+ * access is owned by api.karasu256.com, so the value comes from the
+ * API rather than a direct read. Sign-in does not depend on this link;
+ * callers must treat null as "no Firebase user to talk to" and skip
+ * Firebase-side work.
  */
 export async function getLinkedFirebaseUid(userId: string): Promise<string | null> {
-  const [link] = await getDb()
-    .select({ firebaseUid: firebaseUsers.firebaseUid })
-    .from(firebaseUsers)
-    .where(eq(firebaseUsers.userId, userId))
-    .limit(1);
-  return link?.firebaseUid ?? null;
+  return fetchLinkedFirebaseUid(userId);
 }

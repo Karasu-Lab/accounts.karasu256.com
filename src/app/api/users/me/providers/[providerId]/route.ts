@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, eq } from 'drizzle-orm';
-import { getDb } from '@karasu-lab/db';
-import { accounts } from '@karasu-lab/db/schema';
+import { fetchUnlinkProvider } from '@/lib/api/internal';
 import { requireSession } from '@/lib/api/require-session';
 
 /**
  * Unlinks a third-party provider from the authenticated user's account.
+ * The deletion itself is performed by api.karasu256.com, which owns the
+ * database access; this route only forwards the session's user.
+ *
  * DELETE /api/users/me/providers/[providerId]
  */
 export async function DELETE(_request: NextRequest, { params }: { params: Promise<{ providerId: string }> }) {
@@ -13,13 +14,9 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   if (error) return error;
 
   const { providerId } = await params;
-  const db = getDb();
-  const result = await db
-    .delete(accounts)
-    .where(and(eq(accounts.userId, user.id), eq(accounts.providerId, providerId)))
-    .returning({ id: accounts.id });
+  const removed = await fetchUnlinkProvider(user.id, providerId);
 
-  if (result.length === 0) {
+  if (!removed) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
   return new NextResponse(null, { status: 204 });
