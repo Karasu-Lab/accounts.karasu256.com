@@ -7,7 +7,9 @@ export const firebaseConfigSchema = z.object({
      through better-auth and the Firebase link state is managed with
      the Admin SDK, so no auth domain is configured. */
   authDomain: z.string().min(1).optional(),
-  databaseURL: z.string().url(),
+  /* Neither the Realtime Database nor Firestore is referenced,
+     so no database URL is configured. */
+  databaseURL: z.string().url().optional(),
   projectId: z.string().min(1),
   /* Firebase Storage and Cloud Messaging are not used (files live in
      Cloudflare R2 and nothing sends messages), so neither is

@@ -19,7 +19,6 @@ const envSchema = z.object({
     projectId: z.string().min(1),
     clientEmail: z.string().email(),
     privateKey: z.string().min(1),
-    databaseURL: z.string().url(),
   }),
 });
 
@@ -75,7 +74,6 @@ export function getServerConfig(): ServerConfig {
       projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
       clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
       privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      databaseURL: process.env.FIREBASE_DATABASE_URL,
     },
   });
 

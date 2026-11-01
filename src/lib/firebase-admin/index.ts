@@ -10,7 +10,7 @@ function getAdminApp(): App {
   if (existing) return existing;
   const { firebaseAdmin } = getServerConfig();
   if (process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-    return initializeApp({ projectId: firebaseAdmin.projectId, databaseURL: firebaseAdmin.databaseURL }, ADMIN_APP_NAME);
+    return initializeApp({ projectId: firebaseAdmin.projectId }, ADMIN_APP_NAME);
   }
   return initializeApp(
     {
@@ -19,7 +19,6 @@ function getAdminApp(): App {
         clientEmail: firebaseAdmin.clientEmail,
         privateKey: firebaseAdmin.privateKey,
       }),
-      databaseURL: firebaseAdmin.databaseURL,
     },
     ADMIN_APP_NAME
   );
