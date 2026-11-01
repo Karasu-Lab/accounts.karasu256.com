@@ -10,13 +10,15 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
  * session, a screen fetching its list — reports its loading state
  * here under its own key with {@link useReportLoading}, instead of
  * inventing its own indicator. The shell reads the aggregate with
- * {@link useIsLoading} and presents the single shared presentation
- * for it: a spinner overlaid at the center of the content area.
+ * {@link useIsLoading} and presents it with a spinner overlaid at
+ * the center of the content area; a key whose wait carries its own
+ * meaning (the sign-out) is read back with {@link useIsLoadingKey}
+ * and presented with that wait's own container instead.
  * No screen shows a skeleton or its own loading placeholder for
  * reported loading.
  */
 const LoadingReportContext = createContext<((key: string, loading: boolean) => void) | null>(null);
-const LoadingStateContext = createContext(false);
+const LoadingStateContext = createContext<ReadonlySet<string>>(new Set());
 
 /**
  * Holds the set of loading keys currently in flight. Reporting is
@@ -41,7 +43,7 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
 
   return (
     <LoadingReportContext.Provider value={report}>
-      <LoadingStateContext.Provider value={pendingKeys.size > 0}>{children}</LoadingStateContext.Provider>
+      <LoadingStateContext.Provider value={pendingKeys}>{children}</LoadingStateContext.Provider>
     </LoadingReportContext.Provider>
   );
 }
@@ -64,5 +66,15 @@ export function useReportLoading(key: string, loading: boolean) {
 
 /** Whether any client-side loading reported through this interface is in progress. */
 export function useIsLoading(): boolean {
-  return useContext(LoadingStateContext);
+  return useContext(LoadingStateContext).size > 0;
+}
+
+/**
+ * Whether one named unit of loading is in progress. Most loading
+ * shares the shell's spinner presentation; a unit whose wait has a
+ * presentation of its own — the sign-out, whose container the shell
+ * overlays instead — reads its key here.
+ */
+export function useIsLoadingKey(key: string): boolean {
+  return useContext(LoadingStateContext).has(key);
 }
