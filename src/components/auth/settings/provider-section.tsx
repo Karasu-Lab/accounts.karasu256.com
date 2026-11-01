@@ -89,8 +89,9 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     const linkedProvider = searchParams.get('linked');
 
     if (error) {
+      const errorDescription = searchParams.get('error_description');
       const key = `connections.error.${error}`;
-      toast.error(t.has(key) ? t(key) : t('connections.error.unknown'));
+      toast.error(errorDescription ?? (t.has(key) ? t(key) : t('connections.error.unknown')));
     } else if (linkedProvider) {
       toast.success(t('connections.linked', { provider: linkedProvider }), { autoClose: true });
     }
@@ -139,7 +140,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
       });
       if (error) {
         const key = `connections.error.${error.code?.toLowerCase()}`;
-        toast.error(t.has(key) ? t(key) : t('connections.error.unknown'));
+        toast.error(t.has(key) ? t(key) : (error.message ?? t('connections.error.unknown')));
         setLoading(null);
       }
     } catch (err) {
