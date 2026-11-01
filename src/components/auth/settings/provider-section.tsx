@@ -17,6 +17,16 @@ export interface Provider {
   id: string;
   label: string;
   icon: IconDefinition;
+  // The provider's avatar URL is a raw skin texture that the client
+  // converts into an avatar (Minecraft), not a finished image.
+  textureAvatar?: boolean;
+  // The account-row provider this row's link state belongs to, when
+  // it differs from the row's own ID. Linking navigates to that
+  // provider's dedicated link flow instead of a social link, and
+  // unlinking deletes that account.
+  accountProviderId?: string;
+  // Account-row providers deleted together with this one on unlink.
+  linkedAccountProviderIds?: string[];
 }
 
 interface ProviderSectionProps {
@@ -36,12 +46,6 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
   github: '#24292f',
   microsoft: '#00adef',
   minecraft: '#6a9c3f',
-};
-
-// Minecraft's link state is the `xbox` account stored by the Xbox
-// link flow; the row never counts as an independent sign-in method.
-const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
-  minecraft: 'xbox',
 };
 
 /**
@@ -117,19 +121,19 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     };
   }, []);
 
-  const linkedProviders = providers.filter((provider) => profiles[provider.id] && !DERIVED_PROVIDER_SOURCES[provider.id]);
+  const linkedProviders = providers.filter((provider) => profiles[provider.id] && !provider.accountProviderId);
   const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
 
-  async function handleLink(providerId: string) {
-    setLoading(providerId);
-    if (DERIVED_PROVIDER_SOURCES[providerId]) {
-      window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/xbox/link`);
+  async function handleLink(provider: Provider) {
+    setLoading(provider.id);
+    if (provider.accountProviderId) {
+      window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/${provider.accountProviderId}/link`);
       return;
     }
     try {
       const linkingUrl = `${window.location.origin}/settings/linking`;
       const { error } = await authClient.linkSocial({
-        provider: providerId,
+        provider: provider.id,
         callbackURL: linkingUrl,
         errorCallbackURL: linkingUrl,
       });
@@ -144,17 +148,20 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     }
   }
 
-  async function handleUnlink(providerId: string) {
-    setLoading(providerId);
+  async function handleUnlink(provider: Provider) {
+    setLoading(provider.id);
     try {
-      await unlinkProvider(DERIVED_PROVIDER_SOURCES[providerId] ?? providerId);
-      if (providerId === 'microsoft') {
-        // The Xbox link belongs to the Microsoft account; drop it too.
-        await unlinkProvider('xbox').catch(() => {});
+      const accountProviderId = provider.accountProviderId ?? provider.id;
+      await unlinkProvider(accountProviderId);
+      for (const extra of provider.linkedAccountProviderIds ?? []) {
+        await unlinkProvider(extra).catch(() => {});
       }
+      const removed = new Set([accountProviderId, ...(provider.linkedAccountProviderIds ?? [])]);
       setProfiles((prev) => {
-        const next = { ...prev, [providerId]: null };
-        if (providerId === 'microsoft') next.minecraft = null;
+        const next = { ...prev };
+        for (const row of providers) {
+          if (removed.has(row.accountProviderId ?? row.id)) next[row.id] = null;
+        }
         return next;
       });
     } catch (err) {
@@ -176,7 +183,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
           return (
             <LinkedSettingsItem
               key={provider.id}
-              providerId={provider.id}
+              textureAvatar={provider.textureAvatar}
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
@@ -198,7 +205,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                     type="button"
                     aria-label={t('connections.link')}
                     disabled={isLoading || !guardsLoaded}
-                    onClick={() => void handleLink(provider.id)}
+                    onClick={() => void handleLink(provider)}
                     className={iconButtonClassName}
                   >
                     {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <Link2 className="size-4" />}
@@ -221,7 +228,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
         confirmLabel={t('connections.unlink')}
         cancelLabel={t('connections.unlinkConfirm.cancel')}
         onConfirm={() => {
-          if (unlinkTarget) void handleUnlink(unlinkTarget.id);
+          if (unlinkTarget) void handleUnlink(unlinkTarget);
         }}
       />
     </div>

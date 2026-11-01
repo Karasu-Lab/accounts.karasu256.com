@@ -47,8 +47,8 @@ export function ProviderSectionClient({ initialProfiles }: ProviderSectionClient
     () => [
       { id: 'google', label: 'Google', icon: faGoogle },
       { id: 'github', label: 'GitHub', icon: faGithub },
-      { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft },
-      { id: 'minecraft', label: 'Minecraft', icon: faCube },
+      { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft, linkedAccountProviderIds: ['xbox'] },
+      { id: 'minecraft', label: 'Minecraft', icon: faCube, textureAvatar: true, accountProviderId: 'xbox' },
     ],
     []
   );
