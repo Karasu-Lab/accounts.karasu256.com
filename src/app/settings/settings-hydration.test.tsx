@@ -43,12 +43,16 @@ vi.mock('next/navigation', () => ({
 }));
 
 vi.mock('@/lib/auth/client', () => ({
-  authClient: {
-    useSession: () => ({ ...session.state, refetch: async () => {} }),
-    getSession: async () => ({ data: null }),
-    signOut: async () => {},
-  },
-  getSignInUrl: (url: string) => url,
+  AuthClientProvider: ({ children }: { children: unknown }) => children,
+  useAuthClient: () => ({
+    authClient: {
+      useSession: () => ({ ...session.state, refetch: async () => {} }),
+      getSession: async () => ({ data: null }),
+      signOut: async () => {},
+    },
+    bridgeFirebaseSession: async () => {},
+    config: { authApiUrl: 'https://api-auth.karasu256.com', authUrl: 'https://auth.karasu256.com' },
+  }),
 }));
 
 vi.mock('@/lib/api/accounts', () => ({

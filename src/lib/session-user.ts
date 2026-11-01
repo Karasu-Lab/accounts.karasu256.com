@@ -27,7 +27,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   const requestHeaders = await headers();
   if (!getSessionCookie(requestHeaders)) return null;
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_AUTH_API_URL ?? ''}/api/auth/get-session`, {
+  const res = await fetch(`${process.env.AUTH_API_URL ?? ''}/api/auth/get-session`, {
     headers: {
       cookie: requestHeaders.get('cookie') ?? '',
       ...vercelProtectionBypassHeaders(process.env.VERCEL_PROTECTION_BYPASS_SECRET),

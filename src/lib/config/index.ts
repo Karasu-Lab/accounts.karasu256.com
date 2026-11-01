@@ -14,18 +14,8 @@ const configFileSchema = z.object({
   trustedOrigins: z.array(z.string().url()).optional(),
 });
 
-const envSchema = z.object({
-  firebaseAdmin: z.object({
-    projectId: z.string().min(1),
-    clientEmail: z.string().email(),
-    privateKey: z.string().min(1),
-    databaseURL: z.string().url(),
-  }),
-});
-
 export type ServerConfig = {
   webauthn: z.infer<typeof webauthnSchema>;
-  firebaseAdmin: z.infer<typeof envSchema>['firebaseAdmin'];
   trustedOrigins: string[];
 };
 
@@ -40,31 +30,14 @@ function readConfigFile(fileName: string) {
 
 /**
  * Selects the environment-specific config file name: `config.preview.yml` on
- * Vercel Preview deployments (`VERCEL_ENV=preview`, e.g. dev.accounts.karasu256.com,
- * which serves a real host distinct from both localhost and production),
- * otherwise `config.production.yml` or `config.development.yml` by `NODE_ENV`.
+ * preview deployments (`APP_ENV=preview`, set by the worker's vars for the
+ * preview environment, e.g. dev.accounts.karasu256.com, which serves a real
+ * host distinct from both localhost and production), otherwise
+ * `config.production.yml` or `config.development.yml` by `NODE_ENV`.
  */
 function getEnvConfigFileName(): string {
-  if (process.env.VERCEL_ENV === 'preview') return 'config.preview.yml';
+  if (process.env.APP_ENV === 'preview') return 'config.preview.yml';
   return process.env.NODE_ENV === 'production' ? 'config.production.yml' : 'config.development.yml';
-}
-
-/**
- * Returns the `*.vercel.app` origins of a preview deployment built from a branch
- * other than `dev`, or `undefined` elsewhere. Such deployments have no custom
- * domain, so `config.preview.yml` (written for dev.accounts.karasu256.com) does
- * not match the host they are served from. The branch URL is stable across
- * pushes, so it doubles as the WebAuthn RP ID.
- */
-function getBranchPreviewOrigins(): { branchOrigin: string; deploymentOrigin?: string } | undefined {
-  if (process.env.VERCEL_ENV !== 'preview' || process.env.VERCEL_GIT_COMMIT_REF === 'dev') return undefined;
-  const branchHost = process.env.VERCEL_BRANCH_URL;
-  if (!branchHost) return undefined;
-  const deploymentHost = process.env.VERCEL_URL;
-  return {
-    branchOrigin: `https://${branchHost}`,
-    deploymentOrigin: deploymentHost ? `https://${deploymentHost}` : undefined,
-  };
 }
 
 /**
@@ -80,25 +53,13 @@ export function getServerConfig(): ServerConfig {
 
   const defaults = readConfigFile('config.default.yml');
   const overrides = readConfigFile(getEnvConfigFileName());
-  const preview = getBranchPreviewOrigins();
-  const previewOrigins = preview ? [preview.branchOrigin, ...(preview.deploymentOrigin ? [preview.deploymentOrigin] : [])] : [];
 
   const webauthn = webauthnSchema.parse({
     ...defaults.webauthn,
     ...overrides.webauthn,
-    ...(preview ? { rpId: new URL(preview.branchOrigin).hostname, expectedOrigins: previewOrigins } : {}),
   });
-  const trustedOrigins = [...(overrides.trustedOrigins ?? defaults.trustedOrigins ?? []), ...previewOrigins];
+  const trustedOrigins = [...(overrides.trustedOrigins ?? defaults.trustedOrigins ?? [])];
 
-  const envData = envSchema.parse({
-    firebaseAdmin: {
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-    },
-  });
-
-  cached = { webauthn, trustedOrigins, ...envData };
+  cached = { webauthn, trustedOrigins };
   return cached;
 }

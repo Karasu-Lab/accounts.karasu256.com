@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { Button } from '@karasu-lab/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@karasu-lab/ui';
 import { Identicon } from '@karasu-lab/ui';
@@ -15,6 +15,7 @@ import { PasskeyCreateDialog } from './passkey-create-dialog';
 
 /** Account management card for authenticated users, driven by the better-auth session. */
 export function AccountCard() {
+  const { authClient } = useAuthClient();
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [passkeyVersion, setPasskeyVersion] = useState(0);

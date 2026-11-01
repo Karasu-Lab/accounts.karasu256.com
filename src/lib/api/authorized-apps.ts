@@ -1,5 +1,5 @@
 import { ApiError } from '@karasu-lab/utils/client';
-import { authClient, bridgeFirebaseSession } from '@/lib/auth/client';
+import type { AuthClientHandle } from '@/lib/auth/client';
 
 export interface AuthorizedApp {
   /** The consent record's id, used to revoke the authorization. */
@@ -31,7 +31,7 @@ interface PublicClient {
  * authorization server's consent records, enriched with each client's
  * public name and logo.
  */
-export async function listAuthorizedApps(): Promise<AuthorizedApp[]> {
+export async function listAuthorizedApps({ authClient, bridgeFirebaseSession }: AuthClientHandle): Promise<AuthorizedApp[]> {
   await bridgeFirebaseSession();
   const { data, error } = await authClient.oauth2.getConsents();
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
@@ -56,7 +56,7 @@ export async function listAuthorizedApps(): Promise<AuthorizedApp[]> {
 }
 
 /** Revokes one authorized app by deleting its consent record. */
-export async function revokeAuthorizedApp(consentId: string): Promise<void> {
+export async function revokeAuthorizedApp({ authClient, bridgeFirebaseSession }: AuthClientHandle, consentId: string): Promise<void> {
   await bridgeFirebaseSession();
   const { error } = await authClient.oauth2.deleteConsent({ id: consentId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');

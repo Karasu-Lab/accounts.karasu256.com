@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog, DeleteIconButton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 
 interface CredentialSummary {
@@ -30,6 +30,7 @@ interface PasskeyListProps {
  * trigger a refresh after a new registration.
  */
 export function PasskeyList({ version, createAction }: PasskeyListProps) {
+  const { authClient } = useAuthClient();
   const t = useTranslations();
   const [credentials, setCredentials] = useState<CredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
