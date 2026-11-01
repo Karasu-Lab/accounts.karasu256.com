@@ -51,7 +51,7 @@ export async function deleteOAuthClient({ authClient, bridgeFirebaseSession }: A
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
 }
 
-export async function rotateOAuthClientSecret(clientId: string): Promise<{ client_secret: string }> {
+export async function rotateOAuthClientSecret({ authClient, bridgeFirebaseSession }: AuthClientHandle, clientId: string): Promise<{ client_secret: string }> {
   await bridgeFirebaseSession();
   const { data, error } = await authClient.oauth2.client.rotateSecret({ client_id: clientId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
