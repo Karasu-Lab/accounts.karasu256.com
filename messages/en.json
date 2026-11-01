@@ -213,9 +213,13 @@
     "title": "Connected accounts",
     "link": "Connect",
     "unlink": "Disconnect",
-    "linking": "Connecting",
-    "unlinking": "Disconnecting",
     "cannotUnlink": "Cannot remove your last sign-in method.",
+    "notLinked": "Not linked",
+    "unlinkConfirm": {
+      "title": "Unlink this account?",
+      "description": "This will unlink {provider}.",
+      "cancel": "Cancel"
+    },
     "linked": "{provider} connected.",
     "error": {
       "provider_already_linked": "This account is already connected to another user.",

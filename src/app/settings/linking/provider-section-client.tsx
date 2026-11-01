@@ -4,11 +4,12 @@ import { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { faGoogle, faGithub } from '@fortawesome/free-brands-svg-icons';
 import type { Provider } from '@/components/auth/settings/provider-section';
+import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 
 const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/provider-section').then((m) => m.ProviderSection), { ssr: false });
 
 interface ProviderSectionClientProps {
-  initialProviders: string[];
+  initialProfiles: Record<string, ProviderProfile | null>;
 }
 
 /**
@@ -18,7 +19,7 @@ interface ProviderSectionClientProps {
  * the social providers, so the OAuth test provider defined there is
  * never shown here.
  */
-export function ProviderSectionClient({ initialProviders }: ProviderSectionClientProps) {
+export function ProviderSectionClient({ initialProfiles }: ProviderSectionClientProps) {
   const providers = useMemo<Provider[]>(
     () => [
       { id: 'google', label: 'Google', icon: faGoogle },
@@ -27,5 +28,5 @@ export function ProviderSectionClient({ initialProviders }: ProviderSectionClien
     []
   );
 
-  return <ProviderSectionLazy providers={providers} initialProviders={initialProviders} />;
+  return <ProviderSectionLazy providers={providers} initialProfiles={initialProfiles} />;
 }

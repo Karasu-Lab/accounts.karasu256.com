@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLink, faLinkSlash } from '@fortawesome/free-solid-svg-icons';
+import { Link2, LoaderCircle, Unlink } from 'lucide-react';
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
-import { toast, SettingsAccordion, SettingsItem } from '@karasu-lab/ui';
+import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
 import { authClient } from '@/lib/auth/client';
-import { LoadingButton } from '@/components/ui/loading-button';
+import type { ProviderProfile } from '@/lib/auth/provider-profile';
+import { SettingsItemGroup } from '@/components/settings/settings-item-container';
+import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
+import { cn } from '@/lib/utils';
 
 export interface Provider {
   id: string;
@@ -19,27 +21,50 @@ export interface Provider {
 
 interface ProviderSectionProps {
   providers: Provider[];
-  initialProviders: string[];
+  /**
+   * Each provider's profile as resolved by auth.karasu256.com's
+   * provider profile API. A provider is linked exactly when its profile
+   * is non-null; this section never judges the linked state from any
+   * other source.
+   */
+  initialProfiles: Record<string, ProviderProfile | null>;
 }
 
+/** Brand tile colors for the providers, keyed by provider ID. */
+const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
+  google: '#4285f4',
+  github: '#24292f',
+};
+
 /**
- * Displays linked OAuth providers with link/unlink controls.
+ * Displays linked OAuth providers with link/unlink controls, as
+ * {@link LinkedSettingsItem}s in a settings item group (no accordion).
+ *
+ * A linked provider's item shows the linked account's name as its title
+ * and its email address as its description, with the account's avatar
+ * in the icon tile and the provider's icon as a small badge on the
+ * avatar's bottom-right corner. The item itself never responds to taps; the only
+ * action is the icon button at its right end — an unlink icon for a
+ * linked provider, which opens an unlink confirmation, and a link icon
+ * for a provider that is not linked yet.
  *
  * Linking hands off directly to `authClient.linkSocial`, which drives the
- * OAuth handshake against the browser's own better-auth session. Unlinking
- * removes the entry from `packages/db`'s `accounts` table.
+ * OAuth handshake against the browser's own better-auth session.
+ * Unlinking removes the entry from `packages/db`'s `accounts` table.
  * Unlinking the last provider is blocked when the user has no registered
  * passkeys and no `credential` (email/password) account.
  */
-export function ProviderSection({ providers, initialProviders }: ProviderSectionProps) {
+export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [linked, setLinked] = useState<string[]>(initialProviders);
+  const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>(initialProfiles);
   const [loading, setLoading] = useState<string | null>(null);
+  const [unlinkTarget, setUnlinkTarget] = useState<Provider | null>(null);
   const [hasPasskeys, setHasPasskeys] = useState(false);
-  const [passkeysLoaded, setPasskeysLoaded] = useState(false);
+  const [hasPasswordProvider, setHasPasswordProvider] = useState(false);
+  const [guardsLoaded, setGuardsLoaded] = useState(false);
   const handledParamsRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -60,17 +85,31 @@ export function ProviderSection({ providers, initialProviders }: ProviderSection
   }, [searchParams, t, router, pathname]);
 
   useEffect(() => {
-    void authClient.passkey
-      .listUserPasskeys()
-      .then(({ data }) => setHasPasskeys((data?.length ?? 0) > 0))
-      .catch(() => {})
-      .finally(() => setPasskeysLoaded(true));
+    let cancelled = false;
+    /* Both guards are session-side facts asked of api-auth, not of this
+       app's own data store. A failed check leaves the guard false, which
+       only ever makes unlinking stricter. */
+    const passkeyCheck = Promise.resolve()
+      .then(() => authClient.passkey.listUserPasskeys())
+      .then(({ data }) => (data?.length ?? 0) > 0)
+      .catch(() => false);
+    const passwordCheck = Promise.resolve()
+      .then(() => authClient.listAccounts())
+      .then(({ data }) => (data ?? []).some((account) => account.providerId === 'credential'))
+      .catch(() => false);
+    Promise.all([passkeyCheck, passwordCheck]).then(([passkeys, password]) => {
+      if (cancelled) return;
+      setHasPasskeys(passkeys);
+      setHasPasswordProvider(password);
+      setGuardsLoaded(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const dataReady = passkeysLoaded;
-  const linkedIds = new Set(linked);
-  const hasPasswordProvider = linked.includes('credential');
-  const canUnlink = linked.length > 1 || hasPasskeys || hasPasswordProvider;
+  const linkedProviders = providers.filter((provider) => profiles[provider.id]);
+  const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
 
   async function handleLink(providerId: string) {
     setLoading(providerId);
@@ -96,7 +135,7 @@ export function ProviderSection({ providers, initialProviders }: ProviderSection
     setLoading(providerId);
     try {
       await unlinkProvider(providerId);
-      setLinked((prev) => prev.filter((p) => p !== providerId));
+      setProfiles((prev) => ({ ...prev, [providerId]: null }));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     } finally {
@@ -104,46 +143,65 @@ export function ProviderSection({ providers, initialProviders }: ProviderSection
     }
   }
 
+  const iconButtonClassName =
+    'flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-50';
+
   return (
-    <SettingsAccordion title={t('connections.title')}>
-      <div className="space-y-3">
-        {providers.map(({ id, label, icon }) => {
-          const isLinked = linkedIds.has(id);
-          const isLoading = loading === id;
+    <div className="space-y-3">
+      <SettingsItemGroup>
+        {providers.map((provider) => {
+          const profile = profiles[provider.id] ?? null;
+          const isLoading = loading === provider.id;
           return (
-            <SettingsItem key={id} className="flex items-center justify-between">
-              <span className="flex items-center gap-2 text-sm">
-                <FontAwesomeIcon icon={icon} />
-                {label}
-              </span>
-              {isLinked ? (
-                <LoadingButton
-                  variant="destructive"
-                  size="sm"
-                  disabled={!canUnlink || isLoading || !dataReady}
-                  onClick={() => handleUnlink(id)}
-                  loading={isLoading || !dataReady}
-                  icon={<FontAwesomeIcon icon={faLinkSlash} />}
-                >
-                  {isLoading ? t('connections.unlinking') : t('connections.unlink')}
-                </LoadingButton>
-              ) : (
-                <LoadingButton
-                  variant="outline"
-                  size="sm"
-                  disabled={isLoading || !dataReady}
-                  onClick={() => handleLink(id)}
-                  loading={isLoading || !dataReady}
-                  icon={<FontAwesomeIcon icon={faLink} />}
-                >
-                  {t('connections.link')}
-                </LoadingButton>
-              )}
-            </SettingsItem>
+            <LinkedSettingsItem
+              key={provider.id}
+              providerLabel={provider.label}
+              providerIcon={provider.icon}
+              profile={profile}
+              notLinkedDescription={t('connections.notLinked')}
+              iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
+              trailing={
+                profile ? (
+                  <button
+                    type="button"
+                    aria-label={t('connections.unlink')}
+                    disabled={!canUnlink || isLoading || !guardsLoaded}
+                    onClick={() => setUnlinkTarget(provider)}
+                    className={cn(iconButtonClassName, 'hover:bg-destructive/10 hover:text-destructive')}
+                  >
+                    {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <Unlink className="size-4" />}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    aria-label={t('connections.link')}
+                    disabled={isLoading || !guardsLoaded}
+                    onClick={() => void handleLink(provider.id)}
+                    className={iconButtonClassName}
+                  >
+                    {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <Link2 className="size-4" />}
+                  </button>
+                )
+              }
+            />
           );
         })}
-        {dataReady && !canUnlink && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlink')}</p>}
-      </div>
-    </SettingsAccordion>
+      </SettingsItemGroup>
+      {guardsLoaded && !canUnlink && linkedProviders.length > 0 && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlink')}</p>}
+
+      <ConfirmDialog
+        open={unlinkTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setUnlinkTarget(null);
+        }}
+        title={t('connections.unlinkConfirm.title')}
+        description={t('connections.unlinkConfirm.description', { provider: unlinkTarget?.label ?? '' })}
+        confirmLabel={t('connections.unlink')}
+        cancelLabel={t('connections.unlinkConfirm.cancel')}
+        onConfirm={() => {
+          if (unlinkTarget) void handleUnlink(unlinkTarget.id);
+        }}
+      />
+    </div>
   );
 }
