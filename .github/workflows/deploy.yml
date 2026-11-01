@@ -26,7 +26,6 @@ jobs:
       INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
       FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
-      FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
       FIREBASE_MEASUREMENT_ID: ${{ vars.FIREBASE_MEASUREMENT_ID }}
     steps:
       - name: Deploy the worker
@@ -34,7 +33,7 @@ jobs:
         with:
           mode: production
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET FLAGS_SECRET FIREBASE_PROJECT_ID FIREBASE_APP_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET FLAGS_SECRET FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
 
   preview:
     if: github.ref_name != 'main'
@@ -50,7 +49,6 @@ jobs:
       INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
       FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
-      FIREBASE_APP_ID: ${{ vars.FIREBASE_APP_ID }}
       FIREBASE_MEASUREMENT_ID: ${{ vars.FIREBASE_MEASUREMENT_ID }}
     steps:
       - name: Deploy the worker
@@ -58,4 +56,4 @@ jobs:
         with:
           mode: preview
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET FLAGS_SECRET FIREBASE_PROJECT_ID FIREBASE_APP_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET FLAGS_SECRET FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
