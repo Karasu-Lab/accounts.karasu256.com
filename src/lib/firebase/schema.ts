@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 /** Zod schema that validates all required Firebase client-side configuration values. */
 export const firebaseConfigSchema = z.object({
-  apiKey: z.string().min(1),
+  /* No web API key is configured: Firebase is only ever talked to by
+     api.karasu256.com, whose service account — the project ID and the
+     private key — is the proof of Firebase access. */
+  apiKey: z.string().min(1).optional(),
   /* Firebase Authentication is not used on the client: sign-in runs
      through better-auth and the Firebase link state is managed with
      the Admin SDK, so no auth domain is configured. */
