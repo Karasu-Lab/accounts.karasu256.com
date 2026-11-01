@@ -4,7 +4,7 @@ import { getLinkedProviderProfile, type ProviderProfile } from '@/lib/auth/linke
 import { getSessionUser } from '@/lib/session-user';
 import { ProviderSectionClient } from './provider-section-client';
 
-const PROVIDER_IDS = ['google', 'github', 'microsoft', 'xbox'];
+const PROVIDER_IDS = ['google', 'github', 'microsoft', 'xbox', 'minecraft'];
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();

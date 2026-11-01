@@ -93,6 +93,7 @@ describe('linking page linked-state judgment', () => {
       github: githubProfile,
       microsoft: null,
       xbox: null,
+      minecraft: null,
     });
   });
 
