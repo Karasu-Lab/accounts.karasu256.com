@@ -1,0 +1,96 @@
+name: Accounts Deploy
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+# Deployment itself lives in Karasu-Lab/WorkersDeploy: it deploys this
+# app standalone from this repository, detects the Next.js project,
+# builds it with OpenNext, and deploys it to Cloudflare Workers.
+#
+# The database migrations that the Vercel build used to run keep
+# running here, as a step ahead of the deploy: production migrates
+# only from main, previews always migrate (against their own Neon
+# branch — scripts/migrate.mts refuses the production endpoint).
+
+jobs:
+  deploy:
+    if: github.ref_name == 'main'
+    environment: production
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
+      FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
+      GOOGLE_CLOUD_PROJECT_ID: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+      FIREBASE_ADMIN_CLIENT_EMAIL: ${{ vars.FIREBASE_ADMIN_CLIENT_EMAIL }}
+      FIREBASE_ADMIN_PRIVATE_KEY: ${{ secrets.FIREBASE_ADMIN_PRIVATE_KEY }}
+    steps:
+      - name: Check out the repository for the migration step
+        uses: actions/checkout@v4
+      - name: Set up Node.js for the migration step
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@karasu-lab'
+      - name: Install the dependencies for the migration step
+        run: npx --yes pnpm@12.15.0 install --no-frozen-lockfile
+      - name: Apply the database migrations
+        run: node scripts/migrate.mts
+        env:
+          APP_ENV: production
+      - name: Deploy the worker
+        uses: Karasu-Lab/WorkersDeploy@v1
+        with:
+          mode: production
+          worker-name: accounts-karasu256-com
+          secret-names: DATABASE_URL INTERNAL_API_SECRET FLAGS_SECRET GOOGLE_CLOUD_PROJECT_ID FIREBASE_ADMIN_CLIENT_EMAIL FIREBASE_ADMIN_PRIVATE_KEY
+
+  preview:
+    if: github.ref_name != 'main'
+    environment: preview
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
+      FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
+      GOOGLE_CLOUD_PROJECT_ID: ${{ vars.GOOGLE_CLOUD_PROJECT_ID }}
+      FIREBASE_ADMIN_CLIENT_EMAIL: ${{ vars.FIREBASE_ADMIN_CLIENT_EMAIL }}
+      FIREBASE_ADMIN_PRIVATE_KEY: ${{ secrets.FIREBASE_ADMIN_PRIVATE_KEY }}
+    steps:
+      - name: Check out the repository for the migration step
+        uses: actions/checkout@v4
+      - name: Set up Node.js for the migration step
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@karasu-lab'
+      - name: Install the dependencies for the migration step
+        run: npx --yes pnpm@12.15.0 install --no-frozen-lockfile
+      - name: Apply the database migrations
+        run: node scripts/migrate.mts
+        env:
+          APP_ENV: preview
+      - name: Deploy the worker
+        uses: Karasu-Lab/WorkersDeploy@v1
+        with:
+          mode: preview
+          worker-name: accounts-karasu256-com
+          secret-names: DATABASE_URL INTERNAL_API_SECRET FLAGS_SECRET GOOGLE_CLOUD_PROJECT_ID FIREBASE_ADMIN_CLIENT_EMAIL FIREBASE_ADMIN_PRIVATE_KEY

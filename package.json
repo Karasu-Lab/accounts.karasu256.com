@@ -54,6 +54,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@opennextjs/cloudflare": "^1.20.14",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -61,9 +62,10 @@
     "@types/react-dom": "^19",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.30.6",
+    "jsdom": "^26.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "jsdom": "^26.1.0",
-    "vitest": "^3.2.7"
+    "vitest": "^3.2.7",
+    "wrangler": "^4.155.0"
   }
 }
