@@ -6,8 +6,11 @@ export const firebaseConfigSchema = z.object({
   authDomain: z.string().min(1),
   databaseURL: z.string().url(),
   projectId: z.string().min(1),
-  storageBucket: z.string().min(1),
-  messagingSenderId: z.string().min(1),
+  /* Firebase Storage and Cloud Messaging are not used (files live in
+     Cloudflare R2 and nothing sends messages), so neither is
+     configured. */
+  storageBucket: z.string().min(1).optional(),
+  messagingSenderId: z.string().min(1).optional(),
   appId: z.string().min(1),
   measurementId: z.string().optional(),
 });
