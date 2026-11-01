@@ -44,6 +44,13 @@ export interface LinkedSettingsItemProps {
  * visible which provider the account belongs to instead of the avatar
  * overwriting it. When a linked account has no avatar, the tile keeps
  * the provider icon at full size and no badge is needed.
+ *
+ * While linked, the item's texts auto-fit like the profile item at the
+ * top of the account settings menu (the account's name over its email
+ * address): they stay on one line and their font size shrinks to fit,
+ * so the email address shown as the description carries the same text
+ * style and size as that item's email address instead of wrapping at
+ * the default size. While not linked, the texts wrap as usual.
  */
 export function LinkedSettingsItem({
   textureAvatar,
@@ -63,6 +70,7 @@ export function LinkedSettingsItem({
     <SettingsItemContainer
       title={profile ? (profile.name ?? profile.email ?? providerLabel) : providerLabel}
       description={profile ? (profile.email ?? '') : notLinkedDescription}
+      autoFitText={profile !== null}
       iconNode={
         showTextureAvatar ? (
           <span className="flex size-8 items-center justify-center">
