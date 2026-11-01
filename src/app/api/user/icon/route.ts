@@ -2,8 +2,7 @@ import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { deleteUploadedImage, uploadImage } from '@karasu-lab/utils/server';
-import { getAdminAuth } from '@/lib/firebase-admin';
-import { getLinkedFirebaseUid } from '@/lib/auth/firebase-uid';
+import { fetchSetFirebasePhoto } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
 import { requireSession } from '@/lib/api/require-session';
 import { badRequest } from '@/lib/api/responses';
@@ -25,9 +24,9 @@ async function cleanupPreviousIcon(
 }
 
 /**
- * Uploads the authenticated user's icon via the image API and updates the
- * Firebase Auth `photoURL` to point at it, deleting the previous icon once
- * the new one is persisted.
+ * Uploads the authenticated user's icon via the image API and has the
+ * API point the Firebase Auth `photoURL` at it, deleting the previous
+ * icon once the new one is persisted.
  *
  * POST /api/user/icon
  */
@@ -59,11 +58,9 @@ export async function POST(request: NextRequest) {
 
   // The Firebase link is optional: unlinked users just skip the photoURL
   // sync (their icon still uploads and is returned).
-  const firebaseUid = await getLinkedFirebaseUid(user.id);
-  if (firebaseUid) {
-    const previous = await getAdminAuth().getUser(firebaseUid);
-    await getAdminAuth().updateUser(firebaseUid, { photoURL: url });
-    await cleanupPreviousIcon(previous.photoURL, url, imageApiUrl, cookieHeader);
+  const photo = await fetchSetFirebasePhoto(user.id, url);
+  if (photo.linked) {
+    await cleanupPreviousIcon(photo.previousPhotoURL ?? undefined, url, imageApiUrl, cookieHeader);
   }
 
   return NextResponse.json({ photoURL: url });
@@ -91,11 +88,9 @@ export async function PUT(request: NextRequest) {
   const imageApiUrl = process.env.CDN_URL;
   const cookieHeader = (await headers()).get('cookie');
 
-  const firebaseUid = await getLinkedFirebaseUid(user.id);
-  if (firebaseUid) {
-    const previous = await getAdminAuth().getUser(firebaseUid);
-    await getAdminAuth().updateUser(firebaseUid, { photoURL: profile.avatarUrl });
-    await cleanupPreviousIcon(previous.photoURL, profile.avatarUrl, imageApiUrl, cookieHeader);
+  const photo = await fetchSetFirebasePhoto(user.id, profile.avatarUrl);
+  if (photo.linked) {
+    await cleanupPreviousIcon(photo.previousPhotoURL ?? undefined, profile.avatarUrl, imageApiUrl, cookieHeader);
   }
 
   return NextResponse.json({ photoURL: profile.avatarUrl });
@@ -114,11 +109,9 @@ export async function DELETE() {
   const imageApiUrl = process.env.CDN_URL;
   const cookieHeader = (await headers()).get('cookie');
 
-  const firebaseUid = await getLinkedFirebaseUid(user.id);
-  if (firebaseUid) {
-    const previous = await getAdminAuth().getUser(firebaseUid);
-    await getAdminAuth().updateUser(firebaseUid, { photoURL: null });
-    await cleanupPreviousIcon(previous.photoURL, null, imageApiUrl, cookieHeader);
+  const photo = await fetchSetFirebasePhoto(user.id, null);
+  if (photo.linked) {
+    await cleanupPreviousIcon(photo.previousPhotoURL ?? undefined, null, imageApiUrl, cookieHeader);
   }
 
   return NextResponse.json({ photoURL: null });
