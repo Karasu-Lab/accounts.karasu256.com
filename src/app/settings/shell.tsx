@@ -15,10 +15,19 @@ import { AddAccountDialog } from '@/components/settings/add-account-dialog';
 import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
 import { SettingsMenuContext } from '@/components/settings/settings-menu-context';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';
+import type { SessionUser } from '@/lib/session-user';
 
 interface SettingsShellProps {
   children: React.ReactNode;
   appUrl: string;
+  /**
+   * The signed-in account, resolved server-side by the settings layout
+   * before the page is sent. When present, the shell starts out `ready`
+   * with this user, so account-dependent items render from the first
+   * paint instead of appearing once the client-side session fetch
+   * resolves. The client session still takes over as soon as it loads.
+   */
+  initialUser: SessionUser | null;
 }
 
 /**
@@ -26,6 +35,14 @@ interface SettingsShellProps {
  * /settings menu skip the loading skeleton so their controls are
  * recognizable immediately, rendered disabled until the session
  * resolves.
+ *
+ * The account itself is resolved server-side by the settings layout
+ * before the page is sent ({@link SettingsShellProps.initialUser}), so
+ * the shell starts out ready with it: server rendering simply waits
+ * for the account, and no client-side loading overlay or pop-in is
+ * involved. Only when there is no server-resolved user (no valid
+ * session cookie) does the shell fall back to waiting for the
+ * client-side session, which then redirects to sign-in.
  *
  * There is no sidebar (drawer) and no drawer menu button: navigation
  * lives in the settings menu at `/settings`, and this shell only renders
@@ -43,7 +60,7 @@ interface SettingsShellProps {
  * and removing accounts, adding an account, signing out) through
  * {@link SettingsMenuContext}.
  */
-export function SettingsShell({ children, appUrl }: SettingsShellProps) {
+export function SettingsShell({ children, appUrl, initialUser }: SettingsShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
@@ -60,7 +77,8 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   const isLinkingPage = pathname === '/settings/linking';
   const isProfilePage = pathname === '/settings/profile';
   const isSecurityPage = pathname === '/settings/security';
-  const loading = isPending;
+  /** With a server-resolved initial user there is nothing to wait for: the account is already loaded. */
+  const loading = isPending && !initialUser;
 
   /** Header title for the current settings page, keyed by its route. */
   const pageTitle = useMemo(() => {
@@ -170,13 +188,26 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   );
 
   const contextValue = useMemo(() => {
+    if (!session && initialUser) {
+      /* Server-resolved account: ready from the first paint, so items that
+         depend on the account never appear or disappear after the fact. */
+      const baseUser: SettingsUser = {
+        id: initialUser.id,
+        email: initialUser.email ?? '',
+        emailVerified: false,
+        name: initialUser.name ?? '',
+        image: initialUser.image,
+      };
+      const userOverride = userOverrideState.userId === initialUser.id ? userOverrideState.patch : {};
+      return { user: { ...baseUser, ...userOverride }, ready: true, updateUser };
+    }
     if (!session) {
       const pendingUser: SettingsUser = { id: '', email: '', emailVerified: false, name: '', image: null };
       return { user: pendingUser, ready: false, updateUser };
     }
     const userOverride = userOverrideState.userId === session.user.id ? userOverrideState.patch : {};
     return { user: { ...session.user, ...userOverride }, ready: true, updateUser };
-  }, [session, userOverrideState, updateUser]);
+  }, [session, initialUser, userOverrideState, updateUser]);
 
   const menuContextValue = useMemo(
     () => ({
@@ -193,7 +224,7 @@ export function SettingsShell({ children, appUrl }: SettingsShellProps) {
   );
 
   /** Active account shown as the header account menu's icon, following optimistic profile updates. */
-  const headerUser = session
+  const headerUser = contextValue.ready
     ? {
         uid: contextValue.user.id,
         displayName: contextValue.user.name,
