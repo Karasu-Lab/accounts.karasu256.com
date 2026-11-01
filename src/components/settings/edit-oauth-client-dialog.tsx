@@ -18,6 +18,7 @@ import {
   useR2Storage,
 } from '@karasu-lab/ui';
 import { updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
+import { useAuthClient } from '@/lib/auth/client';
 
 interface EditOAuthClientDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ interface EditOAuthClientDialogProps {
  * icon, and scopes. The client secret cannot be changed here.
  */
 export function EditOAuthClientDialog({ open, onOpenChange, client, sections, onUpdated }: EditOAuthClientDialogProps) {
+  const auth = useAuthClient();
   const t = useTranslations();
   const { uploading, upload } = useR2Storage();
 
@@ -81,7 +83,7 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
     if (uris.length === 0) return;
     setLoading(true);
     try {
-      const updated = await updateOAuthClient(client.client_id, {
+      const updated = await updateOAuthClient(auth, client.client_id, {
         client_name: name.trim(),
         redirect_uris: uris,
         logo_uri: iconUrl.trim(),

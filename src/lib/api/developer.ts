@@ -1,6 +1,6 @@
 import type { ApiKeyCreated, ApiKeySummary, PermissionSummary } from '@karasu-lab/api-permissions';
 import { ApiError } from '@karasu-lab/utils/client';
-import { authClient, bridgeFirebaseSession } from '@/lib/auth/client';
+import type { AuthClientHandle } from '@/lib/auth/client';
 
 export type { ApiKeyCreated, ApiKeySummary };
 export type ApiKeyPermission = PermissionSummary;
@@ -17,7 +17,7 @@ export interface OAuthClientCreated extends OAuthClientSummary {
   client_secret: string;
 }
 
-export async function createOAuthClient(input: {
+export async function createOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, input: {
   client_name: string;
   redirect_uris: string[];
   logo_uri?: string;
@@ -30,6 +30,7 @@ export async function createOAuthClient(input: {
 }
 
 export async function updateOAuthClient(
+  { authClient, bridgeFirebaseSession }: AuthClientHandle,
   clientId: string,
   update: Partial<{
     client_name: string;
@@ -44,13 +45,13 @@ export async function updateOAuthClient(
   return data as OAuthClientSummary;
 }
 
-export async function deleteOAuthClient(clientId: string): Promise<void> {
+export async function deleteOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, clientId: string): Promise<void> {
   await bridgeFirebaseSession();
   const { error } = await authClient.oauth2.deleteClient({ client_id: clientId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
 }
 
-export async function rotateOAuthClientSecret(clientId: string): Promise<{ client_secret: string }> {
+export async function rotateOAuthClientSecret({ authClient, bridgeFirebaseSession }: AuthClientHandle, clientId: string): Promise<{ client_secret: string }> {
   await bridgeFirebaseSession();
   const { data, error } = await authClient.oauth2.client.rotateSecret({ client_id: clientId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');

@@ -51,9 +51,17 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/api/authorized-apps', () => ({
   listAuthorizedApps: () => api.list(),
-  revokeAuthorizedApp: async (id: string) => {
+  revokeAuthorizedApp: async (_auth: unknown, id: string) => {
     api.revokeCalls.push(id);
   },
+}));
+
+vi.mock('@/lib/auth/client', () => ({
+  useAuthClient: () => ({
+    authClient: {},
+    bridgeFirebaseSession: async () => {},
+    config: { authApiUrl: 'https://api-auth.karasu256.com', authUrl: 'https://auth.karasu256.com' },
+  }),
 }));
 
 vi.mock('@/components/ui/loading-button', () => ({

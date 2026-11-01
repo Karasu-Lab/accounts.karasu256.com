@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input } from '@karasu-lab/ui';
 import { rotateOAuthClientSecret } from '@/lib/api/developer';
+import { useAuthClient } from '@/lib/auth/client';
 
 interface RotateSecretDialogProps {
   open: boolean;
@@ -17,6 +18,7 @@ interface RotateSecretDialogProps {
  * Phase 1 shows a confirmation warning; phase 2 reveals the new raw secret once.
  */
 export function RotateSecretDialog({ open, onOpenChange, clientId, clientName }: RotateSecretDialogProps) {
+  const auth = useAuthClient();
   const t = useTranslations();
   const [loading, setLoading] = useState(false);
   const [newSecret, setNewSecret] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export function RotateSecretDialog({ open, onOpenChange, clientId, clientName }:
   async function handleConfirm() {
     setLoading(true);
     try {
-      const { client_secret: secret } = await rotateOAuthClientSecret(clientId);
+      const { client_secret: secret } = await rotateOAuthClientSecret(auth, clientId);
       setNewSecret(secret);
     } finally {
       setLoading(false);

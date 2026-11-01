@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from '@karasu-lab/ui';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { setPassword as setPasswordRequest } from '@/lib/api/set-password';
 import { useSettingsUser } from '@/components/settings/user-context';
 import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Label, PasswordInput } from '@karasu-lab/ui';
@@ -33,6 +33,7 @@ export interface PasswordSectionProps {
  * being replaced with a skeleton.
  */
 export function PasswordSection({ hasPasswordProvider, onPasswordSet }: PasswordSectionProps) {
+  const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const { user, ready } = useSettingsUser();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -67,7 +68,7 @@ export function PasswordSection({ hasPasswordProvider, onPasswordSet }: Password
         }
         toast.success(t('security.passwordChanged'));
       } else {
-        await setPasswordRequest(newPassword);
+        await setPasswordRequest(config.authApiUrl, newPassword);
         onPasswordSet();
         toast.success(t('security.passwordSet'));
       }

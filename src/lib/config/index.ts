@@ -14,18 +14,8 @@ const configFileSchema = z.object({
   trustedOrigins: z.array(z.string().url()).optional(),
 });
 
-const envSchema = z.object({
-  firebaseAdmin: z.object({
-    projectId: z.string().min(1),
-    clientEmail: z.string().email(),
-    privateKey: z.string().min(1),
-    databaseURL: z.string().url(),
-  }),
-});
-
 export type ServerConfig = {
   webauthn: z.infer<typeof webauthnSchema>;
-  firebaseAdmin: z.infer<typeof envSchema>['firebaseAdmin'];
   trustedOrigins: string[];
 };
 
@@ -70,15 +60,6 @@ export function getServerConfig(): ServerConfig {
   });
   const trustedOrigins = [...(overrides.trustedOrigins ?? defaults.trustedOrigins ?? [])];
 
-  const envData = envSchema.parse({
-    firebaseAdmin: {
-      projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
-    },
-  });
-
-  cached = { webauthn, trustedOrigins, ...envData };
+  cached = { webauthn, trustedOrigins };
   return cached;
 }

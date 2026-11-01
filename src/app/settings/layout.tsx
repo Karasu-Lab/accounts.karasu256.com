@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { getRootAppUrl } from '@karasu-lab/utils/server';
 import { getSessionUser } from '@/lib/session-user';
+import { AuthClientProvider } from '@/lib/auth/client';
+import { getClientConfig } from '@/lib/auth/client-config';
 import { SettingsShell } from './shell';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,8 +28,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const [appUrl, initialUser] = await Promise.all([getRootAppUrl(), getSessionUser()]);
   return (
-    <SettingsShell appUrl={appUrl} initialUser={initialUser}>
-      {children}
-    </SettingsShell>
+    <AuthClientProvider config={getClientConfig()}>
+      <SettingsShell appUrl={appUrl} initialUser={initialUser}>
+        {children}
+      </SettingsShell>
+    </AuthClientProvider>
   );
 }
