@@ -18,6 +18,10 @@ export interface AddAccountDialogProps {
  * Sends the user to auth.karasu256.com to sign in to another account. The
  * previously active session is remembered so the settings shell can switch
  * back to it on return, since `multiSession` makes every new sign-in active.
+ * The previously active account's user ID is remembered alongside it, so
+ * the return can recognise that the user signed in with that same account
+ * (whose previous session `multiSession` has then replaced) instead of a
+ * new one.
  */
 export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox = false }: AddAccountDialogProps) {
   const { authClient, config } = useAuthClient();
@@ -28,7 +32,7 @@ export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox
   async function handleContinue() {
     setLoading(true);
     const { data } = await authClient.getSession();
-    savePendingAddAccount({ previousSessionToken: data?.session.token ?? null, switchToNewAccount });
+    savePendingAddAccount({ previousSessionToken: data?.session.token ?? null, previousUserId: data?.user.id ?? null, switchToNewAccount });
 
     const returnTo = buildUri(new URL(window.location.pathname, window.location.origin).toString(), { accountAdded: '1' });
     const signIn = buildUri(new URL('/sign-in', config.authUrl).toString(), { prompt: 'login', next: returnTo });
