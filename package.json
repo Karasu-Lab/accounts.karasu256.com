@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate:dev": "dotenv -e .env.development.local -- drizzle-kit migrate",
@@ -61,6 +62,8 @@
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.30.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.7"
   }
 }
