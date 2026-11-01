@@ -8,7 +8,6 @@ import { SettingsItemContainer } from '@/components/settings/settings-item-conta
 import { MinecraftAvatar } from './minecraft-avatar';
 
 export interface LinkedSettingsItemProps {
-  /** The provider's ID (e.g. `google`). The Minecraft row renders its avatar from the raw skin texture instead of an image URL. */
   providerId: string;
   /** The provider's display label (e.g. Google), shown as the title while the provider is not linked. */
   providerLabel: string;
@@ -57,12 +56,6 @@ export function LinkedSettingsItem({
   hasItemBelow,
 }: LinkedSettingsItemProps) {
   const avatarUrl = profile?.avatarUrl ?? undefined;
-  /**
-   * The Minecraft profile's avatar URL points at the raw UV-mapped
-   * skin texture on Mojang's host, not at a rendered avatar, so the
-   * tile shows the client-side conversion of that texture instead of
-   * an `img`. Every other provider's avatar is a finished image.
-   */
   const isMinecraftTexture = providerId === 'minecraft' && avatarUrl !== undefined;
 
   return (

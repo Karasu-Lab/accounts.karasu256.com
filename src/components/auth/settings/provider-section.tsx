@@ -38,16 +38,10 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
   minecraft: '#6a9c3f',
 };
 
-/**
- * Providers derived from another provider's link, keyed by the
- * provider shown in the row: Minecraft has no OAuth flow of its own —
- * it is derived from the linked Microsoft account through the Xbox
- * Live chain — so its link and unlink actions act on the Microsoft
- * link, and it never counts as an independent sign-in method when the
- * last-provider unlink guard is judged.
- */
+// Minecraft's link state is the `xbox` account stored by the Xbox
+// link flow; the row never counts as an independent sign-in method.
 const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
-  minecraft: 'microsoft',
+  minecraft: 'xbox',
 };
 
 /**
@@ -69,7 +63,7 @@ const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
  * passkeys and no `credential` (email/password) account.
  */
 export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
-  const { authClient } = useAuthClient();
+  const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -128,10 +122,14 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
 
   async function handleLink(providerId: string) {
     setLoading(providerId);
+    if (DERIVED_PROVIDER_SOURCES[providerId]) {
+      window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/xbox/link`);
+      return;
+    }
     try {
       const linkingUrl = `${window.location.origin}/settings/linking`;
       const { error } = await authClient.linkSocial({
-        provider: DERIVED_PROVIDER_SOURCES[providerId] ?? providerId,
+        provider: providerId,
         callbackURL: linkingUrl,
         errorCallbackURL: linkingUrl,
       });
@@ -149,19 +147,14 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
   async function handleUnlink(providerId: string) {
     setLoading(providerId);
     try {
-      const sourceProviderId = DERIVED_PROVIDER_SOURCES[providerId];
-      await unlinkProvider(sourceProviderId ?? providerId);
+      await unlinkProvider(DERIVED_PROVIDER_SOURCES[providerId] ?? providerId);
+      if (providerId === 'microsoft') {
+        // The Xbox link belongs to the Microsoft account; drop it too.
+        await unlinkProvider('xbox').catch(() => {});
+      }
       setProfiles((prev) => {
         const next = { ...prev, [providerId]: null };
-        // Unlinking a derived provider removes the link it derives
-        // from, so the source provider and every provider derived
-        // from it lose their profiles at the same time.
-        if (sourceProviderId) {
-          next[sourceProviderId] = null;
-          for (const [derivedId, source] of Object.entries(DERIVED_PROVIDER_SOURCES)) {
-            if (source === sourceProviderId) next[derivedId] = null;
-          }
-        }
+        if (providerId === 'microsoft') next.minecraft = null;
         return next;
       });
     } catch (err) {

@@ -4,13 +4,6 @@ import { getLinkedProviderProfile, type ProviderProfile } from '@/lib/auth/linke
 import { getSessionUser } from '@/lib/session-user';
 import { ProviderSectionClient } from './provider-section-client';
 
-/**
- * The providers shown on the linking page (kept in step with the
- * definitions in `provider-section-client`). `minecraft` is derived
- * from the Microsoft link rather than linked on its own: its profile
- * resolves exactly when the Microsoft account behind it owns
- * Minecraft.
- */
 const PROVIDER_IDS = ['google', 'github', 'microsoft', 'minecraft'];
 
 export async function generateMetadata(): Promise<Metadata> {
