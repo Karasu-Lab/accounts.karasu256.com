@@ -2,14 +2,6 @@ const STORAGE_KEY = 'pendingAddAccount';
 
 export interface PendingAddAccount {
   previousSessionToken: string | null;
-  /**
-   * The better-auth user ID of the account that was active before
-   * leaving for sign-in. Completing the addition compares it with the
-   * signed-in account's user ID: when they match, the addition is the
-   * same account, whose previous session `multiSession` has replaced,
-   * so there is no previous session left to switch back to.
-   */
-  previousUserId: string | null;
   switchToNewAccount: boolean;
 }
 

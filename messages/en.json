@@ -87,12 +87,7 @@
       "removeAccount": "Remove this account from this device",
       "switchingAccount": "Switching accounts.",
       "switchAfterAdd": "Switch to this account after adding",
-      "continueToSignIn": "Continue to sign in",
-      "sameAccount": {
-        "title": "The same account cannot be added",
-        "description": "You signed in with the account that is already active, so no account was added and the active account remains as it was.",
-        "close": "Close"
-      }
+      "continueToSignIn": "Continue to sign in"
     },
     "developer": {
       "title": "Developer settings",
