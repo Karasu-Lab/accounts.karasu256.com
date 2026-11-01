@@ -49,10 +49,21 @@ export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsP
   const t = useTranslations();
   const [switchingUid, setSwitchingUid] = React.useState<string | null>(null);
   const [removingUid, setRemovingUid] = React.useState<string | null>(null);
-  /** True while a switch or a removal is in flight, serializing the two against the same underlying session list. */
-  const isBusy = switchingUid !== null || removingUid !== null;
+  const [signingOut, setSigningOut] = React.useState(false);
+  /** True while a switch, a removal, or a sign-out is in flight, so no menu action can be triggered twice. */
+  const isBusy = switchingUid !== null || removingUid !== null || signingOut;
 
   const accounts = accountsProp ?? [];
+
+  async function handleSignOut() {
+    if (isBusy) return;
+    setSigningOut(true);
+    try {
+      await onSignOut();
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   async function handleSwitchAccount(uid: string) {
     if (isBusy) return;
@@ -98,7 +109,7 @@ export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsP
               <ExternalLink className="size-4" />
               {t('settings.backToApp')}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => void onSignOut()}>
+            <DropdownMenuItem disabled={isBusy} onClick={() => void handleSignOut()}>
               <LogOut className="size-4" />
               {t('settings.signOut')}
             </DropdownMenuItem>
