@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { getRootAppUrl } from '@karasu-lab/utils/server';
+import { getSessionUser } from '@/lib/session-user';
 import { SettingsShell } from './shell';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,7 +16,18 @@ export async function generateMetadata(): Promise<Metadata> {
  * collapsed preview hosts with more than one subdomain label
  * (`dev.accounts.karasu256.com`) to the production root domain instead of
  * the sibling preview app.
+ *
+ * It also resolves the signed-in account server-side and hands it to the
+ * shell as the initial user: the settings pages are not sent until the
+ * account has finished loading, so account-dependent items (such as the
+ * menu's profile item) render with the account from the very first
+ * paint instead of appearing once a client-side session fetch resolves.
  */
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
-  return <SettingsShell appUrl={await getRootAppUrl()}>{children}</SettingsShell>;
+  const [appUrl, initialUser] = await Promise.all([getRootAppUrl(), getSessionUser()]);
+  return (
+    <SettingsShell appUrl={appUrl} initialUser={initialUser}>
+      {children}
+    </SettingsShell>
+  );
 }
