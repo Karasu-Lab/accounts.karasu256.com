@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { toast } from '@karasu-lab/ui';
@@ -81,17 +81,42 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     }
   }, []);
 
+  /**
+   * Whether the client session has been re-asked once after resolving
+   * to no session despite the server having resolved one for this
+   * page. Bounded to a single retry so a genuinely dead session does
+   * not loop.
+   */
+  const sessionRetriedRef = useRef(false);
+
   useEffect(() => {
     if (isPending) return;
     if (!session) {
-      window.location.replace(getSignInUrl(window.location.href));
+      if (!initialUser) {
+        /* Neither the server render nor the client session found a
+           signed-in account: this visit is genuinely signed out. */
+        window.location.replace(getSignInUrl(window.location.href));
+        return;
+      }
+      /* The server resolved an account for this very page from the
+         same session cookie, so a client-side "no session" here is a
+         transient disagreement — most visibly right after the
+         redirect back from signing in, where a reload used to eject
+         the user to the sign-in page, which then sent them straight
+         back on the strength of the same session. The server's word
+         stands: stay on the page and ask the client session once
+         more so session-gated actions can reconcile. */
+      if (!sessionRetriedRef.current) {
+        sessionRetriedRef.current = true;
+        void refetch();
+      }
       return;
     }
     const activeUid = session.user.id;
     listAccounts()
       .then((result) => setAccounts(result.accounts.filter((a) => a.uid !== activeUid)))
       .catch(() => {});
-  }, [isPending, session, router]);
+  }, [isPending, session, router, initialUser, refetch]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -127,6 +152,11 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     setSigningOut(true);
     try {
       await authClient.signOut();
+      /* The navigation is explicit: a client session resolving to no
+         session no longer redirects on its own when the server had
+         resolved an account for the page (see the session effect), so
+         the sign-out itself sends the browser to sign-in. */
+      window.location.replace(getSignInUrl(window.location.href));
     } catch (err) {
       setSigningOut(false);
       toast.error(err instanceof Error ? err.message : String(err));
