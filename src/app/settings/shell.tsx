@@ -31,10 +31,12 @@ interface SettingsShellProps {
 }
 
 /**
- * /settings/linking, /settings/profile, /settings/security, and the
- * /settings menu skip the loading skeleton so their controls are
- * recognizable immediately, rendered disabled until the session
- * resolves.
+ * /settings/linking, /settings/profile, /settings/security,
+ * /settings/debug, and the /settings menu skip the loading skeleton so
+ * their controls are recognizable immediately, rendered disabled until
+ * the session resolves. The debug screen's content does not depend on
+ * the session at all — its API values arrive with the page and its
+ * flags resolve on their own — so it renders from the first paint.
  *
  * The account itself is resolved server-side by the settings layout
  * before the page is sent ({@link SettingsShellProps.initialUser}), so
@@ -79,6 +81,7 @@ export function SettingsShell({ children, appUrl, initialUser }: SettingsShellPr
   const isLinkingPage = pathname === '/settings/linking';
   const isProfilePage = pathname === '/settings/profile';
   const isSecurityPage = pathname === '/settings/security';
+  const isDebugPage = pathname === '/settings/debug';
   /** With a server-resolved initial user there is nothing to wait for: the account is already loaded. */
   const loading = isPending && !initialUser;
   /**
@@ -253,7 +256,7 @@ export function SettingsShell({ children, appUrl, initialUser }: SettingsShellPr
     if (isLinkingPage) {
       return <>{children}</>;
     }
-    if (isMenuPage || isProfilePage || isSecurityPage) {
+    if (isMenuPage || isProfilePage || isSecurityPage || isDebugPage) {
       return (
         <UserContext.Provider key={contextValue.ready ? contextValue.user.id : 'pending'} value={contextValue}>
           {children}
