@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { AnimatedList, Button, ConfirmDialog, SettingsAccordion, SettingsItem, Skeleton } from '@karasu-lab/ui';
+import { Button, ConfirmDialog } from '@karasu-lab/ui';
 import { deleteApiKey, loadApiKeys, loadOAuthClients } from '@/lib/actions/developer';
 import {
   deleteOAuthClient,
@@ -16,6 +16,7 @@ import {
 } from '@/lib/api/developer';
 import { ApiKeyRow } from './api-key-row';
 import { OAuthClientRow } from './oauth-client-row';
+import { SettingsItemGroup } from './settings-item-container';
 import { CreateApiKeyDialog } from './create-api-key-dialog';
 import { CreateOAuthClientDialog } from './create-oauth-client-dialog';
 import { EditOAuthClientDialog } from './edit-oauth-client-dialog';
@@ -35,7 +36,8 @@ type ListState<T> = { status: 'loading' } | { status: 'error' } | { status: 'loa
 /**
  * Developer settings section. Manages OAuth clients (backed by the
  * better-auth OAuth authorization server on the auth API) and API keys,
- * with collapsible lists and creation/edit dialogs. The OAuth clients
+ * each as a settings item group under its own heading, with
+ * creation/edit dialogs. The OAuth clients
  * load through the `loadOAuthClients` server action, separately from
  * the API keys, and each list tracks its own loading / error / loaded
  * state so "still loading", "failed", and "loaded but empty" render
@@ -118,46 +120,31 @@ export function DeveloperSection() {
 
   return (
     <div className="space-y-6">
-      <SettingsAccordion
-        title={t('settings.developer.oauthClients')}
-        action={
-          <Button size="icon-sm" variant="ghost" aria-label={t('settings.developer.createClient')} onClick={() => setClientDialogOpen(true)}>
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium">{t('settings.developer.oauthClients')}</h2>
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            aria-label={t('settings.developer.createClient')}
+            disabled={clientsState.status === 'loading'}
+            onClick={() => setClientDialogOpen(true)}
+          >
             <Plus />
           </Button>
-        }
-      >
-        <div className="mt-2 space-y-2">
-          {clientsState.status === 'loading' ? (
-            <AnimatedList className="space-y-2">
-              {[0, 1].map((i) => (
-                <li key={i}>
-                  <SettingsItem className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <Skeleton className="size-8 rounded shrink-0" />
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-48" />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <Skeleton className="size-8 rounded-md" />
-                      <Skeleton className="size-8 rounded-md" />
-                    </div>
-                  </SettingsItem>
-                </li>
-              ))}
-            </AnimatedList>
-          ) : clientsState.status === 'error' ? (
-            <div className="flex items-center gap-3 py-2">
-              <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
-              <Button variant="ghost" size="sm" onClick={() => void reloadClients()}>
-                {t('settings.developer.retry')}
-              </Button>
-            </div>
-          ) : clientsState.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noClients')}</p>
-          ) : (
-            clientsState.items.map((c) => (
+        </div>
+        {clientsState.status === 'error' ? (
+          <div className="flex items-center gap-3 py-2">
+            <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
+            <Button variant="ghost" size="sm" onClick={() => void reloadClients()}>
+              {t('settings.developer.retry')}
+            </Button>
+          </div>
+        ) : clientsState.status === 'loaded' && clientsState.items.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noClients')}</p>
+        ) : clientsState.status === 'loaded' ? (
+          <SettingsItemGroup>
+            {clientsState.items.map((c) => (
               <OAuthClientRow
                 key={c.client_id}
                 client={c}
@@ -167,49 +154,35 @@ export function DeveloperSection() {
                 onDelete={(clientId) => setPendingDelete({ type: 'client', id: clientId, name: c.client_name ?? c.client_id })}
                 onRotateSecret={setRotatingClient}
               />
-            ))
-          )}
-        </div>
-      </SettingsAccordion>
+            ))}
+          </SettingsItemGroup>
+        ) : null}
+      </section>
 
-      <SettingsAccordion
-        title={t('settings.developer.apiKeys')}
-        action={
-          <Button size="icon-sm" variant="ghost" aria-label={t('settings.developer.createKey')} onClick={() => setKeyDialogOpen(true)}>
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-medium">{t('settings.developer.apiKeys')}</h2>
+          <Button size="icon-sm" variant="ghost" aria-label={t('settings.developer.createKey')} disabled={keysState.status === 'loading'} onClick={() => setKeyDialogOpen(true)}>
             <Plus />
           </Button>
-        }
-      >
-        <div className="mt-2 space-y-2">
-          {keysState.status === 'loading' ? (
-            <AnimatedList className="space-y-2">
-              {[0, 1].map((i) => (
-                <li key={i}>
-                  <SettingsItem className="flex items-center justify-between gap-4">
-                    <div className="min-w-0 space-y-1.5">
-                      <Skeleton className="h-4 w-28" />
-                      <Skeleton className="h-3 w-20" />
-                      <Skeleton className="h-3 w-36" />
-                    </div>
-                    <Skeleton className="size-8 rounded-md shrink-0" />
-                  </SettingsItem>
-                </li>
-              ))}
-            </AnimatedList>
-          ) : keysState.status === 'error' ? (
-            <div className="flex items-center gap-3 py-2">
-              <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
-              <Button variant="ghost" size="sm" onClick={() => void reloadKeys()}>
-                {t('settings.developer.retry')}
-              </Button>
-            </div>
-          ) : keysState.items.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noKeys')}</p>
-          ) : (
-            keysState.items.map((k) => <ApiKeyRow key={k.id} apiKey={k} onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })} />)
-          )}
         </div>
-      </SettingsAccordion>
+        {keysState.status === 'error' ? (
+          <div className="flex items-center gap-3 py-2">
+            <p className="text-sm text-destructive">{t('settings.developer.loadError')}</p>
+            <Button variant="ghost" size="sm" onClick={() => void reloadKeys()}>
+              {t('settings.developer.retry')}
+            </Button>
+          </div>
+        ) : keysState.status === 'loaded' && keysState.items.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-2">{t('settings.developer.noKeys')}</p>
+        ) : keysState.status === 'loaded' ? (
+          <SettingsItemGroup>
+            {keysState.items.map((k) => (
+              <ApiKeyRow key={k.id} apiKey={k} onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })} />
+            ))}
+          </SettingsItemGroup>
+        ) : null}
+      </section>
 
       <CreateOAuthClientDialog open={clientDialogOpen} onOpenChange={setClientDialogOpen} sections={sections} onCreated={handleClientCreated} />
       {infoClient && (
