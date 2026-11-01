@@ -17,6 +17,16 @@ export interface Provider {
   id: string;
   label: string;
   icon: IconDefinition;
+  // The provider's avatar URL is a raw skin texture that the client
+  // converts into an avatar (Minecraft), not a finished image.
+  textureAvatar?: boolean;
+  // The account-row provider this row's link state belongs to, when
+  // it differs from the row's own ID. Linking navigates to that
+  // provider's dedicated link flow instead of a social link, and
+  // unlinking deletes that account.
+  accountProviderId?: string;
+  // Account-row providers deleted together with this one on unlink.
+  linkedAccountProviderIds?: string[];
 }
 
 interface ProviderSectionProps {
@@ -39,18 +49,6 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
 };
 
 /**
- * Providers derived from another provider's link, keyed by the
- * provider shown in the row: Minecraft has no OAuth flow of its own —
- * it is derived from the linked Microsoft account through the Xbox
- * Live chain — so its link and unlink actions act on the Microsoft
- * link, and it never counts as an independent sign-in method when the
- * last-provider unlink guard is judged.
- */
-const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
-  minecraft: 'microsoft',
-};
-
-/**
  * Displays linked OAuth providers with link/unlink controls, as
  * {@link LinkedSettingsItem}s in a settings item group (no accordion).
  *
@@ -69,7 +67,7 @@ const DERIVED_PROVIDER_SOURCES: Record<string, string> = {
  * passkeys and no `credential` (email/password) account.
  */
 export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
-  const { authClient } = useAuthClient();
+  const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -123,15 +121,19 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     };
   }, []);
 
-  const linkedProviders = providers.filter((provider) => profiles[provider.id] && !DERIVED_PROVIDER_SOURCES[provider.id]);
+  const linkedProviders = providers.filter((provider) => profiles[provider.id] && !provider.accountProviderId);
   const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
 
-  async function handleLink(providerId: string) {
-    setLoading(providerId);
+  async function handleLink(provider: Provider) {
+    setLoading(provider.id);
+    if (provider.accountProviderId) {
+      window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/${provider.accountProviderId}/link`);
+      return;
+    }
     try {
       const linkingUrl = `${window.location.origin}/settings/linking`;
       const { error } = await authClient.linkSocial({
-        provider: DERIVED_PROVIDER_SOURCES[providerId] ?? providerId,
+        provider: provider.id,
         callbackURL: linkingUrl,
         errorCallbackURL: linkingUrl,
       });
@@ -146,21 +148,19 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
     }
   }
 
-  async function handleUnlink(providerId: string) {
-    setLoading(providerId);
+  async function handleUnlink(provider: Provider) {
+    setLoading(provider.id);
     try {
-      const sourceProviderId = DERIVED_PROVIDER_SOURCES[providerId];
-      await unlinkProvider(sourceProviderId ?? providerId);
+      const accountProviderId = provider.accountProviderId ?? provider.id;
+      await unlinkProvider(accountProviderId);
+      for (const extra of provider.linkedAccountProviderIds ?? []) {
+        await unlinkProvider(extra).catch(() => {});
+      }
+      const removed = new Set([accountProviderId, ...(provider.linkedAccountProviderIds ?? [])]);
       setProfiles((prev) => {
-        const next = { ...prev, [providerId]: null };
-        // Unlinking a derived provider removes the link it derives
-        // from, so the source provider and every provider derived
-        // from it lose their profiles at the same time.
-        if (sourceProviderId) {
-          next[sourceProviderId] = null;
-          for (const [derivedId, source] of Object.entries(DERIVED_PROVIDER_SOURCES)) {
-            if (source === sourceProviderId) next[derivedId] = null;
-          }
+        const next = { ...prev };
+        for (const row of providers) {
+          if (removed.has(row.accountProviderId ?? row.id)) next[row.id] = null;
         }
         return next;
       });
@@ -183,7 +183,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
           return (
             <LinkedSettingsItem
               key={provider.id}
-              providerId={provider.id}
+              textureAvatar={provider.textureAvatar}
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
@@ -205,7 +205,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                     type="button"
                     aria-label={t('connections.link')}
                     disabled={isLoading || !guardsLoaded}
-                    onClick={() => void handleLink(provider.id)}
+                    onClick={() => void handleLink(provider)}
                     className={iconButtonClassName}
                   >
                     {isLoading ? <LoaderCircle className="size-4 animate-spin" /> : <Link2 className="size-4" />}
@@ -228,7 +228,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
         confirmLabel={t('connections.unlink')}
         cancelLabel={t('connections.unlinkConfirm.cancel')}
         onConfirm={() => {
-          if (unlinkTarget) void handleUnlink(unlinkTarget.id);
+          if (unlinkTarget) void handleUnlink(unlinkTarget);
         }}
       />
     </div>
