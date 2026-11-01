@@ -18,6 +18,7 @@ import {
   useR2Storage,
 } from '@karasu-lab/ui';
 import { createOAuthClient, type OAuthClientCreated, type PermissionSection } from '@/lib/api/developer';
+import { useAuthClient } from '@/lib/auth/client';
 
 interface CreateOAuthClientDialogProps {
   open: boolean;
@@ -32,6 +33,7 @@ interface CreateOAuthClientDialogProps {
  * Accepts multiple redirect URIs, one per line.
  */
 export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreated }: CreateOAuthClientDialogProps) {
+  const auth = useAuthClient();
   const t = useTranslations();
   const { uploading, upload } = useR2Storage();
 
@@ -84,7 +86,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
     if (uris.length === 0) return;
     setLoading(true);
     try {
-      const result = await createOAuthClient({
+      const result = await createOAuthClient(auth, {
         client_name: name.trim(),
         redirect_uris: uris,
         logo_uri: iconUrl || undefined,

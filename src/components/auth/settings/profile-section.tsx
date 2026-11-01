@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from '@karasu-lab/ui';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { useSettingsUser } from '@/components/settings/user-context';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 import { EditValueDialog } from '@/components/settings/edit-value-dialog';
@@ -25,6 +25,7 @@ import { ProfileIcon, type ProfileIconHandle } from './profile-icon';
  * resolves.
  */
 export function ProfileSection() {
+  const { authClient } = useAuthClient();
   const t = useTranslations();
   const { user, ready, updateUser } = useSettingsUser();
   const profileIconRef = useRef<ProfileIconHandle>(null);

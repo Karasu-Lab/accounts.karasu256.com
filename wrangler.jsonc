@@ -1,1 +1,34 @@
-{"assets":{"binding":"ASSETS","directory":".open-next/assets"},"compatibility_date":"2025-06-24","compatibility_flags":["nodejs_compat"],"env":{"preview":{"name":"accounts-karasu256-com","vars":{"API_URL":"https://dev-api.karasu256.com","APP_ENV":"preview","NEXT_PUBLIC_AUTH_API_URL":"https://dev-api-auth.karasu256.com","NEXT_PUBLIC_AUTH_URL":"https://dev-auth.karasu256.com","NEXT_PUBLIC_FIREBASE_PROJECT_ID":"karasu-lab-application","ROOT_APP_URL":"https://dev.karasu256.com"}}},"main":".open-next/worker.js","name":"accounts-karasu256-com","previews":{"vars":{"API_URL":"https://dev-api.karasu256.com","APP_ENV":"preview","NEXT_PUBLIC_AUTH_API_URL":"https://dev-api-auth.karasu256.com","NEXT_PUBLIC_AUTH_URL":"https://dev-auth.karasu256.com","NEXT_PUBLIC_FIREBASE_PROJECT_ID":"karasu-lab-application","ROOT_APP_URL":"https://dev.karasu256.com"}},"vars":{"API_URL":"https://api.karasu256.com","APP_ENV":"production","NEXT_PUBLIC_AUTH_API_URL":"https://api-auth.karasu256.com","NEXT_PUBLIC_AUTH_URL":"https://auth.karasu256.com","NEXT_PUBLIC_FIREBASE_PROJECT_ID":"karasu-lab-application","ROOT_APP_URL":"https://karasu256.com"}}
+{
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "compatibility_date": "2025-06-24",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "env": {
+    "preview": {
+      "name": "accounts-karasu256-com",
+      "vars": {
+        "API_URL": "https://dev-api.karasu256.com",
+        "APP_ENV": "preview",
+        "ROOT_APP_URL": "https://dev.karasu256.com"
+      }
+    }
+  },
+  "main": ".open-next/worker.js",
+  "name": "accounts-karasu256-com",
+  "previews": {
+    "vars": {
+      "API_URL": "https://dev-api.karasu256.com",
+      "APP_ENV": "preview",
+      "ROOT_APP_URL": "https://dev.karasu256.com"
+    }
+  },
+  "vars": {
+    "API_URL": "https://api.karasu256.com",
+    "APP_ENV": "production",
+    "ROOT_APP_URL": "https://karasu256.com"
+  }
+}

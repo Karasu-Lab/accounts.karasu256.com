@@ -5,6 +5,7 @@ import { AppWindow } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
 import { listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp } from '@/lib/api/authorized-apps';
+import { useAuthClient } from '@/lib/auth/client';
 import { SettingsItemContainer, SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { AuthorizedAppInfoDialog } from '@/components/settings/authorized-app-info-dialog';
 import { useReportLoading } from '@/components/settings/loading-context';
@@ -33,6 +34,7 @@ const APP_ICON_BACKGROUND_COLOR = '#ea580c';
  * load and an empty loaded list keep their own displays here.
  */
 export function AuthorizedAppsClient() {
+  const auth = useAuthClient();
   const t = useTranslations();
   const [state, setState] = useState<ListState>({ status: 'loading' });
   useReportLoading('authorized-apps', state.status === 'loading');
@@ -43,7 +45,7 @@ export function AuthorizedAppsClient() {
   const reload = useCallback(async () => {
     setState({ status: 'loading' });
     try {
-      setState({ status: 'loaded', apps: await listAuthorizedApps() });
+      setState({ status: 'loaded', apps: await listAuthorizedApps(auth) });
     } catch {
       setState({ status: 'error' });
     }
@@ -57,7 +59,7 @@ export function AuthorizedAppsClient() {
     if (!pendingRevoke) return;
     setRevokingId(pendingRevoke.id);
     try {
-      await revokeAuthorizedApp(pendingRevoke.id);
+      await revokeAuthorizedApp(auth, pendingRevoke.id);
       setState((prev) => (prev.status === 'loaded' ? { status: 'loaded', apps: prev.apps.filter((app) => app.id !== pendingRevoke.id) } : prev));
       toast.success(t('authorizedApps.revoked', { name: pendingRevoke.clientName ?? pendingRevoke.clientId }), { autoClose: true });
     } catch (err) {

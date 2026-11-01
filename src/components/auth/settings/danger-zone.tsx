@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast } from '@karasu-lab/ui';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 import { Button } from '@karasu-lab/ui';
 import { Input } from '@karasu-lab/ui';
 import { Label } from '@karasu-lab/ui';
@@ -22,6 +22,7 @@ export interface DangerZoneProps {
  * `authClient.useSession()` redirects to `/` once the account is gone.
  */
 export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
+  const { authClient } = useAuthClient();
   const t = useTranslations();
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState('');

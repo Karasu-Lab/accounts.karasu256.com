@@ -5,7 +5,7 @@ import { LoaderCircle, PlusIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { startRegistration, type PublicKeyCredentialCreationOptionsJSON, type RegistrationResponseJSON } from '@simplewebauthn/browser';
 import { Button, Input, Label, toast, Dialog, DialogPortal, DialogBackdrop, DialogPopup, DialogTitle } from '@karasu-lab/ui';
-import { authClient } from '@/lib/auth/client';
+import { useAuthClient } from '@/lib/auth/client';
 
 interface PasskeyCreateDialogProps {
   /** Called after a passkey is successfully registered. */
@@ -33,6 +33,7 @@ type PendingRegistration = Omit<RegistrationResponseJSON, 'clientExtensionResult
  * not toggle any parent accordion trigger.
  */
 export function PasskeyCreateDialog({ onSuccess }: PasskeyCreateDialogProps) {
+  const { authClient } = useAuthClient();
   const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
