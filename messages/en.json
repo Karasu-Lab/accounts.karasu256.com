@@ -74,14 +74,7 @@
     },
     "menu": {
       "descriptions": {
-        "security": "Protect your account",
-        "connections": "Link external accounts",
-        "authorizedApps": "Manage authorized apps",
-        "developer": "Manage developer tools",
-        "debug": "Show diagnostic information",
-        "addAccount": "Add another account",
-        "backToApp": "Go to karasu256.com",
-        "signOut": "Sign out"
+        "debug": "Show diagnostic information"
       }
     },
     "accountMenu": "Account menu",
@@ -91,7 +84,6 @@
     "signingOut": "Signing out",
     "accountSwitcher": {
       "addAccount": "Add another account",
-      "switchAccount": "Switch to this account",
       "removeAccount": "Remove this account from this device",
       "switchingAccount": "Switching accounts.",
       "switchAfterAdd": "Switch to this account after adding",
