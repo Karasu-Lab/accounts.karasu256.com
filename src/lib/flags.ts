@@ -7,7 +7,9 @@ export const appFlagsSchema = z.object({
 
 export type AppFlags = z.infer<typeof appFlagsSchema>;
 
-export const appFlags = createApiFlags(appFlagsSchema, {
-  baseUrl: process.env.FEATURE_FLAGS_API_URL!,
-  origin: process.env.FEATURE_FLAGS_ORIGIN!,
-});
+export function getAppFlags() {
+  return createApiFlags(appFlagsSchema, {
+    baseUrl: process.env.FEATURE_FLAGS_API_URL!,
+    origin: process.env.FEATURE_FLAGS_ORIGIN!,
+  });
+}

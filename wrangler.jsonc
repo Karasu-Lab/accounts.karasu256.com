@@ -16,6 +16,8 @@
         "ROOT_APP_URL": "https://dev.karasu256.com",
         "AUTH_URL": "https://dev-auth.karasu256.com",
         "AUTH_API_URL": "https://dev-api-auth.karasu256.com",
+        "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
+        "FEATURE_FLAGS_ORIGIN": "https://dev.accounts.karasu256.com",
         "FIREBASE_APP_ID": "karasu-lab-application"
       }
     }
@@ -29,6 +31,8 @@
       "ROOT_APP_URL": "https://dev.karasu256.com",
       "AUTH_URL": "https://dev-auth.karasu256.com",
       "AUTH_API_URL": "https://dev-api-auth.karasu256.com",
+      "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
+      "FEATURE_FLAGS_ORIGIN": "https://dev.accounts.karasu256.com",
       "FIREBASE_APP_ID": "karasu-lab-application"
     }
   },
@@ -38,6 +42,8 @@
     "ROOT_APP_URL": "https://karasu256.com",
     "AUTH_URL": "https://auth.karasu256.com",
     "AUTH_API_URL": "https://api-auth.karasu256.com",
+    "FEATURE_FLAGS_API_URL": "https://flags.karasu256.com",
+    "FEATURE_FLAGS_ORIGIN": "https://accounts.karasu256.com",
     "FIREBASE_APP_ID": "karasu-lab-application"
   }
 }

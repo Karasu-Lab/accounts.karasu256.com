@@ -7,7 +7,7 @@ import './globals.css';
 import { R2StorageProvider, Toaster } from '@karasu-lab/ui';
 import { geistSans, geistMono, notoSansJP } from '@karasu-lab/ui/fonts';
 import { ApiFeatureFlagsProvider } from '@karasu-lab/flags-sdk/server';
-import { appFlags, appFlagsSchema } from '@/lib/flags';
+import { appFlagsSchema, getAppFlags } from '@/lib/flags';
 
 config.autoAddCss = false;
 
@@ -54,7 +54,7 @@ export default async function RootLayout({
     <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         <R2StorageProvider imageApiUrl={process.env.CDN_URL!}>
-          <ApiFeatureFlagsProvider flags={appFlags} schema={appFlagsSchema}>
+          <ApiFeatureFlagsProvider flags={getAppFlags()} schema={appFlagsSchema}>
             <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
             <Toaster />
           </ApiFeatureFlagsProvider>

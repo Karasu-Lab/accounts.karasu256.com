@@ -24,7 +24,6 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
-      FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
       APP_ID: ${{ vars.APP_ID }}
       APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
@@ -35,7 +34,7 @@ jobs:
         with:
           mode: production
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET FLAGS_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
 
   preview:
     if: github.ref_name != 'main'
@@ -49,7 +48,6 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
       INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
-      FLAGS_SECRET: ${{ secrets.FLAGS_SECRET }}
       APP_ID: ${{ vars.APP_ID }}
       APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
@@ -60,4 +58,4 @@ jobs:
         with:
           mode: preview
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET FLAGS_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
