@@ -174,9 +174,6 @@ importers:
       '@base-ui/react':
         specifier: ^1.6.0
         version: 1.9.0(@types/react@19.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@flags-sdk/vercel':
-        specifier: ^1.4.4
-        version: 1.6.0(@aws-sdk/credential-provider-web-identity@3.972.86)(flags@4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(ws@8.22.0)
       '@fortawesome/fontawesome-svg-core':
         specifier: ^7.2.0
         version: 7.3.1
@@ -193,20 +190,20 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(@fortawesome/fontawesome-svg-core@7.3.1)(react@19.2.4)
       '@karasu-lab/api-permissions':
-        specifier: 0.1.0-4efb331
-        version: 0.1.0-4efb331
-      '@karasu-lab/flags':
-        specifier: 0.1.0-7dfff53
-        version: 0.1.0-7dfff53(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: 0.1.0-4b04f47
+        version: 0.1.0-4b04f47
+      '@karasu-lab/flags-sdk':
+        specifier: 0.1.0-dab071f
+        version: 0.1.0-dab071f(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@karasu-lab/types':
-        specifier: 0.1.0-0e2dcae
-        version: 0.1.0-0e2dcae
+        specifier: 0.1.0-5fc5494
+        version: 0.1.0-5fc5494
       '@karasu-lab/ui':
-        specifier: 0.1.0-4f34abc
-        version: 0.1.0-4f34abc(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+        specifier: 0.1.0-518ab4d
+        version: 0.1.0-518ab4d(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       '@karasu-lab/utils':
         specifier: 0.1.0-de578b8
-        version: 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+        version: 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       '@simplewebauthn/browser':
         specifier: ^13.3.0
         version: 13.3.0
@@ -225,9 +222,6 @@ importers:
       firebase:
         specifier: ^12.15.0
         version: 12.19.0
-      flags:
-        specifier: ^4.2.0
-        version: 4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       i:
         specifier: ^0.3.7
         version: 0.3.7
@@ -1323,11 +1317,6 @@ packages:
   '@firebase/webchannel-wrapper@1.0.7':
     resolution: {integrity: sha512-phBFwieDLvkZGYN9CE9ZFNEIoBVksprzsnCzQejCmCHtgwCXReeuRpoEGN9C4EbhONztv8NRV1tau6Rb9pONwQ==}
 
-  '@flags-sdk/vercel@1.6.0':
-    resolution: {integrity: sha512-I3c1lZxHZWrIL+NSXbo2JVdO4gjp8XskX2SnmByh89PyXbepGYtVlIIpR23xECuhCuRUS8tkCVMtFQlQvrGTOQ==}
-    peerDependencies:
-      flags: '*'
-
   '@floating-ui/core@1.8.0':
     resolution: {integrity: sha512-0CIZ5itps/8x7BG8dEIhs53BvCUH2PCoogtakwRTut+Arm58sJooJ0AuZhLw2HJYIR5cMLNPBSS728sPho2khQ==}
 
@@ -1740,20 +1729,20 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@karasu-lab/api-permissions@0.1.0-4efb331':
-    resolution: {integrity: sha512-1BW/uS+dK9bRf9ZrJak+Jgm5CSfESjTCWOAqzVsHDqA2s8fMPbl4JQimAoUU4+aMjp5aYmZGEK0zbYJzDZI+Rg==, tarball: https://npm.pkg.github.com/download/@karasu-lab/api-permissions/0.1.0-4efb331/3505971bbd0ebb3029d0c174ae6f5789b2c8562e}
+  '@karasu-lab/api-permissions@0.1.0-4b04f47':
+    resolution: {integrity: sha512-waPf+NZB15QztOTOLcZdmy/QfXJ/YFJgZGlIveSZcNRGdmStfAxNnjuddZO9CH/iVd0+qkud+7b+W8+Cc3qeUQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/api-permissions/0.1.0-4b04f47/b0dcdfd39bdfdfb806b719eaedaeba1edfff5dca}
 
-  '@karasu-lab/flags@0.1.0-7dfff53':
-    resolution: {integrity: sha512-oGur/oyJNun6mAPz91mlbMZ/0KzhDN0uX3IWxH/Izc8Q3daWJ2XoRpYM4a8BVeCwWzYlJdOOY7y4Ob1DXkC+hA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/flags/0.1.0-7dfff53/6a17d01729db28d7c8f9cd7c9321e4b0f37b243c}
+  '@karasu-lab/flags-sdk@0.1.0-dab071f':
+    resolution: {integrity: sha512-ZiWufhkfKV0DLZXL1lEAkQs6R6Y90UAKIXT/i+2SyrYGGwkpu8EXjMoEiG7hZ9qiF7lq6Nst+fyoHeLLGeimew==, tarball: https://npm.pkg.github.com/download/@karasu-lab/flags-sdk/0.1.0-dab071f/b8aa21bf82c79c82145af04d4ca184c04a60f073}
     peerDependencies:
       next: ^15.3.9
       react: ^19
 
-  '@karasu-lab/types@0.1.0-0e2dcae':
-    resolution: {integrity: sha512-/CIfnI1bfEz0eVdnDHJ8ujJLh2VH6Gv2o61uWFU7WhxS00egjm9V8ySJ0z4E6LbxEmjk8EtJmEEz3ZZKIEEfTw==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-0e2dcae/4af56108db1b5006f25f912f02846a3e1b3d9e7a}
+  '@karasu-lab/types@0.1.0-5fc5494':
+    resolution: {integrity: sha512-Rxv6E7HUOFvFxAzA48ZXi4EddgtBiofP6d4zCJFPc2KPF37jvFwElCVBzpID+0zxoboehggBKkjZupCQkKeYng==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-5fc5494/3377cbe3175a025aefb28ee1b4a9c668af0c9876}
 
-  '@karasu-lab/ui@0.1.0-4f34abc':
-    resolution: {integrity: sha512-RaLckk6a5tKTsg7Sr4oVZiU2ZdgaVcNHfRK2DXsYMvt7kfauWVYz08t7pW9aMeLd7KkbRdK+21uc8r1iEKtQoA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-4f34abc/ea4a86b35ed83a4f5fa473a477a7530d1ac5c330}
+  '@karasu-lab/ui@0.1.0-518ab4d':
+    resolution: {integrity: sha512-BiKr9SnmbOAAfVCo56OM8n1kMgXxb8XVBMsvurpP7pGnh6fNqdQgWrIhHquIEjfCrce2XsxRAVTBnH4BsFFElQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-518ab4d/526934a055d490f8217f508026759e2c4e5cfb37}
     peerDependencies:
       next: ^15.3.9
       react: ^19.0.0
@@ -2815,44 +2804,6 @@ packages:
   '@types/validate-npm-package-name@4.0.2':
     resolution: {integrity: sha512-lrpDziQipxCEeK5kWxvljWYhUvOiB2A9izZd9B2AFarYAkqZshb4lPbRs7zKEic6eGtH8V/2qJW+dPp9OtF6bw==}
 
-  '@vercel/cli-config@0.3.5':
-    resolution: {integrity: sha512-O7y3EFzHENSLtE/3fjM3vIRqDpFFhZor2dMcZaND4G1d88gQk9u8yBcZhRR9CKnBowgzXdl0qcXkuINI05I72w==}
-
-  '@vercel/cli-exec@1.0.1':
-    resolution: {integrity: sha512-g9XerViJ/paZujufXYcu5XYI2vU2rtB4sgdpjUHde5RnOkdmpu0ngH46LCFGHoPXO/C+qDPSczIHIRN+8Q2YKQ==}
-    engines: {node: '>= 18'}
-
-  '@vercel/flags-core@1.11.0':
-    resolution: {integrity: sha512-QUeTQb9uC9cZEPK1B5PQjNezXi890V5OeteCg+IE29Wz/J6RPybkmdTf636EPZMtG75bb1z0S8SquSuIkMLFKA==}
-    peerDependencies:
-      '@openfeature/server-sdk': 1.18.0
-      next: '*'
-    peerDependenciesMeta:
-      '@openfeature/server-sdk':
-        optional: true
-      next:
-        optional: true
-
-  '@vercel/functions@3.10.5':
-    resolution: {integrity: sha512-IDqsDlIbVjWk5zoV63N41vKSShH3LgJ8Y5gAQc+dq7HEkHRrVh3naJ/klZxit4B8G+8WEK7ezb/tkOU2g3UViw==}
-    engines: {node: '>= 20'}
-    peerDependencies:
-      '@aws-sdk/credential-provider-web-identity': '*'
-      ws: '>=8'
-    peerDependenciesMeta:
-      '@aws-sdk/credential-provider-web-identity':
-        optional: true
-      ws:
-        optional: true
-
-  '@vercel/oidc@3.5.0':
-    resolution: {integrity: sha512-jo7GgeJx2YMkjg9A28pFM5p88n5SnSHvDeNlf9898bRWiG9jPxwedj/gn/2XTw4UOTyQ50uHlrTGSlf/XU5tgw==}
-    engines: {node: '>= 20'}
-
-  '@vercel/oidc@4.0.5':
-    resolution: {integrity: sha512-E+duTxv0W8r3qNCGUYxTLt0V0BlLUlrEqxYOu2OoFubIbxwGjwm4wofache+YgU6Sr0MwoAA/vsSrrNrrWjimw==}
-    engines: {node: '>= 20'}
-
   '@vitest/expect@3.2.7':
     resolution: {integrity: sha512-E8eBXaKibuvH2pSZErOjdVb5vF4PbKYcrnluBTYxEk1l/VhhwZg1kZQsdtjq+CsF5CFydf2Rdkz7jDHKSisi3w==}
 
@@ -3303,10 +3254,6 @@ packages:
   depd@2.0.0:
     resolution: {integrity: sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==}
     engines: {node: '>= 0.8'}
-
-  dequal@2.0.3:
-    resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
-    engines: {node: '>=6'}
 
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
@@ -3832,10 +3779,6 @@ packages:
   js-tokens@9.0.1:
     resolution: {integrity: sha512-mxa9E9ITFOt0ban3j6L5MpjwegGz6lBQmM1IJkWeBZGcMxto50+eWdjC/52xDbS2vy0k7vIMK0Fe2wfL9OQSpQ==}
 
-  js-xxhash@4.0.0:
-    resolution: {integrity: sha512-3Q2eIqG6s1KEBBmkj9tGM9lef8LJbuRyTVBdI3GpTnrvtytunjLPO0wqABp5qhtMzfA32jYn1FlnIV7GH1RAHQ==}
-    engines: {node: '>=18.0.0'}
-
   jsdom@26.1.0:
     resolution: {integrity: sha512-Cvc9WUhxSMEo4McES3P7oK3QaXldCfNWp7pl2NNeiIFlCoLr3kfq9kb1fxftiwk1FLV7CvpvDfonxtzUDeSOPg==}
     engines: {node: '>=18'}
@@ -4200,10 +4143,6 @@ packages:
   ora@8.2.0:
     resolution: {integrity: sha512-weP+BZ8MVNnlCm8c0Qdc1WSWq4Qn7I+9CJGm7Qali6g44e/PUzbjNqJX5NJ9ljlNMosfJvg1fKEGILklK9cwnw==}
     engines: {node: '>=18'}
-
-  os-paths@4.4.0:
-    resolution: {integrity: sha512-wrAwOeXp1RRMFfQY8Sy7VaGVmPocaLwSFOYCGKSyo8qmJ+/yaafCl5BCA1IQZWqFSRBrKDYFeR9d/VyQzfH/jg==}
-    engines: {node: '>= 6.0'}
 
   p-limit@2.3.0:
     resolution: {integrity: sha512-//88mFWSJx8lxCzwdAABTJL2MyWB12+eIY7MDL2SqLmAkeKU9qxRvWuSyTjm3FUmpBEMuFfckAIqEaVGUDxb6w==}
@@ -5029,14 +4968,6 @@ packages:
     resolution: {integrity: sha512-c16PKLIRxBYpR3jSWsdS7SFp0COm5SOQdiFjY818dYFHJbMGuLBszpF07LBWmOS1uzrHa9VGdynsEgoeKy0oOQ==}
     engines: {node: '>=20'}
 
-  xdg-app-paths@5.5.1:
-    resolution: {integrity: sha512-hI3flOB4PLZIy5prbtTpirobtPE2ZtZ52szO+2mM9Efp6ErM398La+C1lIpNWDfNoQk+6Lsi6nMcCwVB7pxeMQ==}
-    engines: {node: '>= 6.0'}
-
-  xdg-portable@7.3.0:
-    resolution: {integrity: sha512-sqMMuL1rc0FmMBOzCpd0yuy9trqF2yTTVe+E9ogwCSWQCdDEtQUwrZPT6AxqtsFGRNxycgncbP/xmOOSPw5ZUw==}
-    engines: {node: '>= 6.0'}
-
   xml-crypto@6.4.0:
     resolution: {integrity: sha512-d21ModhBO/+QWWAmOjyDeQJuHNmsR/HtOxyBchiTbKfGNKuHYwQNd+SlLhwyyrwoAGLp4Qc6BQ7nAtnM47dHSQ==}
     engines: {node: '>=16'}
@@ -5107,9 +5038,6 @@ packages:
 
   youch@4.1.0-beta.10:
     resolution: {integrity: sha512-rLfVLB4FgQneDr0dv1oddCVZmKjcJ6yX6mS4pU82Mq/Dt9a3cLZQ62pDBL4AUO+uVrCvtWz3ZFUL2HFAFJ/BXQ==}
-
-  zod@4.1.11:
-    resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
   zod@4.6.7:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
@@ -6505,16 +6433,6 @@ snapshots:
 
   '@firebase/webchannel-wrapper@1.0.7': {}
 
-  '@flags-sdk/vercel@1.6.0(@aws-sdk/credential-provider-web-identity@3.972.86)(flags@4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(ws@8.22.0)':
-    dependencies:
-      '@vercel/flags-core': 1.11.0(@aws-sdk/credential-provider-web-identity@3.972.86)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(ws@8.22.0)
-      flags: 4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-    transitivePeerDependencies:
-      - '@aws-sdk/credential-provider-web-identity'
-      - '@openfeature/server-sdk'
-      - next
-      - ws
-
   '@floating-ui/core@1.8.0':
     dependencies:
       '@floating-ui/utils': 0.2.12
@@ -6827,9 +6745,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@karasu-lab/api-permissions@0.1.0-4efb331': {}
+  '@karasu-lab/api-permissions@0.1.0-4b04f47': {}
 
-  '@karasu-lab/flags@0.1.0-7dfff53(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@karasu-lab/flags-sdk@0.1.0-dab071f(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       flags: 4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next: 16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -6839,12 +6757,12 @@ snapshots:
       - '@opentelemetry/api'
       - react-dom
 
-  '@karasu-lab/types@0.1.0-0e2dcae': {}
+  '@karasu-lab/types@0.1.0-5fc5494': {}
 
-  '@karasu-lab/ui@0.1.0-4f34abc(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
+  '@karasu-lab/ui@0.1.0-518ab4d(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@karasu-lab/utils': 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+      '@karasu-lab/utils': 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       country-flag-icons: 1.6.20
@@ -6886,13 +6804,13 @@ snapshots:
       - vitest
       - vue
 
-  '@karasu-lab/utils@0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
+  '@karasu-lab/utils@0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
     dependencies:
       '@better-auth/oauth-provider': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))
       '@better-auth/passkey': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)
       '@better-auth/sso': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))
       '@enesusta/url-query-builder': 1.0.0
-      '@karasu-lab/api-permissions': 0.1.0-4efb331
+      '@karasu-lab/api-permissions': 0.1.0-4b04f47
       '@react-email/components': 1.0.12(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       better-auth: 1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       jose: 6.2.14
@@ -7871,43 +7789,6 @@ snapshots:
 
   '@types/validate-npm-package-name@4.0.2': {}
 
-  '@vercel/cli-config@0.3.5':
-    dependencies:
-      xdg-app-paths: 5.5.1
-      zod: 4.1.11
-
-  '@vercel/cli-exec@1.0.1':
-    dependencies:
-      execa: 5.1.1
-
-  '@vercel/flags-core@1.11.0(@aws-sdk/credential-provider-web-identity@3.972.86)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(ws@8.22.0)':
-    dependencies:
-      '@vercel/functions': 3.10.5(@aws-sdk/credential-provider-web-identity@3.972.86)(ws@8.22.0)
-      '@vercel/oidc': 3.5.0
-      dequal: 2.0.3
-      jose: 5.10.0
-      js-xxhash: 4.0.0
-    optionalDependencies:
-      next: 16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-    transitivePeerDependencies:
-      - '@aws-sdk/credential-provider-web-identity'
-      - ws
-
-  '@vercel/functions@3.10.5(@aws-sdk/credential-provider-web-identity@3.972.86)(ws@8.22.0)':
-    dependencies:
-      '@vercel/oidc': 4.0.5
-    optionalDependencies:
-      '@aws-sdk/credential-provider-web-identity': 3.972.86
-      ws: 8.22.0
-
-  '@vercel/oidc@3.5.0': {}
-
-  '@vercel/oidc@4.0.5':
-    dependencies:
-      '@vercel/cli-config': 0.3.5
-      '@vercel/cli-exec': 1.0.1
-      jose: 5.10.0
-
   '@vitest/expect@3.2.7':
     dependencies:
       '@types/chai': 5.2.3
@@ -8286,8 +8167,6 @@ snapshots:
   denque@2.1.0: {}
 
   depd@2.0.0: {}
-
-  dequal@2.0.3: {}
 
   detect-libc@2.1.2: {}
 
@@ -8861,8 +8740,6 @@ snapshots:
 
   js-tokens@9.0.1: {}
 
-  js-xxhash@4.0.0: {}
-
   jsdom@26.1.0(supports-color@10.2.2):
     dependencies:
       cssstyle: 4.6.0
@@ -9192,8 +9069,6 @@ snapshots:
       stdin-discarder: 0.2.2
       string-width: 7.2.0
       strip-ansi: 7.2.0
-
-  os-paths@4.4.0: {}
 
   p-limit@2.3.0:
     dependencies:
@@ -10069,15 +9944,6 @@ snapshots:
       is-wsl: 3.1.1
       powershell-utils: 0.2.1
 
-  xdg-app-paths@5.5.1:
-    dependencies:
-      os-paths: 4.4.0
-      xdg-portable: 7.3.0
-
-  xdg-portable@7.3.0:
-    dependencies:
-      os-paths: 4.4.0
-
   xml-crypto@6.4.0:
     dependencies:
       '@xmldom/is-dom-node': 1.0.1
@@ -10145,7 +10011,5 @@ snapshots:
       '@speed-highlight/core': 1.2.24
       cookie: 1.1.1
       youch-core: 0.3.3
-
-  zod@4.1.11: {}
 
   zod@4.6.7: {}
