@@ -2,7 +2,7 @@
 
 import { Flag, GitBranch, Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useFeatureFlags } from '@karasu-lab/flags/client';
+import { useFeatureFlags } from '@karasu-lab/flags-sdk/client';
 import type { ApiMeta } from '@/lib/api/api-client';
 import { appFlagsSchema } from '@/lib/flags';
 import { SettingsItemContainer, SettingsItemGroup } from '@/components/settings/settings-item-container';

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { createApiFlags } from '@karasu-lab/flags/server';
+import { createApiFlags } from '@karasu-lab/flags-sdk/server';
 
 export const appFlagsSchema = z.object({
   testFlag: z.boolean(),

@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@karasu-lab/api-permissions": "0.1.0-4efb331",
-    "@karasu-lab/flags": "0.1.0-7dfff53",
+    "@karasu-lab/flags-sdk": "0.1.0-635e8ff",
     "@karasu-lab/types": "0.1.0-0e2dcae",
     "@karasu-lab/ui": "0.1.0-4f34abc",
     "@karasu-lab/utils": "0.1.0-de578b8",
