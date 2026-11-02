@@ -190,20 +190,20 @@ importers:
         specifier: ^3.3.1
         version: 3.5.0(@fortawesome/fontawesome-svg-core@7.3.1)(react@19.2.4)
       '@karasu-lab/api-permissions':
-        specifier: 0.1.0-4efb331
-        version: 0.1.0-4efb331
-      '@karasu-lab/flags':
-        specifier: 0.1.0-7dfff53
-        version: 0.1.0-7dfff53(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        specifier: 0.1.0-4b04f47
+        version: 0.1.0-4b04f47
+      '@karasu-lab/flags-sdk':
+        specifier: 0.1.0-dab071f
+        version: 0.1.0-dab071f(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@karasu-lab/types':
-        specifier: 0.1.0-0e2dcae
-        version: 0.1.0-0e2dcae
+        specifier: 0.1.0-5fc5494
+        version: 0.1.0-5fc5494
       '@karasu-lab/ui':
-        specifier: 0.1.0-4f34abc
-        version: 0.1.0-4f34abc(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+        specifier: 0.1.0-518ab4d
+        version: 0.1.0-518ab4d(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       '@karasu-lab/utils':
         specifier: 0.1.0-de578b8
-        version: 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+        version: 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       '@simplewebauthn/browser':
         specifier: ^13.3.0
         version: 13.3.0
@@ -1729,20 +1729,20 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@karasu-lab/api-permissions@0.1.0-4efb331':
-    resolution: {integrity: sha512-1BW/uS+dK9bRf9ZrJak+Jgm5CSfESjTCWOAqzVsHDqA2s8fMPbl4JQimAoUU4+aMjp5aYmZGEK0zbYJzDZI+Rg==, tarball: https://npm.pkg.github.com/download/@karasu-lab/api-permissions/0.1.0-4efb331/3505971bbd0ebb3029d0c174ae6f5789b2c8562e}
+  '@karasu-lab/api-permissions@0.1.0-4b04f47':
+    resolution: {integrity: sha512-waPf+NZB15QztOTOLcZdmy/QfXJ/YFJgZGlIveSZcNRGdmStfAxNnjuddZO9CH/iVd0+qkud+7b+W8+Cc3qeUQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/api-permissions/0.1.0-4b04f47/b0dcdfd39bdfdfb806b719eaedaeba1edfff5dca}
 
-  '@karasu-lab/flags@0.1.0-7dfff53':
-    resolution: {integrity: sha512-oGur/oyJNun6mAPz91mlbMZ/0KzhDN0uX3IWxH/Izc8Q3daWJ2XoRpYM4a8BVeCwWzYlJdOOY7y4Ob1DXkC+hA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/flags/0.1.0-7dfff53/6a17d01729db28d7c8f9cd7c9321e4b0f37b243c}
+  '@karasu-lab/flags-sdk@0.1.0-dab071f':
+    resolution: {integrity: sha512-ZiWufhkfKV0DLZXL1lEAkQs6R6Y90UAKIXT/i+2SyrYGGwkpu8EXjMoEiG7hZ9qiF7lq6Nst+fyoHeLLGeimew==, tarball: https://npm.pkg.github.com/download/@karasu-lab/flags-sdk/0.1.0-dab071f/b8aa21bf82c79c82145af04d4ca184c04a60f073}
     peerDependencies:
       next: ^15.3.9
       react: ^19
 
-  '@karasu-lab/types@0.1.0-0e2dcae':
-    resolution: {integrity: sha512-/CIfnI1bfEz0eVdnDHJ8ujJLh2VH6Gv2o61uWFU7WhxS00egjm9V8ySJ0z4E6LbxEmjk8EtJmEEz3ZZKIEEfTw==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-0e2dcae/4af56108db1b5006f25f912f02846a3e1b3d9e7a}
+  '@karasu-lab/types@0.1.0-5fc5494':
+    resolution: {integrity: sha512-Rxv6E7HUOFvFxAzA48ZXi4EddgtBiofP6d4zCJFPc2KPF37jvFwElCVBzpID+0zxoboehggBKkjZupCQkKeYng==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-5fc5494/3377cbe3175a025aefb28ee1b4a9c668af0c9876}
 
-  '@karasu-lab/ui@0.1.0-4f34abc':
-    resolution: {integrity: sha512-RaLckk6a5tKTsg7Sr4oVZiU2ZdgaVcNHfRK2DXsYMvt7kfauWVYz08t7pW9aMeLd7KkbRdK+21uc8r1iEKtQoA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-4f34abc/ea4a86b35ed83a4f5fa473a477a7530d1ac5c330}
+  '@karasu-lab/ui@0.1.0-518ab4d':
+    resolution: {integrity: sha512-BiKr9SnmbOAAfVCo56OM8n1kMgXxb8XVBMsvurpP7pGnh6fNqdQgWrIhHquIEjfCrce2XsxRAVTBnH4BsFFElQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-518ab4d/526934a055d490f8217f508026759e2c4e5cfb37}
     peerDependencies:
       next: ^15.3.9
       react: ^19.0.0
@@ -6745,9 +6745,9 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@karasu-lab/api-permissions@0.1.0-4efb331': {}
+  '@karasu-lab/api-permissions@0.1.0-4b04f47': {}
 
-  '@karasu-lab/flags@0.1.0-7dfff53(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@karasu-lab/flags-sdk@0.1.0-dab071f(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       flags: 4.4.0(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next: 16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -6757,12 +6757,12 @@ snapshots:
       - '@opentelemetry/api'
       - react-dom
 
-  '@karasu-lab/types@0.1.0-0e2dcae': {}
+  '@karasu-lab/types@0.1.0-5fc5494': {}
 
-  '@karasu-lab/ui@0.1.0-4f34abc(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
+  '@karasu-lab/ui@0.1.0-518ab4d(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.3.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@karasu-lab/utils': 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
+      '@karasu-lab/utils': 0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       class-variance-authority: 0.7.1
       clsx: 2.1.1
       country-flag-icons: 1.6.20
@@ -6804,13 +6804,13 @@ snapshots:
       - vitest
       - vue
 
-  '@karasu-lab/utils@0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4efb331)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
+  '@karasu-lab/utils@0.1.0-de578b8(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))':
     dependencies:
       '@better-auth/oauth-provider': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))
       '@better-auth/passkey': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)
       '@better-auth/sso': 1.7.14(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(better-auth@1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1)))(better-call@1.4.4(zod@4.6.7))
       '@enesusta/url-query-builder': 1.0.0
-      '@karasu-lab/api-permissions': 0.1.0-4efb331
+      '@karasu-lab/api-permissions': 0.1.0-4b04f47
       '@react-email/components': 1.0.12(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       better-auth: 1.7.14(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
       jose: 6.2.14
