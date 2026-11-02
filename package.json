@@ -12,11 +12,11 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@karasu-lab/api-permissions": "0.1.0-4efb331",
-    "@karasu-lab/flags-sdk": "0.1.0-635e8ff",
-    "@karasu-lab/types": "0.1.0-0e2dcae",
-    "@karasu-lab/ui": "0.1.0-4f34abc",
-    "@karasu-lab/utils": "0.1.0-de578b8",
+    "@karasu-lab/api-permissions": "0.1.0-4b04f47",
+    "@karasu-lab/flags-sdk": "0.1.0-dab071f",
+    "@karasu-lab/types": "0.1.0-5fc5494",
+    "@karasu-lab/ui": "0.1.0-518ab4d",
+    "@karasu-lab/utils": "0.1.0-be51f04",
     "@base-ui/react": "^1.6.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
