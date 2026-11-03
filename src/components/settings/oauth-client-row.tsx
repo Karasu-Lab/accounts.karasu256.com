@@ -1,8 +1,8 @@
 'use client';
 
-import { Code2, KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
+import { Code2, Copy, KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger } from '@karasu-lab/ui';
+import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger, toast } from '@karasu-lab/ui';
 import type { OAuthClientSummary } from '@/lib/api/developer';
 import { SettingsItemContainer } from './settings-item-container';
 
@@ -25,20 +25,33 @@ const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
 /**
  * A single OAuth client as a settings item: the client's logo in the
  * icon tile (or the developer icon when it has none), its name as the
- * title, and its redirect URIs as the description. A dedicated edit
- * button and a three-dot menu for additional actions (test, rotate
- * secret, delete) sit at the right end. Selecting the item itself
- * opens the client information dialog, which shows the client's
- * scopes in consent screen format — the item no longer summarizes
- * scopes into proprietary chips (e.g. "Profile R/W").
+ * title, and its redirect URIs as the description. The texts auto-fit
+ * like the profile item at the top of the account settings menu: they
+ * stay on one line and their font size shrinks to fit, so a long
+ * callback URI does not wrap and break the item's layout. A dedicated
+ * edit button and a three-dot menu for additional actions (test, copy
+ * client ID, rotate secret, delete) sit at the right end. Selecting
+ * the item itself opens the client information dialog, which shows
+ * the client's scopes in consent screen format — the item no longer
+ * summarizes scopes into proprietary chips (e.g. "Profile R/W").
  */
 export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret, hasItemAbove, hasItemBelow }: OAuthClientRowProps) {
   const t = useTranslations();
+
+  async function handleCopyClientId() {
+    try {
+      await navigator.clipboard.writeText(client.client_id);
+      toast.success(t('settings.developer.clientIdCopied'));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    }
+  }
 
   return (
     <SettingsItemContainer
       title={client.client_name ?? client.client_id}
       description={client.redirect_uris.join(' ')}
+      autoFitText
       icon={Code2}
       iconImageSrc={client.logo_uri ?? undefined}
       iconBackgroundColor={DEVELOPER_ICON_BACKGROUND_COLOR}
@@ -65,6 +78,10 @@ export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onR
                   <DropdownMenuItem onClick={() => onTest(client)}>
                     <Play className="size-4" />
                     {t('settings.developer.testClient')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => void handleCopyClientId()}>
+                    <Copy className="size-4" />
+                    {t('settings.developer.copyClientId')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => onRotateSecret(client)}>
                     <KeyRound className="size-4" />
