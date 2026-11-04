@@ -138,6 +138,8 @@
         "requesting": "{name} is requesting the following permissions.",
         "noScopes": "No permissions requested"
       },
+      "copyClientId": "Copy client ID",
+      "clientIdCopied": "Client ID copied",
       "rotateSecret": "Regenerate secret",
       "rotateSecretConfirm": {
         "title": "Regenerate client secret?",

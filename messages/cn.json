@@ -138,6 +138,8 @@
         "requesting": "{name} 正在请求以下权限。",
         "noScopes": "未请求任何权限"
       },
+      "copyClientId": "复制客户端 ID",
+      "clientIdCopied": "已复制客户端 ID",
       "rotateSecret": "重新生成密钥",
       "rotateSecretConfirm": {
         "title": "重新生成客户端密钥？",
