@@ -54,6 +54,7 @@ export function RadioSettingsItem({
           title: option.label,
           radioValue: option.value,
           disabled,
+          onClick: disabled || onValueChange === undefined ? undefined : () => onValueChange(option.value),
         }))}
         hasItemAbove={hasItemAbove}
         hasItemBelow={hasItemBelow}
