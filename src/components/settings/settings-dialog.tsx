@@ -53,7 +53,8 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const avatarField = spec.fields.find((f) => f.avatar);
   const editingField = editKey !== null ? spec.fields.find((f) => f.key === editKey) : undefined;
-  const multilineEditing = editingField?.edit.multiline ?? false;
+  const editingSpec = editingField?.edit;
+  const multilineEditing = editingSpec?.multiline ?? false;
 
   React.useEffect(() => {
     if (!open) setEditKey(null);
@@ -66,7 +67,7 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
   }
 
   function commitEdit() {
-    if (editingField?.edit) editingField.edit.onSave(draft);
+    editingSpec?.onSave(draft);
     setEditKey(null);
   }
 
@@ -177,18 +178,18 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
           )}
         </DialogPopup>
       </DialogPortal>
-      {multilineEditing && editingField && (
+      {multilineEditing && editingSpec && (
         <EditValueDialog
           open={editKey !== null}
           onOpenChange={(o) => {
             if (!o) setEditKey(null);
           }}
-          label={editingField.title}
-          value={editingField.edit.value}
-          multiline={editingField.edit.multiline}
-          placeholder={editingField.edit.placeholder}
-          autoComplete={editingField.edit.autoComplete}
-          onSave={editingField.edit.onSave}
+          label={editingField?.title}
+          value={editingSpec.value}
+          multiline={editingSpec.multiline}
+          placeholder={editingSpec.placeholder}
+          autoComplete={editingSpec.autoComplete}
+          onSave={editingSpec.onSave}
           saveLabel={spec.editorSaveLabel}
           cancelLabel={spec.editorCancelLabel}
         />
