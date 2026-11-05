@@ -5,16 +5,26 @@ import type { AuthClientHandle } from '@/lib/auth/client';
 export type { ApiKeyCreated, ApiKeySummary };
 export type ApiKeyPermission = PermissionSummary;
 
+export type OAuthClientType = 'web' | 'device';
+
+export const DEVICE_CODE_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
+
 export interface OAuthClientSummary {
   client_id: string;
   client_name?: string;
   logo_uri?: string;
   redirect_uris: string[];
   scope?: string;
+  grant_types?: string[];
+}
+
+export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>): OAuthClientType {
+  const grantTypes = client.grant_types ?? [];
+  return grantTypes.includes(DEVICE_CODE_GRANT_TYPE) && !grantTypes.includes('authorization_code') ? 'device' : 'web';
 }
 
 export interface OAuthClientCreated extends OAuthClientSummary {
-  client_secret: string;
+  client_secret?: string;
 }
 
 export async function createOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, input: {
@@ -22,9 +32,15 @@ export async function createOAuthClient({ authClient, bridgeFirebaseSession }: A
   redirect_uris: string[];
   logo_uri?: string;
   scope: string;
+  type: OAuthClientType;
 }): Promise<OAuthClientCreated> {
   await bridgeFirebaseSession();
-  const { data, error } = await authClient.oauth2.createClient(input);
+  const { type, redirect_uris, ...rest } = input;
+  const payload =
+    type === 'device'
+      ? { ...rest, grant_types: [DEVICE_CODE_GRANT_TYPE], token_endpoint_auth_method: 'none' }
+      : { ...rest, redirect_uris };
+  const { data, error } = await authClient.oauth2.createClient(payload);
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as OAuthClientCreated;
 }

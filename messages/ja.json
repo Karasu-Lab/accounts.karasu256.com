@@ -114,6 +114,10 @@
       "keyPrefix": "キープレフィックス",
       "dialog": {
         "clientName": "クライアント名",
+        "clientType": "OAuth タイプ",
+        "clientTypeWeb": "ウェブ",
+        "clientTypeDevice": "デバイス",
+        "clientCreated": "クライアントを作成しました",
         "callbackUris": "コールバック URI",
         "callbackUrisHelp": "1 行に 1 つの URI を入力してください",
         "icon": "アイコン",

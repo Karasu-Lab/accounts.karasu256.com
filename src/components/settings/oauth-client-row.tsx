@@ -3,7 +3,7 @@
 import { Code2, Copy, KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger, toast } from '@karasu-lab/ui';
-import type { OAuthClientSummary } from '@/lib/api/developer';
+import { oauthClientType, type OAuthClientSummary } from '@/lib/api/developer';
 import { SettingsItemContainer } from './settings-item-container';
 
 interface OAuthClientRowProps {
@@ -50,7 +50,7 @@ export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onR
   return (
     <SettingsItemContainer
       title={client.client_name ?? client.client_id}
-      description={client.redirect_uris.join(' ')}
+      description={oauthClientType(client) === 'device' ? t('settings.developer.dialog.clientTypeDevice') : client.redirect_uris.join(' ')}
       autoFitText
       icon={Code2}
       iconImageSrc={client.logo_uri ?? undefined}
