@@ -14,6 +14,8 @@ import {
   FileUploadButton,
   Input,
   Label,
+  RadioGroup,
+  RadioGroupItem,
   R2Image,
   useR2Storage,
 } from '@karasu-lab/ui';
@@ -127,28 +129,16 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
 
               <div className="space-y-1.5">
                 <Label>{t('settings.developer.dialog.clientType')}</Label>
-                <div className="flex gap-4">
+                <RadioGroup value={clientType} onValueChange={(value) => setClientType(value as OAuthClientType)} className="flex gap-4">
                   <label className="flex items-center gap-1.5 text-sm">
-                    <input
-                      type="radio"
-                      name="client-type"
-                      checked={clientType === 'web'}
-                      onChange={() => setClientType('web')}
-                      className="accent-primary"
-                    />
+                    <RadioGroupItem value="web" />
                     {t('settings.developer.dialog.clientTypeWeb')}
                   </label>
                   <label className="flex items-center gap-1.5 text-sm">
-                    <input
-                      type="radio"
-                      name="client-type"
-                      checked={clientType === 'device'}
-                      onChange={() => setClientType('device')}
-                      className="accent-primary"
-                    />
+                    <RadioGroupItem value="device" />
                     {t('settings.developer.dialog.clientTypeDevice')}
                   </label>
-                </div>
+                </RadioGroup>
               </div>
 
               {clientType === 'web' && (
