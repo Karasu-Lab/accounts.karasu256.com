@@ -11,7 +11,6 @@ function requireEnv(name: string): string {
   return value;
 }
 
-/** RFC 3986 percent-encoding, as required for SigV4 canonical strings. */
 function encodeSegment(value: string): string {
   return encodeURIComponent(value).replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 }
@@ -24,18 +23,6 @@ function hmac(key: Buffer | string, data: string): Buffer {
   return createHmac('sha256', key).update(data, 'utf8').digest();
 }
 
-/**
- * Returns a presigned `PUT` URL for a direct browser upload to the
- * S3-compatible storage.
- *
- * The signature is computed directly instead of through the AWS SDK: the
- * SDK's Node.js runtime resolves its client configuration from the shared
- * AWS config files (`fs.readFile`) when an `S3Client` is constructed, and
- * that read is not implemented in the Workers runtime, which made every
- * `POST /api/user/icon/prepare` request fail before a URL could be issued.
- * SigV4 presigning only needs HMAC-SHA256, which the Workers runtime
- * provides through `node:crypto`.
- */
 export async function presignUploadUrl(path: string, contentType: string): Promise<string> {
   const endpoint = new URL(requireEnv('STORAGE_ENDPOINT'));
   const bucket = requireEnv('STORAGE_BUCKET');
