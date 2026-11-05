@@ -7,12 +7,10 @@ import { Button, ConfirmDialog } from '@karasu-lab/ui';
 import { deleteApiKey, loadApiKeys, loadOAuthClients } from '@/lib/actions/developer';
 import {
   deleteOAuthClient,
-  groupScopesBySection,
   type ApiKeyCreated,
   type ApiKeySummary,
   type OAuthClientCreated,
   type OAuthClientSummary,
-  type PermissionSection,
 } from '@/lib/api/developer';
 import { useAuthClient } from '@/lib/auth/client';
 import { uploadOAuthClientIcon } from '@/lib/avatar/oauth-client-icon-upload';
@@ -35,7 +33,6 @@ export function DeveloperSection() {
 
   const [clientsState, setClientsState] = useState<ListState<OAuthClientSummary>>({ status: 'loading' });
   const [keysState, setKeysState] = useState<ListState<ApiKeySummary>>({ status: 'loading' });
-  const [sections, setSections] = useState<PermissionSection[]>([]);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<OAuthClientSummary | null>(null);
   const [infoClient, setInfoClient] = useState<OAuthClientSummary | null>(null);
@@ -47,8 +44,7 @@ export function DeveloperSection() {
   const reloadClients = useCallback(async () => {
     setClientsState({ status: 'loading' });
     try {
-      const { clients, scopes } = await loadOAuthClients();
-      setSections(groupScopesBySection(scopes));
+      const { clients } = await loadOAuthClients();
       setClientsState({ status: 'loaded', items: clients });
     } catch {
       setClientsState({ status: 'error' });
@@ -173,7 +169,6 @@ export function DeveloperSection() {
       <OAuthClientDialog
         open={clientDialogOpen}
         onOpenChange={setClientDialogOpen}
-        sections={sections}
         onSaved={handleClientCreated}
         onUploadIcon={uploadOAuthClientIcon}
       />
@@ -202,7 +197,6 @@ export function DeveloperSection() {
             if (!open) setEditingClient(null);
           }}
           client={editingClient}
-          sections={sections}
           onSaved={handleClientUpdated}
           onUploadIcon={uploadOAuthClientIcon}
         />
