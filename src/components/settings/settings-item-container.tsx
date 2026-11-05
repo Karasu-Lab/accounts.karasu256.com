@@ -172,8 +172,7 @@ export function SettingsItemContainer({
       data-slot="settings-item-container"
       aria-disabled={disabled || undefined}
       className={cn(
-        'relative flex gap-3 border border-border bg-card px-4 py-3 text-card-foreground',
-        children !== undefined || itemsVisible ? 'items-start' : 'items-center',
+        'relative flex flex-col border border-border bg-card px-4 py-3 text-card-foreground',
         'rounded-xl',
         hasItemAbove && 'rounded-t-none border-t-0',
         hasItemBelow && 'rounded-b-none border-b-0',
@@ -198,97 +197,96 @@ export function SettingsItemContainer({
         />
       ) : null}
 
-      {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
-        <span aria-hidden="true" className="pointer-events-none relative shrink-0">
-          <span
-            className="flex size-8 items-center justify-center overflow-hidden rounded-md"
-            style={{ backgroundColor: iconBackgroundColor }}
-          >
-            {iconImageSrc ? (
-              <img src={iconImageSrc} alt="" className="size-full object-cover" />
-            ) : iconNode !== undefined ? (
-              <span className="flex items-center justify-center text-white">{iconNode}</span>
-            ) : Icon !== null ? (
-              <Icon className="size-4.5 text-white" />
-            ) : null}
-          </span>
-          {iconBadge !== undefined && (
-            <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
-              {iconBadge}
+      <div className={cn('flex gap-3', children !== undefined || itemsVisible ? 'items-start' : 'items-center')}>
+        {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
+          <span aria-hidden="true" className="pointer-events-none relative shrink-0">
+            <span
+              className="flex size-8 items-center justify-center overflow-hidden rounded-md"
+              style={{ backgroundColor: iconBackgroundColor }}
+            >
+              {iconImageSrc ? (
+                <img src={iconImageSrc} alt="" className="size-full object-cover" />
+              ) : iconNode !== undefined ? (
+                <span className="flex items-center justify-center text-white">{iconNode}</span>
+              ) : Icon !== null ? (
+                <Icon className="size-4.5 text-white" />
+              ) : null}
             </span>
-          )}
-        </span>
-      )}
-      <span className="min-w-0 flex-1">
-        <span className="pointer-events-none block">
-          <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
-          {description !== undefined && (
-            <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
-          )}
-        </span>
-        {(children !== undefined || itemsVisible) && (
-          <span className="relative z-10 mt-1 block">
-            {children}
-            {itemsVisible && (
-              <span className="block">
-                {items?.map((item) =>
-                  item.checked !== undefined ? (
-                    <CheckSettingsItem
-                      key={item.key}
-                      title={item.title}
-                      description={item.description}
-                      icon={item.icon ?? null}
-                      iconBackgroundColor={item.iconBackgroundColor}
-                      checked={item.checked}
-                      onCheckedChange={item.onCheckedChange}
-                      disabled={item.disabled}
-                      className="border-0 bg-transparent px-0"
-                    />
-                  ) : item.radioValue !== undefined ? (
-                    <SettingsItemContainer
-                      key={item.key}
-                      title={item.title}
-                      description={item.description}
-                      icon={item.icon ?? null}
-                      iconBackgroundColor={item.iconBackgroundColor}
-                      disabled={item.disabled}
-                      onClick={item.onClick}
-                      trailing={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
-                      className="border-0 bg-transparent px-0"
-                    />
-                  ) : (
-                    <SettingsItemContainer
-                      key={item.key}
-                      title={item.title}
-                      description={item.description}
-                      icon={item.icon ?? null}
-                      iconBackgroundColor={item.iconBackgroundColor}
-                      disabled={item.disabled}
-                      onClick={item.onClick}
-                      trailing={item.trailing}
-                      className="border-0 bg-transparent px-0"
-                    >
-                      {item.content}
-                    </SettingsItemContainer>
-                  )
-                )}
+            {iconBadge !== undefined && (
+              <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
+                {iconBadge}
               </span>
             )}
           </span>
         )}
-      </span>
+        <span className="min-w-0 flex-1">
+          <span className="pointer-events-none block">
+            <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
+            {description !== undefined && (
+              <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
+            )}
+          </span>
+          {children !== undefined && <span className="relative z-10 mt-1 block">{children}</span>}
+        </span>
 
-      {trailing !== undefined ? (
-        <span className="relative z-10 shrink-0">{trailing}</span>
-      ) : collapsible ? (
-        expanded ? (
-          <ChevronDown aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-        ) : (
+        {trailing !== undefined ? (
+          <span className="relative z-10 shrink-0">{trailing}</span>
+        ) : collapsible ? (
+          expanded ? (
+            <ChevronDown aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+          )
+        ) : isInteractive ? (
           <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-        )
-      ) : isInteractive ? (
-        <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-      ) : null}
+        ) : null}
+      </div>
+
+      {itemsVisible && (
+        <span className="relative z-10 mt-1 ml-11 block">
+          {items?.map((item) =>
+            item.checked !== undefined ? (
+              <CheckSettingsItem
+                key={item.key}
+                title={item.title}
+                description={item.description}
+                icon={item.icon ?? null}
+                iconBackgroundColor={item.iconBackgroundColor}
+                checked={item.checked}
+                onCheckedChange={item.onCheckedChange}
+                disabled={item.disabled}
+                className="border-0 bg-transparent px-0"
+              />
+            ) : item.radioValue !== undefined ? (
+              <SettingsItemContainer
+                key={item.key}
+                title={item.title}
+                description={item.description}
+                icon={item.icon ?? null}
+                iconBackgroundColor={item.iconBackgroundColor}
+                disabled={item.disabled}
+                onClick={item.onClick}
+                trailing={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
+                className="border-0 bg-transparent px-0"
+              />
+            ) : (
+              <SettingsItemContainer
+                key={item.key}
+                title={item.title}
+                description={item.description}
+                icon={item.icon ?? null}
+                iconBackgroundColor={item.iconBackgroundColor}
+                disabled={item.disabled}
+                onClick={item.onClick}
+                trailing={item.trailing}
+                className="border-0 bg-transparent px-0"
+              >
+                {item.content}
+              </SettingsItemContainer>
+            )
+          )}
+        </span>
+      )}
     </div>
   );
 }
