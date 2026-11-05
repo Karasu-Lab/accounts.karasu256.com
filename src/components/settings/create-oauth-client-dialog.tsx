@@ -20,6 +20,7 @@ import {
   useR2Storage,
 } from '@karasu-lab/ui';
 import { createOAuthClient, type OAuthClientCreated, type OAuthClientType, type PermissionSection } from '@/lib/api/developer';
+import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
 interface CreateOAuthClientDialogProps {
@@ -41,6 +42,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   const { uploading, upload } = useR2Storage();
 
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [clientType, setClientType] = useState<OAuthClientType>('web');
   const [redirectUrisText, setRedirectUrisText] = useState('');
   const [iconUrl, setIconUrl] = useState('');
@@ -76,6 +78,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   function handleClose() {
     onOpenChange(false);
     setName('');
+    setDescription('');
     setClientType('web');
     setRedirectUrisText('');
     setIconUrl('');
@@ -98,8 +101,13 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
         scope: [...scopes].join(' '),
         type: clientType,
       });
+      await saveOAuthClientInfo(result.client_id, {
+        name: name.trim(),
+        iconUrl: iconUrl || null,
+        description: description.trim() || null,
+      });
       setCreated(result);
-      onCreated(result);
+      onCreated({ ...result, icon_url: iconUrl || null, description: description.trim() || null });
     } finally {
       setLoading(false);
     }
@@ -125,6 +133,11 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
               <div className="space-y-1.5">
                 <Label htmlFor="client-name">{t('settings.developer.dialog.clientName')}</Label>
                 <Input id="client-name" value={name} onChange={(e) => setName(e.target.value)} required />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="client-description">{t('settings.developer.dialog.description')}</Label>
+                <Input id="client-description" value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
 
               <div className="space-y-1.5">

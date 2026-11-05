@@ -114,6 +114,7 @@
       "keyPrefix": "Key prefix",
       "dialog": {
         "clientName": "Client name",
+        "description": "Description",
         "clientType": "OAuth type",
         "clientTypeWeb": "Web",
         "clientTypeDevice": "Device",

@@ -16,6 +16,10 @@ export interface OAuthClientSummary {
   redirect_uris: string[];
   scope?: string;
   grant_types?: string[];
+  /** From the client's `oauth_client_info` row when one exists; the display source for the item description. */
+  description?: string | null;
+  /** From the client's `oauth_client_info` row when one exists; takes precedence over `logo_uri` for the item icon. */
+  icon_url?: string | null;
 }
 
 export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>): OAuthClientType {

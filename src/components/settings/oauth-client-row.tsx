@@ -1,6 +1,6 @@
 'use client';
 
-import { Code2, Copy, KeyRound, MoreHorizontal, Pencil, Play, Trash2 } from 'lucide-react';
+import { Copy, Globe, KeyRound, MoreHorizontal, Pencil, Play, Smartphone, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger, toast } from '@karasu-lab/ui';
 import { oauthClientType, type OAuthClientSummary } from '@/lib/api/developer';
@@ -23,20 +23,25 @@ interface OAuthClientRowProps {
 const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
 
 /**
- * A single OAuth client as a settings item: the client's logo in the
- * icon tile (or the developer icon when it has none), its name as the
- * title, and its redirect URIs as the description. The texts auto-fit
- * like the profile item at the top of the account settings menu: they
- * stay on one line and their font size shrinks to fit, so a long
- * callback URI does not wrap and break the item's layout. A dedicated
- * edit button and a three-dot menu for additional actions (test, copy
- * client ID, rotate secret, delete) sit at the right end. Selecting
- * the item itself opens the client information dialog, which shows
- * the client's scopes in consent screen format — the item no longer
- * summarizes scopes into proprietary chips (e.g. "Profile R/W").
+ * A single OAuth client as a settings item. The icon tile shows the
+ * client's type — a globe for web clients, a smartphone for device
+ * clients — and when the client has an icon image, the image fills the
+ * tile with the type icon overlaid as the bottom-right badge, the same
+ * style as a linked account's provider badge over its avatar. The name
+ * is the title and the description is simply the client's description
+ * from its info row; nothing else is derived into either. The texts
+ * auto-fit like the profile item at the top of the account settings
+ * menu: they stay on one line and their font size shrinks to fit. A
+ * dedicated edit button and a three-dot menu for additional actions
+ * (test, copy client ID, rotate secret, delete) sit at the right end.
+ * Selecting the item itself opens the client information dialog, which
+ * shows the client's scopes in consent screen format — the item no
+ * longer summarizes scopes into proprietary chips (e.g. "Profile R/W").
  */
 export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret, hasItemAbove, hasItemBelow }: OAuthClientRowProps) {
   const t = useTranslations();
+  const TypeIcon = oauthClientType(client) === 'device' ? Smartphone : Globe;
+  const iconImageSrc = client.icon_url ?? client.logo_uri ?? undefined;
 
   async function handleCopyClientId() {
     try {
@@ -50,10 +55,11 @@ export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onR
   return (
     <SettingsItemContainer
       title={client.client_name ?? client.client_id}
-      description={oauthClientType(client) === 'device' ? t('settings.developer.dialog.clientTypeDevice') : client.redirect_uris.join(' ')}
+      description={client.description ?? undefined}
       autoFitText
-      icon={Code2}
-      iconImageSrc={client.logo_uri ?? undefined}
+      icon={TypeIcon}
+      iconImageSrc={iconImageSrc}
+      iconBadge={iconImageSrc ? <TypeIcon className="size-2.5 text-foreground" /> : undefined}
       iconBackgroundColor={DEVELOPER_ICON_BACKGROUND_COLOR}
       onClick={() => onSelect(client)}
       hasItemAbove={hasItemAbove}
