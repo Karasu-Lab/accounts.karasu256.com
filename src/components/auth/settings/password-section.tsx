@@ -11,27 +11,10 @@ import { LocalizedPasswordStrengthIndicator } from '@/components/auth/localized-
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 
 export interface PasswordSectionProps {
-  /** Whether the user already has a `credential` (email/password) account. */
   hasPasswordProvider: boolean;
-  /** Called after successfully setting a password for the first time. */
   onPasswordSet: () => void;
 }
 
-/**
- * The password item of the security settings, shown as an
- * {@link EditableSettingsItem}: its value is a mask when a password is
- * set and a "not set" label otherwise, and pressing it opens a dialog
- * that sets or changes the password.
- *
- * - No `credential` account yet: sets one via `POST /api/auth/set-password`
- *   (wrapping better-auth's server-only `auth.api.setPassword`).
- * - Has a `credential` account: calls `authClient.changePassword()`, which
- *   verifies `currentPassword` itself.
- *
- * Hidden for users with no email address once the session has resolved;
- * while it is still resolving, the item renders disabled instead of
- * being replaced with a skeleton.
- */
 export function PasswordSection({ hasPasswordProvider, onPasswordSet }: PasswordSectionProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();

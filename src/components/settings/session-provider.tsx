@@ -18,37 +18,9 @@ import type { SessionUser } from '@/lib/session-user';
 interface SettingsSessionProviderProps {
   children: ReactNode;
   appUrl: string;
-  /**
-   * The signed-in account, resolved server-side by the settings layout
-   * before the page is sent. When present, the provider starts out
-   * `ready` with this user, so account-dependent items render from the
-   * first paint instead of appearing once the client-side session
-   * fetch resolves. The client session still takes over as soon as it
-   * loads.
-   */
   initialUser: SessionUser | null;
 }
 
-/**
- * The settings session as a provider: everything in the settings
- * screens that needs client-side loading around the account lives
- * here — resolving the client session against the server-resolved
- * account, the device account list, and the account actions (switch,
- * remove, add, sign out) — and is served to the screens through
- * {@link UserContext} and {@link SettingsMenuContext}.
- *
- * Its loading is reported through the common loading interface
- * (see loading-context) instead of driving an indicator of its own:
- * the first load is covered by the server-resolved account when there
- * is one, so loading is reported only for the waits the server render
- * does not cover — the first load without a server-resolved account,
- * any later refetch (as happens while switching accounts or
- * completing an added account), and the sign-out.
- *
- * When there is no server-resolved user (no valid session cookie) the
- * provider falls back to waiting for the client-side session, which
- * then redirects to sign-in.
- */
 export function SettingsSessionProvider({ children, appUrl, initialUser }: SettingsSessionProviderProps) {
   const { authClient, config } = useAuthClient();
   const router = useRouter();
@@ -60,14 +32,8 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   const [switchingAccount, setSwitchingAccount] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   useReportLoading('sign-out', signingOut);
-  /** Tagged with its user so a switched-to account never inherits a stale override. */
   const [userOverrideState, setUserOverrideState] = useState<{ userId?: string; patch: Partial<SettingsUser> }>({ patch: {} });
 
-  /**
-   * Whether the client session has finished loading at least once.
-   * Only loading past that point is reported (plus the first load
-   * when there is no server-resolved account to cover it).
-   */
   const [sessionLoadedOnce, setSessionLoadedOnce] = useState(false);
   useEffect(() => {
     if (!isPending) setSessionLoadedOnce(true);
@@ -79,35 +45,18 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       const result = await listAccounts();
       setAccounts(result.accounts.filter((a) => a.uid !== activeUid));
     } catch {
-      /* The account switcher is non-critical, so a failed refresh keeps the current list. */
     }
   }, []);
 
-  /**
-   * Whether the client session has been re-asked once after resolving
-   * to no session despite the server having resolved one for this
-   * page. Bounded to a single retry so a genuinely dead session does
-   * not loop.
-   */
   const sessionRetriedRef = useRef(false);
 
   useEffect(() => {
     if (isPending) return;
     if (!session) {
       if (!initialUser) {
-        /* Neither the server render nor the client session found a
-           signed-in account: this visit is genuinely signed out. */
         window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
         return;
       }
-      /* The server resolved an account for this very page from the
-         same session cookie, so a client-side "no session" here is a
-         transient disagreement — most visibly right after the
-         redirect back from signing in, where a reload used to eject
-         the user to the sign-in page, which then sent them straight
-         back on the strength of the same session. The server's word
-         stands: stay on the page and ask the client session once
-         more so session-gated actions can reconcile. */
       if (!sessionRetriedRef.current) {
         sessionRetriedRef.current = true;
         void refetch();
@@ -145,19 +94,9 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   }
 
   async function handleSignOut() {
-    // The wait — the sign-out call, the session refetch it triggers
-    // and the redirect to sign-in that follows — is reported through
-    // the common loading interface, and the shell presents it with
-    // the sign-out container overlaid. The state is cleared only when
-    // the sign-out itself fails; on success the page navigates away
-    // with the overlay still up.
     setSigningOut(true);
     try {
       await authClient.signOut();
-      /* The navigation is explicit: a client session resolving to no
-         session no longer redirects on its own when the server had
-         resolved an account for the page (see the session effect), so
-         the sign-out itself sends the browser to sign-in. */
       window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
     } catch (err) {
       setSigningOut(false);
@@ -165,7 +104,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     }
   }
 
-  /** Refreshes `accounts` against the uid the switch reports, since `session` is a stale closure here. */
   async function switchToSession(sessionToken: string) {
     setSwitchingAccount(true);
     try {
@@ -174,7 +112,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       await refreshAccounts(result.uid);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
-      /** Resyncs so a stale entry that caused this failure doesn't keep failing on retry. */
       await refreshAccounts(session?.user.id);
     } finally {
       setSwitchingAccount(false);
@@ -192,7 +129,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     if (!target) return;
     try {
       await removeAccount(target.sessionToken);
-      /** Awaited so the remove button's spinner doesn't flash idle before the entry disappears. */
       await refreshAccounts(session?.user.id);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
@@ -212,8 +148,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
 
   const contextValue = useMemo(() => {
     if (!session && initialUser) {
-      /* Server-resolved account: ready from the first paint, so items that
-         depend on the account never appear or disappear after the fact. */
       const baseUser: SettingsUser = {
         id: initialUser.id,
         email: initialUser.email ?? '',
@@ -241,7 +175,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       onAddAccount: () => setAddDialogOpen(true),
       onRemoveAccount: handleRemoveAccount,
     }),
-    // The handlers read the latest `accounts` / `session` on each render of the menu.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [appUrl, accounts, session?.user.id]
   );

@@ -13,31 +13,12 @@ interface OAuthClientRowProps {
   onEdit: (_client: OAuthClientSummary) => void;
   onDelete: (_clientId: string) => void;
   onRotateSecret: (_client: OAuthClientSummary) => void;
-  /** Forwarded from {@link SettingsItemGroup}: true when another item sits directly above this one. */
   hasItemAbove?: boolean;
-  /** Forwarded from {@link SettingsItemGroup}: true when another item sits directly below this one. */
   hasItemBelow?: boolean;
 }
 
-/** Icon tile color of the developer items, matching the developer entry in the settings menu. */
 const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
 
-/**
- * A single OAuth client as a settings item. The icon tile shows the
- * client's type — a globe for web clients, a smartphone for device
- * clients — and when the client has an icon image, the image fills the
- * tile with the type icon overlaid as the bottom-right badge, the same
- * style as a linked account's provider badge over its avatar. The name
- * is the title and the description is simply the client's description
- * from its info row; nothing else is derived into either. The texts
- * auto-fit like the profile item at the top of the account settings
- * menu: they stay on one line and their font size shrinks to fit. A
- * dedicated edit button and a three-dot menu for additional actions
- * (test, copy client ID, rotate secret, delete) sit at the right end.
- * Selecting the item itself opens the client information dialog, which
- * shows the client's scopes in consent screen format — the item no
- * longer summarizes scopes into proprietary chips (e.g. "Profile R/W").
- */
 export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret, hasItemAbove, hasItemBelow }: OAuthClientRowProps) {
   const t = useTranslations();
   const TypeIcon = oauthClientType(client) === 'device' ? Smartphone : Globe;

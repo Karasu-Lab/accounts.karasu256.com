@@ -26,32 +26,20 @@ export interface HeaderAccountMenuUser {
 }
 
 interface HeaderAccountMenuProps {
-  /** The active account, or null while the session is still resolving. */
   user: HeaderAccountMenuUser | null;
-  /** URL of the root app, for the "back to app" menu item. */
   appUrl: string | undefined;
   onSignOut: () => void | Promise<void>;
-  /** Other accounts added on this device, excluding the active `user`. */
   accounts?: AccountSummary[];
   onSwitchAccount?: (uid: string) => void | Promise<void>;
   onAddAccount?: () => void;
   onRemoveAccount?: (uid: string) => void | Promise<void>;
 }
 
-/**
- * The account menu in the settings header, opened from the account icon
- * at the header's right end. This restores the user menu that the
- * abolished drawer (sidebar) used to host in its footer: the active
- * account's name and email, going back to the root app, signing out,
- * switching to another account on this device, removing one, and adding
- * a new one.
- */
 export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsProp, onSwitchAccount, onAddAccount, onRemoveAccount }: HeaderAccountMenuProps) {
   const t = useTranslations();
   const [switchingUid, setSwitchingUid] = React.useState<string | null>(null);
   const [removingUid, setRemovingUid] = React.useState<string | null>(null);
   const [signingOut, setSigningOut] = React.useState(false);
-  /** True while a switch, a removal, or a sign-out is in flight, so no menu action can be triggered twice. */
   const isBusy = switchingUid !== null || removingUid !== null || signingOut;
 
   const accounts = accountsProp ?? [];

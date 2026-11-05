@@ -8,24 +8,6 @@ import { useSettingsMenu } from './settings-menu-context';
 import { useSettingsUser } from './user-context';
 import { avatarSrc } from '@/lib/avatar/avatar-src';
 
-/**
- * The settings menu shown at `/settings`, built entirely from
- * {@link SettingsItemContainer}s. It carries everything the abolished
- * sidebar (drawer) used to host: the section navigation (now grouped by
- * category, with an icon per item), the other accounts
- * on this device with switching and removal, adding an account, going
- * back to the root app, and signing out.
- *
- * Groups are separated by a wide margin (`space-y-8` on the wrapper) so
- * each concern or category reads as its own block, while items inside a
- * group stay connected with no gap.
- *
- * At the very top sits a standalone account item (its own single-item
- * group): its title is the account's name and its description is the
- * email address, both taken from the session; its icon is the account's
- * image when one is set; and its arrow is replaced with the edit pencil,
- * since it leads to the profile editor.
- */
 export function SettingsMenu() {
   const t = useTranslations();
   const { user, ready } = useSettingsUser();
