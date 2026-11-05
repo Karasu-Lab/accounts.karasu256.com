@@ -46,8 +46,6 @@ interface ProviderSectionClientProps {
  */
 export function ProviderSectionClient({ initialProfiles }: ProviderSectionClientProps) {
   const flags = useFeatureFlags<typeof appFlagsSchema>();
-  // A flag that cannot be resolved keeps Minecraft authentication off,
-  // matching the server side, which does not resolve its profile then.
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const providers = useMemo<Provider[]>(
     () => [

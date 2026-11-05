@@ -15,12 +15,6 @@ export function getAppFlags() {
   });
 }
 
-/**
- * Whether Minecraft authentication is enabled by the `useMinecraftAuth`
- * flag on flagship. A flag that cannot be evaluated keeps Minecraft
- * authentication off, so a failing flag read never starts a Minecraft
- * profile resolution that is expected to fail.
- */
 export async function isMinecraftAuthEnabled(): Promise<boolean> {
   return getAppFlags()
     .useMinecraftAuth()

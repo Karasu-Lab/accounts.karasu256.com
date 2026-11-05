@@ -16,11 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
  * The linked state is judged solely by auth.karasu256.com's provider
  * profile API: a provider is linked exactly when a profile comes back
  * for it. No provider IDs are read from this app's own data store.
- *
- * While the `useMinecraftAuth` flag is off, the Minecraft profile is
- * not resolved at all: the provider starts unlinked here and its row
- * stays disabled on the client, so a Minecraft authentication that is
- * turned off never reaches the auth API.
  */
 export default async function LinkingPage() {
   const sessionUser = await getSessionUser();

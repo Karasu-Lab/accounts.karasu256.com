@@ -6,9 +6,6 @@ import { requireSession } from '@/lib/api/require-session';
 /**
  * Returns the authenticated user's profile for a single linked provider.
  *
- * While the `useMinecraftAuth` flag is off, the Minecraft profile is
- * not resolved and answers as not found, like an unlinked provider.
- *
  * GET /api/users/me/providers/[providerId]/details
  */
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ providerId: string }> }) {

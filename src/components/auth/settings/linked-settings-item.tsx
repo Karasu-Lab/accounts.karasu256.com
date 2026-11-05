@@ -23,7 +23,6 @@ export interface LinkedSettingsItemProps {
   profile: ProviderProfile | null;
   /** Description shown while the provider is not linked (e.g. "Not linked"). */
   notLinkedDescription: string;
-  /** The whole item is dimmed while this is set, for a provider whose authentication is turned off. */
   disabled?: boolean;
   /** Right-end action (the link / unlink icon button). */
   trailing?: React.ReactNode;

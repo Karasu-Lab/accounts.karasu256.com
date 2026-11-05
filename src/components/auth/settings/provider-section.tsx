@@ -27,9 +27,6 @@ export interface Provider {
   accountProviderId?: string;
   // Account-row providers deleted together with this one on unlink.
   linkedAccountProviderIds?: string[];
-  // The row is dimmed and its link / unlink button cannot be pressed
-  // while this is set, for a provider whose authentication is turned
-  // off (Minecraft while the `useMinecraftAuth` flag is off).
   disabled?: boolean;
 }
 

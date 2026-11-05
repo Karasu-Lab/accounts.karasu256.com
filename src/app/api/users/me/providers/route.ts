@@ -5,8 +5,7 @@ import { isMinecraftAuthEnabled } from '@/lib/flags';
 import { requireSession } from '@/lib/api/require-session';
 
 // `minecraft` has no account row; it is included when the Xbox link
-// exists, Minecraft authentication is enabled by the `useMinecraftAuth`
-// flag, and the auth API resolves a profile for it.
+// exists and the auth API resolves a profile for it.
 const DERIVED_PROVIDER_IDS = ['minecraft'];
 
 /**
