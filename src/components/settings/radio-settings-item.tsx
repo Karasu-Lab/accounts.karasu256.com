@@ -40,27 +40,25 @@ export function RadioSettingsItem({
   hasItemBelow,
 }: RadioSettingsItemProps) {
   return (
-    <SettingsItemContainer
-      title={title}
-      description={description}
-      autoFitText={autoFitText}
-      icon={icon}
-      iconImageSrc={iconImageSrc}
-      iconNode={iconNode}
-      iconBackgroundColor={iconBackgroundColor}
-      disabled={disabled}
-      trailing={
-        <RadioGroup value={value} onValueChange={onValueChange} disabled={disabled || onValueChange === undefined} className="flex gap-4">
-          {options.map((option) => (
-            <label key={option.value} className="flex items-center gap-1.5 text-sm">
-              <RadioGroupItem value={option.value} />
-              {option.label}
-            </label>
-          ))}
-        </RadioGroup>
-      }
-      hasItemAbove={hasItemAbove}
-      hasItemBelow={hasItemBelow}
-    />
+    <RadioGroup value={value} onValueChange={onValueChange} disabled={disabled || onValueChange === undefined}>
+      <SettingsItemContainer
+        title={title}
+        description={description}
+        autoFitText={autoFitText}
+        icon={icon}
+        iconImageSrc={iconImageSrc}
+        iconNode={iconNode}
+        iconBackgroundColor={iconBackgroundColor}
+        items={options.map((option) => ({
+          key: option.value,
+          title: option.label,
+          disabled,
+          trailing: <RadioGroupItem value={option.value} aria-label={option.label} />,
+          onClick: disabled || onValueChange === undefined ? undefined : () => onValueChange(option.value),
+        }))}
+        hasItemAbove={hasItemAbove}
+        hasItemBelow={hasItemBelow}
+      />
+    </RadioGroup>
   );
 }
