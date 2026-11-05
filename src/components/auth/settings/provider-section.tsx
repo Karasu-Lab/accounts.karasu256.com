@@ -27,6 +27,7 @@ export interface Provider {
   accountProviderId?: string;
   // Account-row providers deleted together with this one on unlink.
   linkedAccountProviderIds?: string[];
+  disabled?: boolean;
 }
 
 interface ProviderSectionProps {
@@ -127,6 +128,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
   const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
 
   async function handleLink(provider: Provider) {
+    if (provider.disabled) return;
     setLoading(provider.id);
     if (provider.accountProviderId) {
       window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/${provider.accountProviderId}/link`);
@@ -151,6 +153,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
   }
 
   async function handleUnlink(provider: Provider) {
+    if (provider.disabled) return;
     setLoading(provider.id);
     try {
       const accountProviderId = provider.accountProviderId ?? provider.id;
@@ -189,6 +192,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
+              disabled={provider.disabled}
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
@@ -196,7 +200,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                   <button
                     type="button"
                     aria-label={t('connections.unlink')}
-                    disabled={!canUnlink || isLoading || !guardsLoaded}
+                    disabled={provider.disabled || !canUnlink || isLoading || !guardsLoaded}
                     onClick={() => setUnlinkTarget(provider)}
                     className={cn(iconButtonClassName, 'hover:bg-destructive/10 hover:text-destructive')}
                   >
@@ -206,7 +210,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                   <button
                     type="button"
                     aria-label={t('connections.link')}
-                    disabled={isLoading || !guardsLoaded}
+                    disabled={provider.disabled || isLoading || !guardsLoaded}
                     onClick={() => void handleLink(provider)}
                     className={iconButtonClassName}
                   >

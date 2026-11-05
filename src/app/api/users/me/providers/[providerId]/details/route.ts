@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
+import { isMinecraftAuthEnabled } from '@/lib/flags';
 import { requireSession } from '@/lib/api/require-session';
 
 /**
@@ -12,6 +13,9 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
   if (error) return error;
 
   const { providerId } = await params;
+  if (providerId === 'minecraft' && !(await isMinecraftAuthEnabled())) {
+    return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  }
   const profile = await getProviderProfile(providerId);
   if (!profile) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });

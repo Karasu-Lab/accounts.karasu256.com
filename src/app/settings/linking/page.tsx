@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import { getLinkedProviderProfile, type ProviderProfile } from '@/lib/auth/linked-provider-profile';
+import { isMinecraftAuthEnabled } from '@/lib/flags';
 import { getSessionUser } from '@/lib/session-user';
 import { ProviderSectionClient } from './provider-section-client';
 
@@ -20,10 +21,13 @@ export default async function LinkingPage() {
   const sessionUser = await getSessionUser();
   const initialProfiles: Record<string, ProviderProfile | null> = {};
   if (sessionUser) {
-    const profiles = await Promise.all(PROVIDER_IDS.map((providerId) => getLinkedProviderProfile(providerId)));
-    PROVIDER_IDS.forEach((providerId, i) => {
+    const minecraftAuthEnabled = await isMinecraftAuthEnabled();
+    const providerIds = minecraftAuthEnabled ? PROVIDER_IDS : PROVIDER_IDS.filter((providerId) => providerId !== 'minecraft');
+    const profiles = await Promise.all(providerIds.map((providerId) => getLinkedProviderProfile(providerId)));
+    providerIds.forEach((providerId, i) => {
       initialProfiles[providerId] = profiles[i];
     });
+    if (!minecraftAuthEnabled) initialProfiles['minecraft'] = null;
   }
   return <ProviderSectionClient initialProfiles={initialProfiles} />;
 }

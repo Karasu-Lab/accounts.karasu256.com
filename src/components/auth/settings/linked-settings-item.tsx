@@ -23,6 +23,7 @@ export interface LinkedSettingsItemProps {
   profile: ProviderProfile | null;
   /** Description shown while the provider is not linked (e.g. "Not linked"). */
   notLinkedDescription: string;
+  disabled?: boolean;
   /** Right-end action (the link / unlink icon button). */
   trailing?: React.ReactNode;
   /** Forwarded from {@link SettingsItemGroup}: true when another item sits directly above this one. */
@@ -59,6 +60,7 @@ export function LinkedSettingsItem({
   iconBackgroundColor,
   profile,
   notLinkedDescription,
+  disabled,
   trailing,
   hasItemAbove,
   hasItemBelow,
@@ -71,6 +73,7 @@ export function LinkedSettingsItem({
       title={profile ? (profile.name ?? profile.email ?? providerLabel) : providerLabel}
       description={profile ? (profile.email ?? '') : notLinkedDescription}
       autoFitText={profile !== null}
+      className={disabled ? 'opacity-50' : undefined}
       iconNode={
         showTextureAvatar ? (
           <span className="flex size-8 items-center justify-center">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fetchLinkedProviderIds } from '@/lib/api/internal';
 import { getProviderProfile, type ProviderProfile } from '@/lib/auth/provider-profile';
+import { isMinecraftAuthEnabled } from '@/lib/flags';
 import { requireSession } from '@/lib/api/require-session';
 
 // `minecraft` has no account row; it is included when the Xbox link
@@ -25,7 +26,7 @@ export async function GET() {
     result[providerId] = profiles[i] ?? { name: null, email: null, avatarUrl: null };
   });
 
-  if (providerIds.includes('xbox')) {
+  if (providerIds.includes('xbox') && (await isMinecraftAuthEnabled())) {
     const derivedProfiles = await Promise.all(DERIVED_PROVIDER_IDS.map((providerId) => getProviderProfile(providerId)));
     DERIVED_PROVIDER_IDS.forEach((providerId, i) => {
       const profile = derivedProfiles[i];
