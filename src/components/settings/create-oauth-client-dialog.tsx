@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   Button,
@@ -11,7 +12,6 @@ import {
   DialogPopup,
   DialogPortal,
   DialogTitle,
-  FileUploadButton,
   Input,
   Label,
   RadioGroup,
@@ -40,6 +40,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   const [redirectUrisText, setRedirectUrisText] = useState('');
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [scopes, setScopes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState<OAuthClientCreated | null>(null);
@@ -123,6 +124,32 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
           {!created ? (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
+                <Label>{t('settings.developer.dialog.icon')}</Label>
+                <button
+                  type="button"
+                  aria-label={t('settings.developer.dialog.upload')}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="group relative block size-16 overflow-hidden rounded-full border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {iconPreview && <R2Image src={iconPreview} alt="" className="size-full object-cover" />}
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <Upload className="size-5" />
+                  </span>
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (file) handleFileSelected(file);
+                  }}
+                />
+              </div>
+
+              <div className="space-y-1.5">
                 <Label htmlFor="client-name">{t('settings.developer.dialog.clientName')}</Label>
                 <Input id="client-name" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
@@ -162,19 +189,6 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <Label>{t('settings.developer.dialog.icon')}</Label>
-                <div className="flex items-center gap-3">
-                  {iconPreview && <R2Image src={iconPreview} alt="" className="size-10 rounded object-cover border border-border" />}
-                  <FileUploadButton
-                    label={t('settings.developer.dialog.upload')}
-                    loadingLabel={t('settings.developer.dialog.uploading')}
-                    loading={false}
-                    accept="image/jpeg,image/png,image/webp"
-                    onFileSelected={handleFileSelected}
-                  />
-                </div>
-              </div>
 
               {sections.length > 0 && (
                 <div className="space-y-2">
