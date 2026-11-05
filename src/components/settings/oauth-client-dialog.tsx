@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
@@ -18,19 +18,28 @@ import {
   RadioGroupItem,
   R2Image,
 } from '@karasu-lab/ui';
-import { createOAuthClient, updateOAuthClient, type OAuthClientCreated, type OAuthClientType, type PermissionSection } from '@/lib/api/developer';
+import {
+  createOAuthClient,
+  oauthClientType,
+  updateOAuthClient,
+  type OAuthClientCreated,
+  type OAuthClientSummary,
+  type OAuthClientType,
+  type PermissionSection,
+} from '@/lib/api/developer';
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
-interface CreateOAuthClientDialogProps {
+interface OAuthClientDialogProps {
   open: boolean;
   onOpenChange: (_open: boolean) => void;
   sections: PermissionSection[];
-  onCreated: (_client: OAuthClientCreated) => void;
+  client?: OAuthClientSummary;
+  onSaved: (_client: OAuthClientCreated) => void;
   onUploadIcon: (_clientId: string, _file: File) => Promise<string>;
 }
 
-export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreated, onUploadIcon }: CreateOAuthClientDialogProps) {
+export function OAuthClientDialog({ open, onOpenChange, sections, client, onSaved, onUploadIcon }: OAuthClientDialogProps) {
   const auth = useAuthClient();
   const t = useTranslations();
 
@@ -45,6 +54,19 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   const [loading, setLoading] = useState(false);
   const [created, setCreated] = useState<OAuthClientCreated | null>(null);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    setName(client?.client_name ?? '');
+    setDescription(client?.description ?? '');
+    setClientType(client ? oauthClientType(client) : 'web');
+    setRedirectUrisText(client?.redirect_uris.join('\n') ?? '');
+    setIconFile(null);
+    setIconPreview(client?.icon_url ?? client?.logo_uri ?? '');
+    setScopes(new Set(client?.scope?.split(' ').filter(Boolean) ?? []));
+    setCreated(null);
+    setCopied(false);
+  }, [open, client]);
 
   function parseUris(text: string): string[] {
     return text
@@ -69,15 +91,6 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
 
   function handleClose() {
     onOpenChange(false);
-    setName('');
-    setDescription('');
-    setClientType('web');
-    setRedirectUrisText('');
-    setIconFile(null);
-    setIconPreview('');
-    setScopes(new Set());
-    setCreated(null);
-    setCopied(false);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -86,21 +99,29 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
     if (clientType === 'web' && uris.length === 0) return;
     setLoading(true);
     try {
-      const result = await createOAuthClient(auth, {
-        client_name: name.trim(),
-        redirect_uris: uris,
-        scope: [...scopes].join(' '),
-        type: clientType,
-      });
-      const iconUrl = iconFile ? await onUploadIcon(result.client_id, iconFile) : null;
-      if (iconUrl) await updateOAuthClient(auth, result.client_id, { logo_uri: iconUrl });
-      await saveOAuthClientInfo(result.client_id, {
+      const saved = client
+        ? await updateOAuthClient(auth, client.client_id, {
+            client_name: name.trim(),
+            ...(clientType === 'web' ? { redirect_uris: uris } : {}),
+            scope: [...scopes].join(' '),
+          })
+        : await createOAuthClient(auth, {
+            client_name: name.trim(),
+            redirect_uris: uris,
+            scope: [...scopes].join(' '),
+            type: clientType,
+          });
+      const iconUrl = iconFile ? await onUploadIcon(saved.client_id, iconFile) : (client?.icon_url ?? client?.logo_uri ?? null);
+      if (iconFile && iconUrl) await updateOAuthClient(auth, saved.client_id, { logo_uri: iconUrl });
+      await saveOAuthClientInfo(saved.client_id, {
         name: name.trim(),
-        iconUrl: iconUrl || null,
+        iconUrl,
         description: description.trim() || null,
       });
-      setCreated(result);
-      onCreated({ ...result, icon_url: iconUrl || null, description: description.trim() || null });
+      const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null };
+      onSaved(result);
+      if (client) onOpenChange(false);
+      else setCreated(result);
     } finally {
       setLoading(false);
     }
@@ -119,7 +140,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
       <DialogPortal>
         <DialogBackdrop />
         <DialogPopup className="max-w-lg w-full p-6 space-y-4 max-h-[90dvh] overflow-y-auto">
-          <DialogTitle>{t('settings.developer.createClient')}</DialogTitle>
+          <DialogTitle>{t(client ? 'settings.developer.editClient' : 'settings.developer.createClient')}</DialogTitle>
 
           {!created ? (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -161,7 +182,12 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
 
               <div className="space-y-1.5">
                 <Label>{t('settings.developer.dialog.clientType')}</Label>
-                <RadioGroup value={clientType} onValueChange={(value) => setClientType(value as OAuthClientType)} className="flex gap-4">
+                <RadioGroup
+                  value={clientType}
+                  onValueChange={(value) => setClientType(value as OAuthClientType)}
+                  disabled={client !== undefined}
+                  className="flex gap-4"
+                >
                   <label className="flex items-center gap-1.5 text-sm">
                     <RadioGroupItem value="web" />
                     {t('settings.developer.dialog.clientTypeWeb')}
@@ -226,7 +252,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
                   }
                 />
                 <Button type="submit" disabled={loading || !name.trim() || (clientType === 'web' && uris.length === 0)}>
-                  {t('settings.developer.dialog.create')}
+                  {t(client ? 'settings.developer.dialog.save' : 'settings.developer.dialog.create')}
                 </Button>
               </div>
             </form>
