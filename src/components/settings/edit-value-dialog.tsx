@@ -39,7 +39,13 @@ export function EditValueDialog({ open, onOpenChange, label, value, multiline = 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && saving) return;
+        onOpenChange(next);
+      }}
+    >
       <DialogPortal>
         <DialogBackdrop />
         <DialogPopup>
