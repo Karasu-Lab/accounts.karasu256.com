@@ -26,8 +26,6 @@ interface OAuthClientDialogProps {
   onUploadIcon: (clientId: string, file: File) => Promise<string>;
 }
 
-const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
-
 function parseUris(text: string): string[] {
   return text
     .split('\n')
@@ -128,40 +126,38 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
     cancelLabel: t('settings.developer.dialog.cancel'),
     editorSaveLabel: t('settings.developer.dialog.save'),
     editorCancelLabel: t('settings.developer.dialog.cancel'),
-    fields: [
+    sections: [
       {
-        key: 'icon',
-        title: t('settings.developer.dialog.icon'),
-        icon: ImagePlus,
-        iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
-        avatar: {
-          src: iconPreview || null,
-          uploading: loading,
-          accept: 'image/jpeg,image/png,image/webp',
-          onPick: handleFileSelected,
-        },
-      },
-      {
-        key: 'name',
-        title: t('settings.developer.dialog.clientName'),
-        description: name || undefined,
-        icon: Type,
-        iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
-        edit: { value: name, autoComplete: 'organization', onSave: setName },
-      },
-      {
+        fields: [
+          {
+          key: 'icon',
+          title: t('settings.developer.dialog.icon'),
+          icon: ImagePlus,
+          avatar: {
+              src: iconPreview || null,
+              uploading: loading,
+              accept: 'image/jpeg,image/png,image/webp',
+              onPick: handleFileSelected,
+            },
+          },
+          {
+            key: 'name',
+            title: t('settings.developer.dialog.clientName'),
+            description: name || undefined,
+            icon: Type,
+            edit: { value: name, autoComplete: 'organization', onSave: setName },
+          },
+          {
         key: 'description',
         title: t('settings.developer.dialog.description'),
         description: description || undefined,
         icon: AlignLeft,
-        iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
-        edit: { value: description, onSave: setDescription },
+        edit: { value: description, multiline: true, onSave: setDescription },
       },
       {
         key: 'clientType',
         title: t('settings.developer.dialog.clientType'),
         icon: Globe,
-        iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
         disabled: typeLocked,
         trailing: (
           <RadioGroup
@@ -187,7 +183,6 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
               key: 'callbackUris',
               title: t('settings.developer.dialog.callbackUris'),
               icon: Link2,
-              iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
               content: (
                 <div className="space-y-0.5">
                   {uris.map((uri) => (
@@ -207,28 +202,32 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
             },
           ]
         : []),
-      ...sections.map((s) => ({
-        key: `permissions.${s.key}`,
-        title: t(`permissions.sections.${s.key}.label`),
-        icon: KeyRound,
-        iconBackgroundColor: DEVELOPER_ICON_BACKGROUND_COLOR,
-        content: (
-          <div className="flex gap-4">
-            {s.canRead && (
-              <label className="flex items-center gap-1.5 text-sm">
-                <Checkbox checked={scopes.has(`read:${s.key}`)} onCheckedChange={() => toggleScope(`read:${s.key}`)} disabled={loading} />
-                {t('settings.developer.dialog.read')}
-              </label>
-            )}
-            {s.canWrite && (
-              <label className="flex items-center gap-1.5 text-sm">
-                <Checkbox checked={scopes.has(`write:${s.key}`)} onCheckedChange={() => toggleScope(`write:${s.key}`)} disabled={loading} />
-                {t('settings.developer.dialog.write')}
-              </label>
-            )}
-          </div>
-        ),
-      })),
+        ],
+      },
+      {
+        title: t('settings.developer.dialog.permissions'),
+        fields: sections.map((s) => ({
+          key: `permissions.${s.key}`,
+          title: t(`permissions.sections.${s.key}.label`),
+          icon: KeyRound,
+          content: (
+            <div className="flex gap-4">
+              {s.canRead && (
+                <label className="flex items-center gap-1.5 text-sm">
+                  <Checkbox checked={scopes.has(`read:${s.key}`)} onCheckedChange={() => toggleScope(`read:${s.key}`)} disabled={loading} />
+                  {t('settings.developer.dialog.read')}
+                </label>
+              )}
+              {s.canWrite && (
+                <label className="flex items-center gap-1.5 text-sm">
+                  <Checkbox checked={scopes.has(`write:${s.key}`)} onCheckedChange={() => toggleScope(`write:${s.key}`)} disabled={loading} />
+                  {t('settings.developer.dialog.write')}
+                </label>
+              )}
+            </div>
+          ),
+        })),
+      },
     ],
   };
 
