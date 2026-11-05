@@ -18,40 +18,27 @@ import { useSettingsUser } from '@/components/settings/user-context';
 import { avatarSrc } from '@/lib/avatar/avatar-src';
 import { uploadUserIcon } from '@/lib/avatar/upload-client';
 
-/** Imperative handle of {@link ProfileIcon}, for callers that host the icon inside their own item row. */
 export interface ProfileIconHandle {
-  /** Opens the icon file picker, exactly as clicking the avatar does. */
   openFilePicker: () => void;
 }
 
-/** Formats a submenu entry as "user name (Provider)", falling back to just the provider name. */
+export interface ProfileIconProps {
+  onBusyChange?: (busy: boolean) => void;
+}
+
 function providerLabel(providerId: string, profile: ProviderProfile): string {
   const displayName = providerId.charAt(0).toUpperCase() + providerId.slice(1);
   return profile.name ? `${profile.name} (${displayName})` : displayName;
 }
 
-/**
- * Avatar that opens the file picker on a plain click, and additionally
- * exposes a right-click / long-press context menu for uploading a new icon,
- * reusing a linked provider's avatar, or removing the current one. Falls
- * back to an identicon when the user has no icon set.
- *
- * The icon itself is still stored on the Firebase user record (`api/user/icon`),
- * not in better-auth's own `image` column, so each handler below applies the
- * URL the server returns to {@link useSettingsUser}'s context directly
- * instead of waiting on a better-auth session refetch to pick it up.
- *
- * Renders immediately regardless of session state; until `ready` is true
- * (the better-auth session hasn't resolved yet) the avatar ignores clicks
- * and the linked-provider list isn't fetched, since that request requires
- * an authenticated session.
- */
-export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_, ref) {
+export const ProfileIcon = forwardRef<ProfileIconHandle, ProfileIconProps>(function ProfileIcon({ onBusyChange }, ref) {
   const t = useTranslations();
   const { user, ready, updateUser } = useSettingsUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [providers, setProviders] = useState<Record<string, ProviderProfile>>({});
+  const [busy, setBusy] = useState(false);
   const providerEntries = useMemo(() => Object.entries(providers), [providers]);
+  const disabled = !ready || busy;
 
   useEffect(() => {
     if (!ready) return;
@@ -60,47 +47,43 @@ export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_,
       .catch(() => {});
   }, [ready]);
 
+  useEffect(() => {
+    onBusyChange?.(busy);
+  }, [busy, onBusyChange]);
+
+  async function applyIcon(change: () => Promise<string | null>) {
+    setBusy(true);
+    try {
+      const photoURL = await change();
+      updateUser({ image: photoURL });
+      toast.success(t('profile.iconChanged'), { autoClose: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleFileSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-
-    let photoURL: string;
-    try {
-      photoURL = await uploadUserIcon(file);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-      return;
-    }
-    updateUser({ image: photoURL });
-    toast.success(t('profile.iconChanged'), { autoClose: true });
+    await applyIcon(() => uploadUserIcon(file));
   }
 
   async function handleSelectProvider(providerId: string) {
-    let photoURL: string;
-    try {
-      photoURL = await setUserIconFromProvider(providerId);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-      return;
-    }
-    updateUser({ image: photoURL });
-    toast.success(t('profile.iconChanged'), { autoClose: true });
+    await applyIcon(() => setUserIconFromProvider(providerId));
   }
 
   async function handleDeleteIcon() {
-    try {
+    await applyIcon(async () => {
       await deleteUserIcon();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-      return;
-    }
-    updateUser({ image: null });
-    toast.success(t('profile.iconChanged'), { autoClose: true });
+      return null;
+    });
   }
 
   function openFilePicker() {
-    if (!ready) return;
+    if (disabled) return;
     fileInputRef.current?.click();
   }
 
@@ -112,8 +95,8 @@ export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_,
         <ContextMenuTrigger
           onClick={openFilePicker}
           aria-label={t('profile.changeIcon')}
-          aria-disabled={!ready}
-          className={!ready ? 'pointer-events-none opacity-50' : undefined}
+          aria-disabled={disabled}
+          className={disabled ? 'pointer-events-none opacity-50' : undefined}
         >
           <UserAvatar uid={user.id} iconUrl={avatarSrc(user.image ?? null)} size={48} className="border border-border" />
         </ContextMenuTrigger>
@@ -140,7 +123,7 @@ export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_,
         accept="image/jpeg,image/png,image/webp"
         className="hidden"
         onChange={handleFileSelected}
-        disabled={!ready}
+        disabled={disabled}
       />
     </>
   );

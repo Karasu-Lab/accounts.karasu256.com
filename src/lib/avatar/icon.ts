@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { deleteUploadedImage } from '@karasu-lab/utils/server';
-import { fetchSetFirebasePhoto, fetchUploadStatus, fetchVerifyUpload } from '@/lib/api/internal';
+import { fetchSetFirebasePhoto, fetchSetUserImage, fetchUploadStatus, fetchVerifyUpload } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
 import { signUploadIntent, verifyUploadIntent } from './intent';
 import { avatarCdnPath } from './paths';
@@ -46,6 +46,7 @@ export async function completeIconUpload(userId: string, intentToken: string, cd
   if (!verified) return { ok: false, error: 'upload_verification_failed' };
 
   const photoURL = `${cdnUrl}/${intent.path}?v=${verified.sha256.slice(0, 16)}`;
+  await fetchSetUserImage(userId, photoURL);
   await fetchSetFirebasePhoto(userId, photoURL);
   return { ok: true, photoURL };
 }
