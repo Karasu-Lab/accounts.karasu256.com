@@ -37,7 +37,6 @@ export interface SettingsItemContainerProps {
   arrowIcon?: LucideIcon;
   href?: string;
   onClick?: () => void | Promise<void>;
-  leading?: React.ReactNode;
   trailing?: React.ReactNode;
   items?: SettingsItemNestedItemData[];
   children?: React.ReactNode;
@@ -114,7 +113,6 @@ export function SettingsItemContainer({
   arrowIcon: ArrowIcon = ChevronRight,
   href,
   onClick,
-  leading,
   trailing,
   items,
   children,
@@ -221,7 +219,6 @@ export function SettingsItemContainer({
           )}
         </span>
       )}
-      {leading !== undefined && <span className="relative z-10 shrink-0">{leading}</span>}
       <span className="min-w-0 flex-1">
         <span className="pointer-events-none block">
           <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
@@ -256,7 +253,7 @@ export function SettingsItemContainer({
                       iconBackgroundColor={item.iconBackgroundColor}
                       disabled={item.disabled}
                       onClick={item.onClick}
-                      leading={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
+                      trailing={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
                       className="border-0 bg-transparent px-0"
                     />
                   ) : (
@@ -330,7 +327,7 @@ export function CheckSettingsItem({
       icon={icon}
       iconBackgroundColor={iconBackgroundColor}
       onClick={interactive && !disabled ? () => onCheckedChange(!checked) : undefined}
-      leading={
+      trailing={
         <Checkbox
           checked={checked}
           disabled={disabled || !interactive}
