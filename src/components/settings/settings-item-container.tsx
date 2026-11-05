@@ -18,6 +18,7 @@ export interface SettingsItemNestedItemData {
   iconBackgroundColor?: string;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  onClick?: () => void | Promise<void>;
   disabled?: boolean;
   trailing?: React.ReactNode;
   content?: React.ReactNode;
@@ -250,6 +251,7 @@ export function SettingsItemContainer({
                       icon={item.icon ?? null}
                       iconBackgroundColor={item.iconBackgroundColor}
                       disabled={item.disabled}
+                      onClick={item.onClick}
                       trailing={item.trailing}
                       className="border-0 bg-transparent px-0"
                     >
