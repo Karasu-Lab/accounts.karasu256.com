@@ -24,6 +24,12 @@
   },
   "main": ".open-next/worker.js",
   "name": "accounts-karasu256-com",
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": false
+    }
+  },
   "previews": {
     "vars": {
       "API_URL": "https://dev-api.karasu256.com",
