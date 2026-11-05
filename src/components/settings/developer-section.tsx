@@ -20,8 +20,7 @@ import { ApiKeyRow } from './api-key-row';
 import { OAuthClientRow } from './oauth-client-row';
 import { SettingsItemGroup } from './settings-item-container';
 import { CreateApiKeyDialog } from './create-api-key-dialog';
-import { CreateOAuthClientDialog } from './create-oauth-client-dialog';
-import { EditOAuthClientDialog } from './edit-oauth-client-dialog';
+import { OAuthClientDialog } from './oauth-client-dialog';
 import { OAuthClientInfoDialog } from './oauth-client-info-dialog';
 import { OAuthClientTestDialog } from './oauth-client-test-dialog';
 import { RotateSecretDialog } from './rotate-secret-dialog';
@@ -171,11 +170,11 @@ export function DeveloperSection() {
         ) : null}
       </section>
 
-      <CreateOAuthClientDialog
+      <OAuthClientDialog
         open={clientDialogOpen}
         onOpenChange={setClientDialogOpen}
         sections={sections}
-        onCreated={handleClientCreated}
+        onSaved={handleClientCreated}
         onUploadIcon={uploadOAuthClientIcon}
       />
       {infoClient && (
@@ -197,15 +196,15 @@ export function DeveloperSection() {
         />
       )}
       {editingClient && (
-        <EditOAuthClientDialog
+        <OAuthClientDialog
           open={editingClient !== null}
           onOpenChange={(open) => {
             if (!open) setEditingClient(null);
           }}
           client={editingClient}
           sections={sections}
-          onUpdated={handleClientUpdated}
-          onUploadIcon={(file) => uploadOAuthClientIcon(editingClient.client_id, file)}
+          onSaved={handleClientUpdated}
+          onUploadIcon={uploadOAuthClientIcon}
         />
       )}
       <CreateApiKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} onCreated={handleKeyCreated} />
