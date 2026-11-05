@@ -1,6 +1,6 @@
 import { getSessionUser } from '@/lib/session-user';
 import { handleMcpMessage } from '@/lib/mcp/server';
-import { resolveUserFromSessionToken } from '@/lib/mcp/session';
+import { resolveUserFromAccessToken, resolveUserFromSessionToken } from '@/lib/mcp/session';
 
 export async function POST(request: Request): Promise<Response> {
   let message: unknown;
@@ -13,7 +13,10 @@ export async function POST(request: Request): Promise<Response> {
   let user = await getSessionUser().catch(() => null);
   const authorization = request.headers.get('authorization');
   if (!user && authorization?.startsWith('Bearer ')) {
-    user = await resolveUserFromSessionToken(authorization.slice('Bearer '.length)).catch(() => null);
+    const token = authorization.slice('Bearer '.length);
+    user =
+      (await resolveUserFromAccessToken(token).catch(() => null)) ??
+      (await resolveUserFromSessionToken(token).catch(() => null));
   }
 
   const response = await handleMcpMessage(message, { user, cookieHeader: request.headers.get('cookie') });
