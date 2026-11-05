@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, LoaderCircle, Pencil, X, type LucideIcon } from 'lucide-react';
-import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, R2Image } from '@karasu-lab/ui';
+import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, Label, R2Image } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { EditValueDialog } from './edit-value-dialog';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from './settings-item-container';
@@ -35,9 +35,14 @@ export interface SettingsDialogFieldSpec {
   edit?: SettingsDialogValueEditSpec;
 }
 
+export interface SettingsDialogSectionSpec {
+  title?: string;
+  fields: SettingsDialogFieldSpec[];
+}
+
 export interface SettingsDialogSpec {
   title: string;
-  fields: SettingsDialogFieldSpec[];
+  sections: SettingsDialogSectionSpec[];
   running?: boolean;
   primaryLabel: string;
   primaryDisabled?: boolean;
@@ -51,8 +56,10 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
   const [editKey, setEditKey] = React.useState<string | null>(null);
   const [draft, setDraft] = React.useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const avatarField = spec.fields.find((f) => f.avatar);
-  const editingField = editKey !== null ? spec.fields.find((f) => f.key === editKey) : undefined;
+  const sections = spec.sections.filter((section) => section.fields.length > 0);
+  const fields = sections.flatMap((section) => section.fields);
+  const avatarField = fields.find((f) => f.avatar);
+  const editingField = editKey !== null ? fields.find((f) => f.key === editKey) : undefined;
   const editingSpec = editingField?.edit;
   const multilineEditing = editingSpec?.multiline ?? false;
 
@@ -93,8 +100,11 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
           ) : (
             <>
               <div aria-disabled={spec.running || undefined} className={cn('space-y-3', spec.running && 'pointer-events-none opacity-50')}>
-                <SettingsItemGroup>
-                  {spec.fields.map((field) => {
+                {sections.map((section) => (
+                  <React.Fragment key={section.fields[0]?.key ?? section.title}>
+                    {section.title !== undefined && <Label>{section.title}</Label>}
+                    <SettingsItemGroup>
+                      {section.fields.map((field) => {
                     const inlineEditing = editKey === field.key && !field.edit?.multiline;
                     return (
                       <SettingsItemContainer
@@ -144,8 +154,10 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
                         )}
                       </SettingsItemContainer>
                     );
-                  })}
-                </SettingsItemGroup>
+                      })}
+                    </SettingsItemGroup>
+                  </React.Fragment>
+                ))}
                 {avatarField && (
                   <input
                     ref={fileInputRef}
@@ -176,24 +188,24 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
               </div>
             </>
           )}
+          {multilineEditing && editingSpec && (
+            <EditValueDialog
+              open={editKey !== null}
+              onOpenChange={(o) => {
+                if (!o) setEditKey(null);
+              }}
+              label={editingField?.title}
+              value={editingSpec.value}
+              multiline={editingSpec.multiline}
+              placeholder={editingSpec.placeholder}
+              autoComplete={editingSpec.autoComplete}
+              onSave={editingSpec.onSave}
+              saveLabel={spec.editorSaveLabel}
+              cancelLabel={spec.editorCancelLabel}
+            />
+          )}
         </DialogPopup>
       </DialogPortal>
-      {multilineEditing && editingSpec && (
-        <EditValueDialog
-          open={editKey !== null}
-          onOpenChange={(o) => {
-            if (!o) setEditKey(null);
-          }}
-          label={editingField?.title}
-          value={editingSpec.value}
-          multiline={editingSpec.multiline}
-          placeholder={editingSpec.placeholder}
-          autoComplete={editingSpec.autoComplete}
-          onSave={editingSpec.onSave}
-          saveLabel={spec.editorSaveLabel}
-          cancelLabel={spec.editorCancelLabel}
-        />
-      )}
     </Dialog>
   );
 }
