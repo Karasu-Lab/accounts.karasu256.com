@@ -25,15 +25,27 @@ export interface OAuthClientsData {
  * Throws on failure so the caller can show an error state that is
  * distinct from both "loading" and "no clients".
  */
+interface OAuthClientInfoRow {
+  client_id: string;
+  name: string;
+  author_id: string | null;
+  icon_url: string | null;
+  description: string | null;
+}
+
 export async function loadOAuthClients(): Promise<OAuthClientsData> {
   const cookieHeader = (await cookies()).toString();
   const authApiBase = (process.env.AUTH_API_URL ?? '').replace(/\/$/, '');
 
-  const [clientsRes, scopes] = await Promise.all([
+  const [clientsRes, infoRes, scopes] = await Promise.all([
     fetch(`${authApiBase}/api/auth/oauth2/get-clients`, {
       headers: { cookie: cookieHeader },
       cache: 'no-store',
     }),
+    fetch(`${authApiBase}/api/oauth-client-info`, {
+      headers: { cookie: cookieHeader },
+      cache: 'no-store',
+    }).catch(() => null),
     listOauthScopes(),
   ]);
 
@@ -42,7 +54,49 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
   }
 
   const clients = (await clientsRes.json()) as OAuthClientSummary[];
-  return { clients, scopes };
+
+  // The info rows are the display source for each item's name, icon, and
+  // description. A missing info endpoint or row leaves the client's own
+  // fields in place, so the list still renders before any info is saved.
+  const infoByClientId = new Map<string, OAuthClientInfoRow>();
+  if (infoRes?.ok) {
+    const rows = (await infoRes.json()) as OAuthClientInfoRow[];
+    for (const row of rows) infoByClientId.set(row.client_id, row);
+  }
+
+  return {
+    clients: clients.map((client) => {
+      const info = infoByClientId.get(client.client_id);
+      if (!info) return client;
+      return { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description };
+    }),
+    scopes,
+  };
+}
+
+/**
+ * Saves the display info (name, icon, description) for one of the
+ * signed-in user's OAuth clients into its `oauth_client_info` row on
+ * the auth API, which owns the table. Called right after the client is
+ * created or updated so the row mirrors what the settings show.
+ */
+export async function saveOAuthClientInfo(
+  clientId: string,
+  info: { name: string; iconUrl: string | null; description: string | null }
+): Promise<void> {
+  const cookieHeader = (await cookies()).toString();
+  const base = authApiBase();
+
+  const res = await fetch(`${base}/api/oauth-client-info/${encodeURIComponent(clientId)}`, {
+    method: 'PUT',
+    headers: { cookie: cookieHeader, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: info.name, icon_url: info.iconUrl, description: info.description }),
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to save OAuth client info: HTTP ${res.status}`);
+  }
 }
 
 /** The base URL of the auth API, which owns API key processing. */

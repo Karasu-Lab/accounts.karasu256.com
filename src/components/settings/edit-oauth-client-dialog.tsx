@@ -18,6 +18,7 @@ import {
   useR2Storage,
 } from '@karasu-lab/ui';
 import { oauthClientType, updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
+import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
 interface EditOAuthClientDialogProps {
@@ -38,18 +39,20 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
   const { uploading, upload } = useR2Storage();
 
   const [name, setName] = useState(client.client_name ?? '');
+  const [description, setDescription] = useState(client.description ?? '');
   const [redirectUrisText, setRedirectUrisText] = useState(client.redirect_uris.join('\n'));
-  const [iconUrl, setIconUrl] = useState(client.logo_uri ?? '');
-  const [iconPreview, setIconPreview] = useState(client.logo_uri ?? '');
+  const [iconUrl, setIconUrl] = useState(client.icon_url ?? client.logo_uri ?? '');
+  const [iconPreview, setIconPreview] = useState(client.icon_url ?? client.logo_uri ?? '');
   const [scopes, setScopes] = useState<Set<string>>(new Set(client.scope?.split(' ') ?? []));
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
       setName(client.client_name ?? '');
+      setDescription(client.description ?? '');
       setRedirectUrisText(client.redirect_uris.join('\n'));
-      setIconUrl(client.logo_uri ?? '');
-      setIconPreview(client.logo_uri ?? '');
+      setIconUrl(client.icon_url ?? client.logo_uri ?? '');
+      setIconPreview(client.icon_url ?? client.logo_uri ?? '');
       setScopes(new Set(client.scope?.split(' ') ?? []));
     }
   }, [open, client]);
@@ -91,7 +94,12 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
         logo_uri: iconUrl.trim(),
         scope: [...scopes].join(' '),
       });
-      onUpdated(updated);
+      await saveOAuthClientInfo(client.client_id, {
+        name: name.trim(),
+        iconUrl: iconUrl.trim() || null,
+        description: description.trim() || null,
+      });
+      onUpdated({ ...updated, client_name: name.trim(), logo_uri: iconUrl.trim(), icon_url: iconUrl.trim() || null, description: description.trim() || null });
       onOpenChange(false);
     } finally {
       setLoading(false);
@@ -111,6 +119,11 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
             <div className="space-y-1.5">
               <Label htmlFor="edit-client-name">{t('settings.developer.dialog.clientName')}</Label>
               <Input id="edit-client-name" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-client-description">{t('settings.developer.dialog.description')}</Label>
+              <Input id="edit-client-description" value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
 
             {clientType === 'web' && (
