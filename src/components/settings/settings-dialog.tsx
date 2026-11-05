@@ -5,7 +5,8 @@ import { Check, LoaderCircle, Pencil, X, type LucideIcon } from 'lucide-react';
 import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, Label, R2Image } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { EditValueDialog } from './edit-value-dialog';
-import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from './settings-item-container';
+import { RadioSettingsItem, type RadioSettingsItemOption } from './radio-settings-item';
+import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton, type SettingsItemNestedItemData } from './settings-item-container';
 
 export interface SettingsDialogAvatarSpec {
   src?: string | null;
@@ -22,6 +23,12 @@ export interface SettingsDialogValueEditSpec {
   onSave: (value: string) => void;
 }
 
+export interface SettingsDialogRadioSpec {
+  options: RadioSettingsItemOption[];
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
 export interface SettingsDialogFieldSpec {
   key: string;
   title: string;
@@ -32,6 +39,8 @@ export interface SettingsDialogFieldSpec {
   avatar?: SettingsDialogAvatarSpec;
   trailing?: React.ReactNode;
   content?: React.ReactNode;
+  items?: SettingsItemNestedItemData[];
+  radio?: SettingsDialogRadioSpec;
   edit?: SettingsDialogValueEditSpec;
 }
 
@@ -106,6 +115,21 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
                     <SettingsItemGroup>
                       {section.fields.map((field) => {
                     const inlineEditing = editKey === field.key && !field.edit?.multiline;
+                    if (field.radio) {
+                      return (
+                        <RadioSettingsItem
+                          key={field.key}
+                          title={field.title}
+                          description={field.description}
+                          icon={field.icon}
+                          iconBackgroundColor={field.iconBackgroundColor}
+                          options={field.radio.options}
+                          value={field.radio.value}
+                          onValueChange={field.radio.onValueChange}
+                          disabled={field.disabled}
+                        />
+                      );
+                    }
                     return (
                       <SettingsItemContainer
                         key={field.key}
@@ -125,6 +149,7 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
                         }
                         iconBackgroundColor={field.iconBackgroundColor}
                         disabled={field.disabled}
+                        items={field.items}
                         onClick={field.avatar ? () => fileInputRef.current?.click() : undefined}
                         trailing={
                           inlineEditing ? (

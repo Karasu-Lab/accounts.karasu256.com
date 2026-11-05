@@ -3,16 +3,31 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChevronRight, LoaderCircle, Settings, type LucideIcon } from 'lucide-react';
+import { ChevronDown, ChevronRight, LoaderCircle, Settings, type LucideIcon } from 'lucide-react';
+import { Checkbox } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/lib/use-is-mobile';
 
 const DEFAULT_ICON_BACKGROUND_COLOR = '#8e8e93';
+
+export interface SettingsItemNestedItemData {
+  key: string;
+  title: string;
+  description?: string;
+  icon?: LucideIcon | null;
+  iconBackgroundColor?: string;
+  checked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  trailing?: React.ReactNode;
+  content?: React.ReactNode;
+}
 
 export interface SettingsItemContainerProps {
   title: string;
   description?: string;
   autoFitText?: boolean;
-  icon?: LucideIcon;
+  icon?: LucideIcon | null;
   iconImageSrc?: string;
   iconNode?: React.ReactNode;
   iconBadge?: React.ReactNode;
@@ -21,6 +36,7 @@ export interface SettingsItemContainerProps {
   href?: string;
   onClick?: () => void | Promise<void>;
   trailing?: React.ReactNode;
+  items?: SettingsItemNestedItemData[];
   children?: React.ReactNode;
   disabled?: boolean;
   hasItemAbove?: boolean;
@@ -87,7 +103,7 @@ export function SettingsItemContainer({
   title,
   description,
   autoFitText = false,
-  icon: Icon = Settings,
+  icon,
   iconImageSrc,
   iconNode,
   iconBadge,
@@ -96,13 +112,20 @@ export function SettingsItemContainer({
   href,
   onClick,
   trailing,
+  items,
   children,
   disabled = false,
   hasItemAbove = false,
   hasItemBelow = false,
   className,
 }: SettingsItemContainerProps) {
-  const isInteractive = (href !== undefined || onClick !== undefined) && !disabled;
+  const Icon = icon === undefined ? Settings : icon;
+  const isMobile = useIsMobile();
+  const [expanded, setExpanded] = React.useState(false);
+  const hasItems = items !== undefined && items.length > 0;
+  const collapsible = hasItems && isMobile && href === undefined;
+  const itemsVisible = hasItems && (!collapsible || expanded);
+  const isInteractive = (href !== undefined || onClick !== undefined || collapsible) && !disabled;
   const pathname = usePathname();
   const [activating, setActivating] = React.useState(false);
 
@@ -126,6 +149,14 @@ export function SettingsItemContainer({
     } finally {
       setActivating(false);
     }
+  }
+
+  function handleOverlayClick() {
+    if (collapsible) {
+      setExpanded((prev) => !prev);
+      return;
+    }
+    void handleButtonClick();
   }
 
   const overlayClassName = cn(
@@ -153,30 +184,39 @@ export function SettingsItemContainer({
         ) : (
           <Link href={href} aria-label={title} aria-disabled={activating || undefined} onClick={handleLinkClick} className={overlayClassName} />
         )
-      ) : isInteractive && onClick !== undefined ? (
-        <button type="button" aria-label={title} disabled={activating} onClick={() => void handleButtonClick()} className={cn(overlayClassName, 'cursor-pointer')} />
+      ) : isInteractive && (onClick !== undefined || collapsible) ? (
+        <button
+          type="button"
+          aria-label={title}
+          aria-expanded={collapsible ? expanded : undefined}
+          disabled={activating}
+          onClick={handleOverlayClick}
+          className={cn(overlayClassName, 'cursor-pointer')}
+        />
       ) : null}
 
-      <span aria-hidden="true" className="pointer-events-none relative shrink-0">
-        <span
-          className="flex size-8 items-center justify-center overflow-hidden rounded-md"
-          style={{ backgroundColor: iconBackgroundColor }}
-        >
-          {iconImageSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={iconImageSrc} alt="" className="size-full object-cover" />
-          ) : iconNode !== undefined ? (
-            <span className="flex items-center justify-center text-white">{iconNode}</span>
-          ) : (
-            <Icon className="size-4.5 text-white" />
+      {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
+        <span aria-hidden="true" className="pointer-events-none relative shrink-0">
+          <span
+            className="flex size-8 items-center justify-center overflow-hidden rounded-md"
+            style={{ backgroundColor: iconBackgroundColor }}
+          >
+            {iconImageSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={iconImageSrc} alt="" className="size-full object-cover" />
+            ) : iconNode !== undefined ? (
+              <span className="flex items-center justify-center text-white">{iconNode}</span>
+            ) : Icon !== null ? (
+              <Icon className="size-4.5 text-white" />
+            ) : null}
+          </span>
+          {iconBadge !== undefined && (
+            <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
+              {iconBadge}
+            </span>
           )}
         </span>
-        {iconBadge !== undefined && (
-          <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
-            {iconBadge}
-          </span>
-        )}
-      </span>
+      )}
       <span className="min-w-0 flex-1">
         <span className="pointer-events-none block">
           <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
@@ -184,15 +224,106 @@ export function SettingsItemContainer({
             <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
           )}
         </span>
-        {children !== undefined && <span className="relative z-10 mt-1 block">{children}</span>}
+        {(children !== undefined || itemsVisible) && (
+          <span className="relative z-10 mt-1 block">
+            {children}
+            {itemsVisible && (
+              <span className="block">
+                {items?.map((item) =>
+                  item.checked !== undefined ? (
+                    <CheckSettingsItem
+                      key={item.key}
+                      title={item.title}
+                      description={item.description}
+                      icon={item.icon ?? null}
+                      iconBackgroundColor={item.iconBackgroundColor}
+                      checked={item.checked}
+                      onCheckedChange={item.onCheckedChange}
+                      disabled={item.disabled}
+                      className="border-0 bg-transparent px-0"
+                    />
+                  ) : (
+                    <SettingsItemContainer
+                      key={item.key}
+                      title={item.title}
+                      description={item.description}
+                      icon={item.icon ?? null}
+                      iconBackgroundColor={item.iconBackgroundColor}
+                      disabled={item.disabled}
+                      trailing={item.trailing}
+                      className="border-0 bg-transparent px-0"
+                    >
+                      {item.content}
+                    </SettingsItemContainer>
+                  )
+                )}
+              </span>
+            )}
+          </span>
+        )}
       </span>
 
       {trailing !== undefined ? (
         <span className="relative z-10 shrink-0">{trailing}</span>
+      ) : collapsible ? (
+        expanded ? (
+          <ChevronDown aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+        ) : (
+          <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+        )
       ) : isInteractive ? (
         <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
       ) : null}
     </div>
+  );
+}
+
+export interface CheckSettingsItemProps {
+  title: string;
+  description?: string;
+  icon?: LucideIcon | null;
+  iconBackgroundColor?: string;
+  checked: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+  hasItemAbove?: boolean;
+  hasItemBelow?: boolean;
+  className?: string;
+}
+
+export function CheckSettingsItem({
+  title,
+  description,
+  icon,
+  iconBackgroundColor,
+  checked,
+  onCheckedChange,
+  disabled = false,
+  hasItemAbove,
+  hasItemBelow,
+  className,
+}: CheckSettingsItemProps) {
+  const interactive = onCheckedChange !== undefined;
+
+  return (
+    <SettingsItemContainer
+      title={title}
+      description={description}
+      icon={icon}
+      iconBackgroundColor={iconBackgroundColor}
+      onClick={interactive && !disabled ? () => onCheckedChange(!checked) : undefined}
+      trailing={
+        <Checkbox
+          checked={checked}
+          disabled={disabled || !interactive}
+          onCheckedChange={interactive ? onCheckedChange : undefined}
+          aria-label={title}
+        />
+      }
+      hasItemAbove={hasItemAbove}
+      hasItemBelow={hasItemBelow}
+      className={className}
+    />
   );
 }
 
