@@ -15,6 +15,7 @@ import {
   type PermissionSection,
 } from '@/lib/api/developer';
 import { useAuthClient } from '@/lib/auth/client';
+import { uploadOAuthClientIcon } from '@/lib/avatar/oauth-client-icon-upload';
 import { ApiKeyRow } from './api-key-row';
 import { OAuthClientRow } from './oauth-client-row';
 import { SettingsItemGroup } from './settings-item-container';
@@ -27,23 +28,8 @@ import { RotateSecretDialog } from './rotate-secret-dialog';
 
 type PendingDelete = { type: 'client'; id: string; name: string } | { type: 'key'; id: string; name: string };
 
-/**
- * Load state of one settings list. Loading, failed, and loaded (which
- * may still be empty) are distinct states so the UI can switch its
- * display explicitly instead of guessing from a shared flag.
- */
 type ListState<T> = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; items: T[] };
 
-/**
- * Developer settings section. Manages OAuth clients (backed by the
- * better-auth OAuth authorization server on the auth API) and API keys,
- * each as a settings item group under its own heading, with
- * creation/edit dialogs. The OAuth clients
- * load through the `loadOAuthClients` server action, separately from
- * the API keys, and each list tracks its own loading / error / loaded
- * state so "still loading", "failed", and "loaded but empty" render
- * distinctly.
- */
 export function DeveloperSection() {
   const auth = useAuthClient();
   const t = useTranslations();
@@ -59,7 +45,6 @@ export function DeveloperSection() {
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
 
-  /** OAuth clients load through the server action, independently of the API keys. */
   const reloadClients = useCallback(async () => {
     setClientsState({ status: 'loading' });
     try {
@@ -186,7 +171,13 @@ export function DeveloperSection() {
         ) : null}
       </section>
 
-      <CreateOAuthClientDialog open={clientDialogOpen} onOpenChange={setClientDialogOpen} sections={sections} onCreated={handleClientCreated} />
+      <CreateOAuthClientDialog
+        open={clientDialogOpen}
+        onOpenChange={setClientDialogOpen}
+        sections={sections}
+        onCreated={handleClientCreated}
+        onUploadIcon={uploadOAuthClientIcon}
+      />
       {infoClient && (
         <OAuthClientInfoDialog
           open={infoClient !== null}
@@ -214,6 +205,7 @@ export function DeveloperSection() {
           client={editingClient}
           sections={sections}
           onUpdated={handleClientUpdated}
+          onUploadIcon={(file) => uploadOAuthClientIcon(editingClient.client_id, file)}
         />
       )}
       <CreateApiKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} onCreated={handleKeyCreated} />

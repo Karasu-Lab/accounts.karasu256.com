@@ -15,7 +15,7 @@ import {
   Input,
   Label,
   R2Image,
-  useR2Storage,
+  toast,
 } from '@karasu-lab/ui';
 import { oauthClientType, updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
@@ -27,16 +27,13 @@ interface EditOAuthClientDialogProps {
   client: OAuthClientSummary;
   sections: PermissionSection[];
   onUpdated: (_client: OAuthClientSummary) => void;
+  onUploadIcon: (_file: File) => Promise<string>;
 }
 
-/**
- * Dialog for editing an existing OAuth client. Updates name, redirect URIs,
- * icon, and scopes. The client secret cannot be changed here.
- */
-export function EditOAuthClientDialog({ open, onOpenChange, client, sections, onUpdated }: EditOAuthClientDialogProps) {
+export function EditOAuthClientDialog({ open, onOpenChange, client, sections, onUpdated, onUploadIcon }: EditOAuthClientDialogProps) {
   const auth = useAuthClient();
   const t = useTranslations();
-  const { uploading, upload } = useR2Storage();
+  const [uploading, setUploading] = useState(false);
 
   const [name, setName] = useState(client.client_name ?? '');
   const [description, setDescription] = useState(client.description ?? '');
@@ -74,10 +71,15 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
   }
 
   async function handleFileSelected(file: File) {
-    const url = await upload(file, `oauth/${client.client_id}/icon.png`);
-    if (!url) return;
-    setIconUrl(url);
-    setIconPreview(URL.createObjectURL(file));
+    setUploading(true);
+    try {
+      setIconUrl(await onUploadIcon(file));
+      setIconPreview(URL.createObjectURL(file));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setUploading(false);
+    }
   }
 
   const clientType = oauthClientType(client);
