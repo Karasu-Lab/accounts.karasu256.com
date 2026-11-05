@@ -114,6 +114,7 @@
       "keyPrefix": "キープレフィックス",
       "dialog": {
         "clientName": "クライアント名",
+        "description": "説明",
         "clientType": "OAuth タイプ",
         "clientTypeWeb": "ウェブ",
         "clientTypeDevice": "デバイス",
