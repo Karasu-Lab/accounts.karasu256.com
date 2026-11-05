@@ -2,9 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 
-// Draws the head region (base at (8, 8), overlay at (40, 8)) of the
-// raw skin texture onto a canvas. Legacy 64×32 textures get no
-// overlay: that region is often opaque padding, not a hat layer.
 export function MinecraftAvatar({ textureUrl }: { textureUrl: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 

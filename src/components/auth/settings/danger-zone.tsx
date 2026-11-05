@@ -10,17 +10,9 @@ import { Label } from '@karasu-lab/ui';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 
 export interface DangerZoneProps {
-  /** Whether the user has a `credential` (email/password) account. */
   hasPasswordProvider: boolean;
 }
 
-/**
- * Account deletion UI, via `authClient.deleteUser()`.
- * Password users confirm with their current password. OAuth/passkey-only
- * users rely on the session being "fresh" (signed in recently); if it
- * isn't, they're asked to sign out and back in first. `SettingsShell`'s
- * `authClient.useSession()` redirects to `/` once the account is gone.
- */
 export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
   const { authClient } = useAuthClient();
   const t = useTranslations();

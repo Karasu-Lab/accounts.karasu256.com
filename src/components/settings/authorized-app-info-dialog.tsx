@@ -10,18 +10,10 @@ interface AuthorizedAppInfoDialogProps {
   open: boolean;
   onOpenChange: (_open: boolean) => void;
   app: AuthorizedApp;
-  /** True while this app's revocation is in flight. */
   revoking: boolean;
   onRevoke: (_app: AuthorizedApp) => void;
 }
 
-/**
- * Shows one authorized app's information in the format of the OAuth
- * consent screen — the app's icon, the line naming the app, and the
- * list of permissions the user approved for it — together with the
- * app's client ID and authorization date, and the control that revokes
- * the authorization (which hands over to the caller's confirmation).
- */
 export function AuthorizedAppInfoDialog({ open, onOpenChange, app, revoking, onRevoke }: AuthorizedAppInfoDialogProps) {
   const t = useTranslations();
   const name = app.clientName ?? app.clientId;

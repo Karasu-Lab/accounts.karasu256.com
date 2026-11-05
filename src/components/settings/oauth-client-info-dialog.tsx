@@ -11,15 +11,6 @@ interface OAuthClientInfoDialogProps {
   client: OAuthClientSummary;
 }
 
-/**
- * Shows a client's information in the same format as the OAuth consent
- * screen: the app's icon on its own (there is no source account to
- * connect from here, so no user icon or connection icon), then the
- * scopes container — the line naming the app as requesting the
- * following permissions and the vertical list of those scopes,
- * translated on the client. There are no approve / deny buttons: this
- * dialog only displays the client.
- */
 export function OAuthClientInfoDialog({ open, onOpenChange, client }: OAuthClientInfoDialogProps) {
   const t = useTranslations();
   const name = client.client_name ?? client.client_id;

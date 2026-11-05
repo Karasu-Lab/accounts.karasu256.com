@@ -12,7 +12,6 @@ interface CreateApiKeyDialogProps {
   onCreated: (_key: ApiKeyCreated) => void;
 }
 
-/** Groups grantable permissions by the resource they apply to, preserving their order. */
 function groupByResource(permissions: ApiKeyPermission[]): [string, ApiKeyPermission[]][] {
   const groups = new Map<string, ApiKeyPermission[]>();
   for (const permission of permissions) {
@@ -21,10 +20,6 @@ function groupByResource(permissions: ApiKeyPermission[]): [string, ApiKeyPermis
   return [...groups.entries()];
 }
 
-/**
- * Dialog for creating a new API key with the permissions it is granted. Shows
- * the raw key once after creation and never again.
- */
 export function CreateApiKeyDialog({ open, onOpenChange, onCreated }: CreateApiKeyDialogProps) {
   const t = useTranslations();
   const [name, setName] = useState('');

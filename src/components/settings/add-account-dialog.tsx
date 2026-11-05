@@ -10,15 +10,9 @@ import { savePendingAddAccount } from '@/lib/add-account';
 export interface AddAccountDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Whether to show the "switch to this account after adding" checkbox. Defaults to `false`. */
   showSwitchAccountCheckBox?: boolean;
 }
 
-/**
- * Sends the user to auth.karasu256.com to sign in to another account. The
- * previously active session is remembered so the settings shell can switch
- * back to it on return, since `multiSession` makes every new sign-in active.
- */
 export function AddAccountDialog({ open, onOpenChange, showSwitchAccountCheckBox = false }: AddAccountDialogProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();

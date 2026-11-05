@@ -13,10 +13,6 @@ interface RotateSecretDialogProps {
   clientName: string;
 }
 
-/**
- * Two-phase dialog for rotating an OAuth client secret.
- * Phase 1 shows a confirmation warning; phase 2 reveals the new raw secret once.
- */
 export function RotateSecretDialog({ open, onOpenChange, clientId, clientName }: RotateSecretDialogProps) {
   const auth = useAuthClient();
   const t = useTranslations();
