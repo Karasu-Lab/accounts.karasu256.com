@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Upload } from 'lucide-react';
+import { LoaderCircle, Upload } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   Button,
@@ -29,6 +29,7 @@ import {
 } from '@/lib/api/developer';
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
+import { cn } from '@/lib/utils';
 
 interface OAuthClientDialogProps {
   open: boolean;
@@ -134,6 +135,7 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
   }
 
   const uris = parseUris(redirectUrisText);
+  const typeLocked = client !== undefined || loading;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -150,12 +152,19 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
                   type="button"
                   aria-label={t('settings.developer.dialog.upload')}
                   onClick={() => fileInputRef.current?.click()}
-                  className="group relative block size-16 overflow-hidden rounded-full border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  disabled={loading}
+                  className="group relative block size-16 overflow-hidden rounded-full border border-border bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
                 >
                   {iconPreview && <R2Image src={iconPreview} alt="" className="size-full object-cover" />}
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-                    <Upload className="size-5" />
-                  </span>
+                  {loading ? (
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
+                      <LoaderCircle className="size-5 animate-spin" />
+                    </span>
+                  ) : (
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
+                      <Upload className="size-5" />
+                    </span>
+                  )}
                 </button>
                 <input
                   ref={fileInputRef}
@@ -172,20 +181,20 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
 
               <div className="space-y-1.5">
                 <Label htmlFor="client-name">{t('settings.developer.dialog.clientName')}</Label>
-                <Input id="client-name" value={name} onChange={(e) => setName(e.target.value)} required />
+                <Input id="client-name" value={name} onChange={(e) => setName(e.target.value)} disabled={loading} required />
               </div>
 
               <div className="space-y-1.5">
                 <Label htmlFor="client-description">{t('settings.developer.dialog.description')}</Label>
-                <Input id="client-description" value={description} onChange={(e) => setDescription(e.target.value)} />
+                <Input id="client-description" value={description} onChange={(e) => setDescription(e.target.value)} disabled={loading} />
               </div>
 
-              <div className="space-y-1.5">
+              <div className={cn('space-y-1.5', typeLocked && 'pointer-events-none opacity-50')} aria-disabled={typeLocked}>
                 <Label>{t('settings.developer.dialog.clientType')}</Label>
                 <RadioGroup
                   value={clientType}
                   onValueChange={(value) => setClientType(value as OAuthClientType)}
-                  disabled={client !== undefined}
+                  disabled={typeLocked}
                   className="flex gap-4"
                 >
                   <label className="flex items-center gap-1.5 text-sm">
@@ -208,7 +217,8 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
                     onChange={(e) => setRedirectUrisText(e.target.value)}
                     rows={3}
                     placeholder="https://example.com/callback"
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={loading}
                     required
                   />
                   <p className="text-xs text-muted-foreground">{t('settings.developer.dialog.callbackUrisHelp')}</p>
@@ -217,7 +227,7 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
 
 
               {sections.length > 0 && (
-                <div className="space-y-2">
+                <div className={cn('space-y-2', loading && 'pointer-events-none opacity-50')} aria-disabled={loading}>
                   <Label>{t('settings.developer.dialog.permissions')}</Label>
                   <div className="rounded-lg border border-border divide-y divide-border">
                     {sections.map((s) => (
@@ -226,13 +236,13 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
                         <div className="flex gap-4 mt-1">
                           {s.canRead && (
                             <label className="flex items-center gap-1.5 text-sm">
-                              <Checkbox checked={scopes.has(`read:${s.key}`)} onCheckedChange={() => toggleScope(`read:${s.key}`)} />
+                              <Checkbox checked={scopes.has(`read:${s.key}`)} onCheckedChange={() => toggleScope(`read:${s.key}`)} disabled={loading} />
                               {t('settings.developer.dialog.read')}
                             </label>
                           )}
                           {s.canWrite && (
                             <label className="flex items-center gap-1.5 text-sm">
-                              <Checkbox checked={scopes.has(`write:${s.key}`)} onCheckedChange={() => toggleScope(`write:${s.key}`)} />
+                              <Checkbox checked={scopes.has(`write:${s.key}`)} onCheckedChange={() => toggleScope(`write:${s.key}`)} disabled={loading} />
                               {t('settings.developer.dialog.write')}
                             </label>
                           )}
@@ -252,6 +262,7 @@ export function OAuthClientDialog({ open, onOpenChange, sections, client, onSave
                   }
                 />
                 <Button type="submit" disabled={loading || !name.trim() || (clientType === 'web' && uris.length === 0)}>
+                  {loading && <LoaderCircle className="size-4 animate-spin" />}
                   {t(client ? 'settings.developer.dialog.save' : 'settings.developer.dialog.create')}
                 </Button>
               </div>
