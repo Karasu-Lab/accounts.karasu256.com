@@ -204,7 +204,6 @@ export function SettingsItemContainer({
             style={{ backgroundColor: iconBackgroundColor }}
           >
             {iconImageSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={iconImageSrc} alt="" className="size-full object-cover" />
             ) : iconNode !== undefined ? (
               <span className="flex items-center justify-center text-white">{iconNode}</span>
