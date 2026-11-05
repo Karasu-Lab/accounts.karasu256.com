@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { deleteUploadedImage, uploadImage } from '@karasu-lab/utils/server';
+import { deleteUploadedImage } from '@karasu-lab/utils/server';
 import { fetchSetFirebasePhoto } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
 import { requireSession } from '@/lib/api/require-session';
@@ -21,49 +21,6 @@ async function cleanupPreviousIcon(
 ): Promise<void> {
   if (!imageApiUrl || !cookieHeader || !previousPhotoURL || previousPhotoURL === nextPhotoURL) return;
   await deleteUploadedImage(previousPhotoURL, { imageApiUrl, cookieHeader });
-}
-
-/**
- * Uploads the authenticated user's icon via the image API and has the
- * API point the Firebase Auth `photoURL` at it, deleting the previous
- * icon once the new one is persisted.
- *
- * POST /api/user/icon
- */
-export async function POST(request: NextRequest) {
-  const { user, error } = await requireSession();
-  if (error) return error;
-
-  const imageApiUrl = process.env.CDN_URL;
-  if (!imageApiUrl) {
-    return NextResponse.json({ error: 'image_api_not_configured' }, { status: 500 });
-  }
-
-  const incoming = await request.formData();
-  const file = incoming.get('file');
-  if (!(file instanceof File)) return badRequest();
-
-  const cookieHeader = (await headers()).get('cookie');
-  if (!cookieHeader) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const result = await uploadImage(file, {
-    imageApiUrl,
-    cookieHeader,
-    path: `users/${user.id}/avatar.png`,
-  });
-  if (!result.ok) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
-  }
-  const { url } = result;
-
-  // The Firebase link is optional: unlinked users just skip the photoURL
-  // sync (their icon still uploads and is returned).
-  const photo = await fetchSetFirebasePhoto(user.id, url);
-  if (photo.linked) {
-    await cleanupPreviousIcon(photo.previousPhotoURL ?? undefined, url, imageApiUrl, cookieHeader);
-  }
-
-  return NextResponse.json({ photoURL: url });
 }
 
 /**

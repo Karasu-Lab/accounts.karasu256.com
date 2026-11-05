@@ -28,13 +28,17 @@ jobs:
       APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
       FIREBASE_MEASUREMENT_ID: ${{ vars.FIREBASE_MEASUREMENT_ID }}
+      STORAGE_ENDPOINT: ${{ vars.STORAGE_ENDPOINT }}
+      STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET }}
+      STORAGE_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
+      STORAGE_SECRET_ACCESS_KEY: ${{ secrets.STORAGE_SECRET_ACCESS_KEY }}
     steps:
       - name: Deploy the worker
         uses: Karasu-Lab/WorkersDeploy@v1
         with:
           mode: production
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID STORAGE_ENDPOINT STORAGE_BUCKET STORAGE_ACCESS_KEY_ID STORAGE_SECRET_ACCESS_KEY
 
   preview:
     if: github.ref_name != 'main'
@@ -52,10 +56,14 @@ jobs:
       APP_PRIVATE_KEY: ${{ secrets.APP_PRIVATE_KEY }}
       FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
       FIREBASE_MEASUREMENT_ID: ${{ vars.FIREBASE_MEASUREMENT_ID }}
+      STORAGE_ENDPOINT: ${{ vars.STORAGE_ENDPOINT }}
+      STORAGE_BUCKET: ${{ vars.STORAGE_BUCKET }}
+      STORAGE_ACCESS_KEY_ID: ${{ secrets.STORAGE_ACCESS_KEY_ID }}
+      STORAGE_SECRET_ACCESS_KEY: ${{ secrets.STORAGE_SECRET_ACCESS_KEY }}
     steps:
       - name: Deploy the worker
         uses: Karasu-Lab/WorkersDeploy@v1
         with:
           mode: preview
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID
+          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID FIREBASE_MEASUREMENT_ID STORAGE_ENDPOINT STORAGE_BUCKET STORAGE_ACCESS_KEY_ID STORAGE_SECRET_ACCESS_KEY

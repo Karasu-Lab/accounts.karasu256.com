@@ -149,3 +149,55 @@ export async function fetchSetFirebasePhoto(userId: string, photoURL: string | n
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
   return (await res.json()) as FirebasePhotoResult;
 }
+
+async function uploadFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const sessionToken = await fetchSessionToken();
+  return fetch(internalUrl(path), {
+    ...init,
+    headers: { ...init.headers, authorization: `Bearer ${sessionToken}` },
+    cache: 'no-store',
+  });
+}
+
+export interface UploadVerifyRequest {
+  path: string;
+  sha256: string;
+  contentType: string;
+  size: number;
+  uploaderId?: string;
+}
+
+export interface VerifiedUpload {
+  url: string;
+  sha256: string;
+  contentType: string;
+  size: number;
+}
+
+export async function fetchVerifyUpload(upload: UploadVerifyRequest): Promise<VerifiedUpload | null> {
+  const res = await uploadFetch('/upload/verify', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(upload),
+  });
+  if (res.status === 422) return null;
+  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
+  return (await res.json()) as VerifiedUpload;
+}
+
+export interface UploadStatus {
+  valid: true;
+  url: string;
+  sha256?: string;
+  contentType?: string;
+  size?: number;
+}
+
+export async function fetchUploadStatus(path: string, uploaderId: string): Promise<UploadStatus | null> {
+  const query = new URLSearchParams({ path, uploaderId });
+  const res = await uploadFetch(`/upload/verify?${query}`);
+  if (res.status === 404 || res.status === 422) return null;
+  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
+  const status = (await res.json()) as UploadStatus;
+  return status.valid ? status : null;
+}
