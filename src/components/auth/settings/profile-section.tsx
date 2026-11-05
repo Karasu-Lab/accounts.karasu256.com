@@ -9,34 +9,14 @@ import { EditableSettingsItem } from '@/components/settings/editable-settings-it
 import { EditValueDialog } from '@/components/settings/edit-value-dialog';
 import { ProfileIcon, type ProfileIconHandle } from './profile-icon';
 
-/**
- * The profile settings page, rebuilt from {@link EditableSettingsItem}s:
- * the icon item and the display name item — the same items as before.
- *
- * There is no page-level save button and no saved/unsaved judgment.
- * Pressing the display name item opens the generic
- * {@link EditValueDialog}, where the user edits the value and chooses
- * Save or Cancel there. The icon item's edit button opens the icon file
- * picker (the avatar itself keeps its click and context-menu behaviour).
- *
- * Nothing is replaced with a skeleton while loading: the items render
- * immediately and are only disabled until {@link useSettingsUser}'s
- * `ready` flag flips true, which happens once the better-auth session
- * resolves.
- */
 export function ProfileSection() {
   const { authClient } = useAuthClient();
   const t = useTranslations();
   const { user, ready, updateUser } = useSettingsUser();
   const profileIconRef = useRef<ProfileIconHandle>(null);
   const [nameDialogOpen, setNameDialogOpen] = useState(false);
+  const [iconBusy, setIconBusy] = useState(false);
 
-  /**
-   * Applies the display name chosen in the edit dialog. better-auth's
-   * `user` row is the source of truth; the server-side
-   * `syncProfileToFirebase` hook mirrors it onto Firebase. Rethrows after
-   * reporting the error so the dialog stays open for a retry.
-   */
   async function handleSaveName(name: string) {
     try {
       await authClient.updateUser({ name });
@@ -52,10 +32,11 @@ export function ProfileSection() {
     <div>
       <EditableSettingsItem
         label={t('profile.icon')}
-        value={<ProfileIcon ref={profileIconRef} />}
+        value={<ProfileIcon ref={profileIconRef} onBusyChange={setIconBusy} />}
         onEdit={() => profileIconRef.current?.openFilePicker()}
         editLabel={t('profile.changeIcon')}
         disabled={!ready}
+        busy={iconBusy}
       />
       <EditableSettingsItem
         label={t('profile.displayName')}

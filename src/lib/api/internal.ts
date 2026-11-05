@@ -1,24 +1,8 @@
 import { createHash, createPrivateKey, randomUUID, sign } from 'node:crypto';
 import { headers } from 'next/headers';
 import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
+import { InternalApiError } from './internal-api-error';
 
-/**
- * Service-to-service calls to api.karasu256.com's internal user
- * endpoints, which own this app's former direct database access and
- * all Firebase access: the linked providers, the Firebase user link
- * and the Firebase profile photo. This app holds no database or
- * Firebase configuration of its own anymore; the API is the single
- * place that reads and writes the database and the only holder of
- * the Firebase service account.
- *
- * Every call carries two proofs, and the API requires both to name
- * the user in the path:
- *
- * - this app's own short-lived token (see signAppToken), proving the
- *   caller is the genuine app, and
- * - the signed-in user's better-auth session token, exchanged from
- *   the request's session cookie at the auth API, proving the user.
- */
 function internalUrl(path: string): string {
   const base = process.env.API_URL;
   if (!base) throw new MissingEnvError('API_URL');
@@ -31,15 +15,6 @@ function base64Url(data: string | Buffer): string {
   return Buffer.from(data).toString('base64url');
 }
 
-/**
- * Issues this app's own token for one internal call: a compact JWS
- * (EdDSA) signed with the app private key whose public half the API
- * registers against the app ID. The claims bind the call — issuer is
- * the app ID, audience is the API's origin, subject is the user the
- * call acts for, and the method, path and body hash are signed — and
- * the token lives for APP_TOKEN_TTL_SECONDS with a unique ID, so the
- * API can reject any replay of it.
- */
 function signAppToken(userId: string, method: string, url: URL, body: string): string {
   const appId = process.env.APP_ID;
   if (!appId) throw new MissingEnvError('APP_ID');
@@ -67,12 +42,6 @@ function signAppToken(userId: string, method: string, url: URL, body: string): s
   return `${signingInput}.${base64Url(signature)}`;
 }
 
-/**
- * Exchanges the current request's better-auth session cookie for the
- * session token the auth API issues at its token endpoint — the same
- * exchange the session SDK performs — so the API can verify the user
- * itself instead of trusting this app's word for who they are.
- */
 async function fetchSessionToken(): Promise<string> {
   const authApiUrl = process.env.AUTH_API_URL;
   if (!authApiUrl) throw new MissingEnvError('AUTH_API_URL');
@@ -112,7 +81,6 @@ async function internalFetch(path: string, userId: string, init: RequestInit = {
   });
 }
 
-/** Lists the social-provider IDs linked to the user, as the API reports them. */
 export async function fetchLinkedProviderIds(userId: string): Promise<string[]> {
   const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/linked-providers`, userId);
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
@@ -120,11 +88,6 @@ export async function fetchLinkedProviderIds(userId: string): Promise<string[]> 
   return providerIds;
 }
 
-/**
- * Unlinks one provider from the user through the API.
- *
- * @returns `true` when a link was removed, `false` when the user had no such link.
- */
 export async function fetchUnlinkProvider(userId: string, providerId: string): Promise<boolean> {
   const res = await internalFetch(
     `/internal/users/${encodeURIComponent(userId)}/linked-providers/${encodeURIComponent(providerId)}`,
@@ -137,16 +100,10 @@ export async function fetchUnlinkProvider(userId: string, providerId: string): P
 }
 
 export interface FirebasePhotoResult {
-  /** Whether the user has a linked Firebase user whose photo was updated. */
   linked: boolean;
-  /** The photo URL the Firebase user had before this update, for cleaning up the replaced image. */
   previousPhotoURL: string | null;
 }
 
-/**
- * Sets the user's Firebase profile photo through the API, which alone
- * holds the Firebase credentials. Passing null clears the photo.
- */
 export async function fetchSetFirebasePhoto(userId: string, photoURL: string | null): Promise<FirebasePhotoResult> {
   const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/firebase-photo`, userId, {
     method: 'POST',
@@ -155,6 +112,15 @@ export async function fetchSetFirebasePhoto(userId: string, photoURL: string | n
   });
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
   return (await res.json()) as FirebasePhotoResult;
+}
+
+export async function fetchSetUserImage(userId: string, image: string | null): Promise<void> {
+  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/image`, userId, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ image }),
+  });
+  if (!res.ok) throw new InternalApiError();
 }
 
 async function uploadFetch(path: string, init: RequestInit = {}): Promise<Response> {
