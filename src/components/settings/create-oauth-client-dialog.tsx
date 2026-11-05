@@ -17,9 +17,8 @@ import {
   RadioGroup,
   RadioGroupItem,
   R2Image,
-  useR2Storage,
 } from '@karasu-lab/ui';
-import { createOAuthClient, type OAuthClientCreated, type OAuthClientType, type PermissionSection } from '@/lib/api/developer';
+import { createOAuthClient, updateOAuthClient, type OAuthClientCreated, type OAuthClientType, type PermissionSection } from '@/lib/api/developer';
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
@@ -28,24 +27,18 @@ interface CreateOAuthClientDialogProps {
   onOpenChange: (_open: boolean) => void;
   sections: PermissionSection[];
   onCreated: (_client: OAuthClientCreated) => void;
+  onUploadIcon: (_clientId: string, _file: File) => Promise<string>;
 }
 
-/**
- * Dialog for creating a new OAuth client. Handles icon upload to the image API,
- * scope selection, and displays the raw secret once after creation.
- * Web clients accept multiple redirect URIs, one per line; device clients
- * register for the device code grant instead and have no redirect URIs.
- */
-export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreated }: CreateOAuthClientDialogProps) {
+export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreated, onUploadIcon }: CreateOAuthClientDialogProps) {
   const auth = useAuthClient();
   const t = useTranslations();
-  const { uploading, upload } = useR2Storage();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [clientType, setClientType] = useState<OAuthClientType>('web');
   const [redirectUrisText, setRedirectUrisText] = useState('');
-  const [iconUrl, setIconUrl] = useState('');
+  const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState('');
   const [scopes, setScopes] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
@@ -68,10 +61,8 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
     });
   }
 
-  async function handleFileSelected(file: File) {
-    const url = await upload(file);
-    if (!url) return;
-    setIconUrl(url);
+  function handleFileSelected(file: File) {
+    setIconFile(file);
     setIconPreview(URL.createObjectURL(file));
   }
 
@@ -81,7 +72,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
     setDescription('');
     setClientType('web');
     setRedirectUrisText('');
-    setIconUrl('');
+    setIconFile(null);
     setIconPreview('');
     setScopes(new Set());
     setCreated(null);
@@ -97,10 +88,11 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
       const result = await createOAuthClient(auth, {
         client_name: name.trim(),
         redirect_uris: uris,
-        logo_uri: iconUrl || undefined,
         scope: [...scopes].join(' '),
         type: clientType,
       });
+      const iconUrl = iconFile ? await onUploadIcon(result.client_id, iconFile) : null;
+      if (iconUrl) await updateOAuthClient(auth, result.client_id, { logo_uri: iconUrl });
       await saveOAuthClientInfo(result.client_id, {
         name: name.trim(),
         iconUrl: iconUrl || null,
@@ -177,7 +169,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
                   <FileUploadButton
                     label={t('settings.developer.dialog.upload')}
                     loadingLabel={t('settings.developer.dialog.uploading')}
-                    loading={uploading}
+                    loading={false}
                     accept="image/jpeg,image/png,image/webp"
                     onFileSelected={handleFileSelected}
                   />

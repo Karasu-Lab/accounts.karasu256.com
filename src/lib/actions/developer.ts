@@ -1,30 +1,16 @@
 'use server';
 
+import { createHash } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { listOauthScopes } from '@/lib/api/api-client';
+import { AuthApiError } from '@/lib/api/auth-api-error';
 import type { ApiKeyCreated, ApiKeyPermission, ApiKeySummary, OAuthClientSummary } from '@/lib/api/developer';
 
 export interface OAuthClientsData {
   clients: OAuthClientSummary[];
-  /** The catalog of scopes an OAuth client can request, ungrouped. */
   scopes: string[];
 }
 
-/**
- * Server action backing the developer settings' OAuth client list.
- *
- * The list used to be fetched in the browser: bridging the Firebase
- * session first, then calling the authorization server, all coupled
- * with the API key list behind one shared loading flag — any slow or
- * failed leg left the whole section unstable, and a failure rendered
- * exactly like an empty list. Here the read runs on the server
- * instead: the incoming request's cookies (the better-auth session
- * cookie is scoped to the shared parent domain) are forwarded to the
- * authorization server's get-clients endpoint, and the scope catalog
- * is read from the same source as the permissions sections route.
- * Throws on failure so the caller can show an error state that is
- * distinct from both "loading" and "no clients".
- */
 interface OAuthClientInfoRow {
   client_id: string;
   name: string;
@@ -55,9 +41,6 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
 
   const clients = (await clientsRes.json()) as OAuthClientSummary[];
 
-  // The info rows are the display source for each item's name, icon, and
-  // description. A missing info endpoint or row leaves the client's own
-  // fields in place, so the list still renders before any info is saved.
   const infoByClientId = new Map<string, OAuthClientInfoRow>();
   if (infoRes?.ok) {
     const rows = (await infoRes.json()) as OAuthClientInfoRow[];
@@ -74,12 +57,6 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
   };
 }
 
-/**
- * Saves the display info (name, icon, description) for one of the
- * signed-in user's OAuth clients into its `oauth_client_info` row on
- * the auth API, which owns the table. Called right after the client is
- * created or updated so the row mirrors what the settings show.
- */
 export async function saveOAuthClientInfo(
   clientId: string,
   info: { name: string; iconUrl: string | null; description: string | null }
@@ -99,22 +76,44 @@ export async function saveOAuthClientInfo(
   }
 }
 
-/** The base URL of the auth API, which owns API key processing. */
+export async function prepareOAuthClientIcon(clientId: string, form: FormData): Promise<{ uploadUrl: string; intent: string }> {
+  const file = form.get('file');
+  if (!(file instanceof File)) throw new AuthApiError();
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  const res = await fetch(`${authApiBase()}/api/oauth-client-info/${encodeURIComponent(clientId)}/icon`, {
+    method: 'POST',
+    headers: { cookie: (await cookies()).toString(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      content_type: file.type,
+      size: bytes.byteLength,
+      sha256: createHash('sha256').update(bytes).digest('hex'),
+    }),
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new AuthApiError();
+  const { upload_url, intent } = (await res.json()) as { upload_url: string; intent: string };
+  return { uploadUrl: upload_url, intent };
+}
+
+export async function completeOAuthClientIcon(clientId: string, intent: string): Promise<string> {
+  const res = await fetch(`${authApiBase()}/api/oauth-client-info/${encodeURIComponent(clientId)}/icon/complete`, {
+    method: 'POST',
+    headers: { cookie: (await cookies()).toString(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ intent }),
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new AuthApiError();
+  const { icon_url } = (await res.json()) as { icon_url: string };
+  return icon_url;
+}
+
 function authApiBase(): string {
   const base = process.env.AUTH_API_URL;
   if (!base) throw new Error('AUTH_API_URL is not configured');
   return base.replace(/\/$/, '');
 }
 
-/**
- * Lists the signed-in user's API keys from the auth API, which owns
- * the key table and the permission grants. The session cookie rides
- * along on the shared parent domain, so the auth API sees the same
- * session the browser holds.
- *
- * @throws when the auth API does not answer OK, so the caller can
- * show an error state instead of an empty list.
- */
 export async function loadApiKeys(): Promise<ApiKeySummary[]> {
   const cookieHeader = (await cookies()).toString();
   const res = await fetch(`${authApiBase()}/api/api-keys`, {
@@ -125,7 +124,6 @@ export async function loadApiKeys(): Promise<ApiKeySummary[]> {
   return (await res.json()) as ApiKeySummary[];
 }
 
-/** Lists the permissions that can be granted to an API key, read from the auth API. */
 export async function loadGrantablePermissions(): Promise<ApiKeyPermission[]> {
   const cookieHeader = (await cookies()).toString();
   const res = await fetch(`${authApiBase()}/api/permissions`, {
@@ -136,7 +134,6 @@ export async function loadGrantablePermissions(): Promise<ApiKeyPermission[]> {
   return (await res.json()) as ApiKeyPermission[];
 }
 
-/** Issues an API key granted the permissions identified by their public ids. The raw key is only returned here. */
 export async function createApiKey(name: string, permissionPublicIds: string[]): Promise<ApiKeyCreated> {
   const cookieHeader = (await cookies()).toString();
   const res = await fetch(`${authApiBase()}/api/api-keys`, {
@@ -149,7 +146,6 @@ export async function createApiKey(name: string, permissionPublicIds: string[]):
   return (await res.json()) as ApiKeyCreated;
 }
 
-/** Deletes one of the signed-in user's API keys. */
 export async function deleteApiKey(id: string): Promise<void> {
   const cookieHeader = (await cookies()).toString();
   const res = await fetch(`${authApiBase()}/api/api-keys/${encodeURIComponent(id)}`, {
