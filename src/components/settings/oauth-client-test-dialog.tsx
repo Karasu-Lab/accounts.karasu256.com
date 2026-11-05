@@ -7,10 +7,11 @@ import { Spinner as DefaultSpinner, toast } from '@karasu-lab/ui';
 import { useOAuthErrorMessage } from '@/lib/i18n/use-oauth-error-message';
 import { useAuthClient } from '@/lib/auth/client';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle, Input, Label } from '@karasu-lab/ui';
-import type { OAuthClientSummary } from '@/lib/api/developer';
+import { DEVICE_CODE_GRANT_TYPE, oauthClientType, type OAuthClientSummary } from '@/lib/api/developer';
 
-const STEP_LABELS = ['authorize', 'access_token'] as const;
-type StepLabel = (typeof STEP_LABELS)[number];
+const WEB_STEP_LABELS = ['authorize', 'access_token'] as const;
+const DEVICE_STEP_LABELS = ['device_code', 'access_token'] as const;
+type StepLabel = 'authorize' | 'device_code' | 'access_token';
 type StepStatus = 'waiting' | 'running' | 'success' | 'error';
 
 interface StepState {
@@ -28,8 +29,8 @@ interface OAuthClientTestDialogProps {
   spinner?: React.ComponentType<{ className?: string }>;
 }
 
-function makeInitialSteps(): StepState[] {
-  return STEP_LABELS.map((label) => ({ label, status: 'waiting' }));
+function makeInitialSteps(isDevice: boolean): StepState[] {
+  return (isDevice ? DEVICE_STEP_LABELS : WEB_STEP_LABELS).map((label) => ({ label, status: 'waiting' }));
 }
 
 function failStep(label: StepLabel, error: string) {
@@ -67,13 +68,18 @@ function basicAuthorization(clientId: string, clientSecret: string): string {
 }
 
 /**
- * Dialog that tests the authorization flow for the given client by opening
- * the auth app's real authorization page in a popup window and exchanging
- * the resulting code at the auth API's `/oauth2/token` endpoint (PKCE
- * required, with `client_secret_basic` client authentication). The popup lands on the auth app's test-callback confirmation
- * screen, which posts the code back here. The requested permissions are
- * checked and granted on the auth app's consent screen as part of the
- * real authorization — this dialog no longer performs a separate
+ * Dialog that tests the authorization flow for the given client. Web
+ * clients run the authorization code flow: the auth app's real
+ * authorization page opens in a popup window and the resulting code is
+ * exchanged at the auth API's `/oauth2/token` endpoint (PKCE required,
+ * with `client_secret_basic` client authentication). Device clients
+ * have no secret, so they run the device authorization flow instead —
+ * the same intermediate authorization the MCP server uses: a device
+ * code is requested from `/device/code`, the user approves it on the
+ * auth app's device page, and the dialog polls `/oauth2/token` until
+ * the token is issued. The requested permissions are checked and
+ * granted on the auth app's consent screen as part of the real
+ * authorization — this dialog no longer performs a separate
  * permission check against a resource server. Every run also writes a
  * debug log into the result field under the steps, copyable with the
  * copy button, because the translated step errors alone do not say
@@ -87,17 +93,25 @@ export function OAuthClientTestDialog({
 }: OAuthClientTestDialogProps) {
   const { config } = useAuthClient();
   const t = useTranslations();
-  const [steps, setSteps] = useState<StepState[]>(makeInitialSteps);
+  const isDevice = oauthClientType(client) === 'device';
+  const [steps, setSteps] = useState<StepState[]>(() => makeInitialSteps(isDevice));
   const [secret, setSecret] = useState('');
+  const [deviceInfo, setDeviceInfo] = useState<{ userCode: string; verificationUrl: string } | null>(null);
   const [resultLog, setResultLog] = useState('');
   const popupRef = useRef<Window | null>(null);
   const clientRef = useRef(client);
   const secretRef = useRef(secret);
   const verifierRef = useRef('');
+  const runIdRef = useRef(0);
 
   useEffect(() => {
     clientRef.current = client;
   }, [client]);
+  useEffect(() => {
+    if (!open) return;
+    setSteps(makeInitialSteps(isDevice));
+    setDeviceInfo(null);
+  }, [open, isDevice]);
   useEffect(() => {
     secretRef.current = secret;
   }, [secret]);
@@ -204,7 +218,7 @@ export function OAuthClientTestDialog({
   }, [appendLog]);
 
   useEffect(() => {
-    if (!isWaitingForCode) return;
+    if (isDevice || !isWaitingForCode) return;
 
     const interval = setInterval(() => {
       if (!popupRef.current?.closed) return;
@@ -216,9 +230,135 @@ export function OAuthClientTestDialog({
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isWaitingForCode, t, appendLog]);
+  }, [isDevice, isWaitingForCode, t, appendLog]);
+
+  /**
+   * Polls the token endpoint with the device code until the user
+   * approves on the device page and the token is issued, following the
+   * authorization_pending / slow_down protocol. The run id guards
+   * against a cancelled or superseded run writing into a later one.
+   * The device code itself is never logged.
+   */
+  async function pollDeviceToken(runId: number, deviceCode: string, intervalSeconds: number) {
+    let interval = intervalSeconds;
+    for (;;) {
+      await new Promise((resolve) => setTimeout(resolve, interval * 1000));
+      if (runIdRef.current !== runId) return;
+
+      let tokenRes: Response;
+      try {
+        tokenRes = await fetch(`${authApiBase(config.authApiUrl)}/api/auth/oauth2/token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            grant_type: DEVICE_CODE_GRANT_TYPE,
+            device_code: deviceCode,
+            client_id: clientRef.current.client_id,
+          }).toString(),
+        });
+      } catch {
+        appendLog('token request failed: network error');
+        setSteps(failStep('access_token', 'network_error'));
+        return;
+      }
+
+      const body = (await tokenRes.json().catch(() => ({}))) as {
+        access_token?: string;
+        expires_in?: number;
+        error?: string;
+        error_description?: string;
+      };
+
+      if (tokenRes.ok && body.access_token) {
+        appendLog(`token response: HTTP ${tokenRes.status} (access token issued, expires_in=${body.expires_in})`);
+        setSteps((prev) =>
+          prev.map((s) =>
+            s.label === 'access_token'
+              ? { ...s, status: 'success', data: { token: body.access_token!.slice(0, 12) + '…', expires_in: body.expires_in } }
+              : s
+          )
+        );
+        return;
+      }
+
+      const error = body.error ?? 'invalid_grant';
+      if (error === 'authorization_pending') continue;
+      appendLog(`token response: HTTP ${tokenRes.status} ${JSON.stringify(body)}`);
+      if (error === 'slow_down') {
+        interval += 5;
+        continue;
+      }
+      setSteps(failStep('access_token', error));
+      return;
+    }
+  }
+
+  async function startDeviceTest() {
+    runIdRef.current += 1;
+    const runId = runIdRef.current;
+    setResultLog('');
+    setDeviceInfo(null);
+    appendLog(`test started: client_id=${client.client_id}, scope=${client.scope ?? ''}`);
+    setSteps(makeInitialSteps(true).map((s) => (s.label === 'device_code' ? { ...s, status: 'running' } : s)));
+
+    let codeRes: Response;
+    try {
+      appendLog(`device code request: POST ${authApiBase(config.authApiUrl)}/api/auth/device/code`);
+      codeRes = await fetch(`${authApiBase(config.authApiUrl)}/api/auth/device/code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: client.client_id, ...(client.scope ? { scope: client.scope } : {}) }),
+      });
+    } catch {
+      appendLog('device code request failed: network error');
+      setSteps(failStep('device_code', 'network_error'));
+      return;
+    }
+
+    const body = (await codeRes.json().catch(() => ({}))) as {
+      device_code?: string;
+      user_code?: string;
+      verification_uri?: string;
+      verification_uri_complete?: string;
+      expires_in?: number;
+      interval?: number;
+      error?: string;
+    };
+
+    if (!codeRes.ok || !body.device_code || !body.user_code) {
+      appendLog(`device code response: HTTP ${codeRes.status} ${JSON.stringify(body)}`);
+      setSteps(failStep('device_code', body.error ?? 'invalid_client'));
+      return;
+    }
+
+    const verificationUrl = body.verification_uri_complete ?? body.verification_uri ?? '';
+    appendLog(`device code issued: user_code=${body.user_code}, expires_in=${body.expires_in}`);
+    setDeviceInfo({ userCode: body.user_code, verificationUrl });
+    setSteps((prev) =>
+      prev.map((s) => {
+        if (s.label === 'device_code') return { ...s, status: 'success', data: { user_code: body.user_code } };
+        if (s.label === 'access_token') return { ...s, status: 'running' };
+        return s;
+      })
+    );
+
+    if (verificationUrl) {
+      const popup = window.open(verificationUrl, 'oauth_test', 'popup=yes,width=520,height=640');
+      if (popup) {
+        popupRef.current = popup;
+      } else {
+        appendLog('device page: the popup was blocked by the browser');
+      }
+    }
+
+    void pollDeviceToken(runId, body.device_code, body.interval ?? 5);
+  }
 
   async function startTest() {
+    if (isDevice) {
+      await startDeviceTest();
+      return;
+    }
     setResultLog('');
     const redirectUri = client.redirect_uris[0];
     if (!redirectUri) {
@@ -230,7 +370,7 @@ export function OAuthClientTestDialog({
     }
 
     appendLog(`test started: client_id=${client.client_id}, scope=${client.scope ?? ''}`);
-    setSteps(makeInitialSteps().map((s) => (s.label === 'authorize' ? { ...s, status: 'running' } : s)));
+    setSteps(makeInitialSteps(false).map((s) => (s.label === 'authorize' ? { ...s, status: 'running' } : s)));
 
     const { verifier, challenge } = await createPkcePair();
     verifierRef.current = verifier;
@@ -260,18 +400,22 @@ export function OAuthClientTestDialog({
   }
 
   function cancelTest() {
+    runIdRef.current += 1;
     popupRef.current?.close();
     popupRef.current = null;
-    setSteps(makeInitialSteps());
+    setSteps(makeInitialSteps(isDevice));
+    setDeviceInfo(null);
     setResultLog('');
   }
 
   function handleOpenChange(next: boolean) {
     if (!next) {
+      runIdRef.current += 1;
       popupRef.current?.close();
       popupRef.current = null;
-      setSteps(makeInitialSteps());
+      setSteps(makeInitialSteps(isDevice));
       setSecret('');
+      setDeviceInfo(null);
       setResultLog('');
     }
     onOpenChange(next);
@@ -289,17 +433,39 @@ export function OAuthClientTestDialog({
         <DialogPopup className="max-w-md w-full p-6 space-y-4">
           <DialogTitle>{t('settings.developer.test.title', { name: client.client_name ?? client.client_id })}</DialogTitle>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="oauth-test-secret">{t('settings.developer.test.clientSecret')}</Label>
-            <Input
-              id="oauth-test-secret"
-              type="password"
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-              disabled={isRunning}
-              autoComplete="off"
-            />
-          </div>
+          {!isDevice && (
+            <div className="space-y-1.5">
+              <Label htmlFor="oauth-test-secret">{t('settings.developer.test.clientSecret')}</Label>
+              <Input
+                id="oauth-test-secret"
+                type="password"
+                value={secret}
+                onChange={(e) => setSecret(e.target.value)}
+                disabled={isRunning}
+                autoComplete="off"
+              />
+            </div>
+          )}
+
+          {isDevice && deviceInfo && (
+            <div className="space-y-1.5">
+              <Label>{t('settings.developer.test.userCode')}</Label>
+              <p className="font-mono text-lg tracking-widest">{deviceInfo.userCode}</p>
+              {deviceInfo.verificationUrl && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const popup = window.open(deviceInfo.verificationUrl, 'oauth_test', 'popup=yes,width=520,height=640');
+                    if (popup) popupRef.current = popup;
+                  }}
+                >
+                  {t('settings.developer.test.openDevicePage')}
+                </Button>
+              )}
+            </div>
+          )}
 
           <div className="space-y-2">
             {steps.map((step) => (
@@ -328,14 +494,14 @@ export function OAuthClientTestDialog({
           )}
 
           <div className="flex justify-end gap-2">
-            {isWaitingForCode ? (
+            {isWaitingForCode || (isDevice && isRunning) ? (
               <Button variant="ghost" onClick={cancelTest}>
                 {t('settings.developer.dialog.cancel')}
               </Button>
             ) : (
               <DialogClose render={<Button variant="ghost">{t('settings.developer.dialog.done')}</Button>} />
             )}
-            <Button onClick={() => void startTest()} disabled={isRunning || !secret.trim()}>
+            <Button onClick={() => void startTest()} disabled={isRunning || (!isDevice && !secret.trim())}>
               {hasStarted && !isRunning ? t('settings.developer.test.runAgain') : t('settings.developer.test.run')}
             </Button>
           </div>
