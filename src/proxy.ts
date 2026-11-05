@@ -16,10 +16,7 @@ function getPublicOrigin(request: NextRequest): string {
 }
 
 /**
- * Next.js 16 proxy (formerly middleware) that:
- * 1. Validates all required Firebase environment variables on every request.
- * 2. Redirects unauthenticated requests for / and /settings to auth.karasu256.com's sign-in page.
- * 3. Redirects authenticated requests for / to /settings.
+ * Next.js 16 proxy (formerly middleware).
  *
  * A request counts as authenticated if the better-auth session cookie is
  * present, checked via `getSessionCookie()` — this app no longer overrides
@@ -50,6 +47,11 @@ export function proxy(request: NextRequest): NextResponse {
   }
 
   const { pathname, search } = request.nextUrl;
+
+  if (pathname === '/.well-known/oauth-authorization-server' || pathname === '/.well-known/openid-configuration') {
+    return NextResponse.rewrite(new URL(`/api/auth${pathname}`, process.env.AUTH_API_URL));
+  }
+
   const hasSession = Boolean(getSessionCookie(request));
   const publicOrigin = getPublicOrigin(request);
 
