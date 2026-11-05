@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { LoaderCircle, Pencil, type LucideIcon } from 'lucide-react';
-import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, R2Image } from '@karasu-lab/ui';
+import { Check, LoaderCircle, Pencil, X, type LucideIcon } from 'lucide-react';
+import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, R2Image } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { EditValueDialog } from './edit-value-dialog';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from './settings-item-container';
@@ -49,13 +49,30 @@ export interface SettingsDialogSpec {
 
 export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: SettingsDialogSpec; open: boolean; onOpenChange: (open: boolean) => void; done?: React.ReactNode }) {
   const [editKey, setEditKey] = React.useState<string | null>(null);
+  const [draft, setDraft] = React.useState('');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const avatarField = spec.fields.find((f) => f.avatar);
   const editingField = editKey !== null ? spec.fields.find((f) => f.key === editKey) : undefined;
+  const multilineEditing = editingField?.edit.multiline ?? false;
 
   React.useEffect(() => {
     if (!open) setEditKey(null);
   }, [open]);
+
+  function beginEdit(field: SettingsDialogFieldSpec) {
+    if (!field.edit) return;
+    setDraft(field.edit.value);
+    setEditKey(field.key);
+  }
+
+  function commitEdit() {
+    if (editingField?.edit) editingField.edit.onSave(draft);
+    setEditKey(null);
+  }
+
+  function cancelEdit() {
+    setEditKey(null);
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -70,34 +87,57 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
             <>
               <div aria-disabled={spec.running || undefined} className={cn('space-y-3', spec.running && 'pointer-events-none opacity-50')}>
                 <SettingsItemGroup>
-                  {spec.fields.map((field) => (
-                    <SettingsItemContainer
-                      key={field.key}
-                      title={field.title}
-                      description={field.description}
-                      icon={field.icon}
-                      iconImageSrc={!field.avatar?.uploading ? (field.avatar?.src ?? undefined) : undefined}
-                      iconNode={
-                        field.avatar?.uploading ? (
-                          <span className="relative block size-full">
-                            {field.avatar?.src && <R2Image src={field.avatar.src} alt="" className="size-full object-cover" />}
-                            <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
-                              <LoaderCircle className="size-4 animate-spin" />
+                  {spec.fields.map((field) => {
+                    const inlineEditing = editKey === field.key && !field.edit?.multiline;
+                    return (
+                      <SettingsItemContainer
+                        key={field.key}
+                        title={field.title}
+                        description={inlineEditing ? undefined : field.description}
+                        icon={field.icon}
+                        iconImageSrc={!field.avatar?.uploading ? (field.avatar?.src ?? undefined) : undefined}
+                        iconNode={
+                          field.avatar?.uploading ? (
+                            <span className="relative block size-full">
+                              {field.avatar?.src && <R2Image src={field.avatar.src} alt="" className="size-full object-cover" />}
+                              <span className="absolute inset-0 flex items-center justify-center bg-black/40 text-white">
+                                <LoaderCircle className="size-4 animate-spin" />
+                              </span>
                             </span>
-                          </span>
-                        ) : undefined
-                      }
-                      iconBackgroundColor={field.iconBackgroundColor}
-                      disabled={field.disabled}
-                      onClick={field.avatar ? () => fileInputRef.current?.click() : undefined}
-                      trailing={
-                        field.trailing ??
-                        (field.edit ? <SettingsItemIconButton label={field.title} icon={Pencil} onClick={() => setEditKey(field.key)} /> : undefined)
-                      }
-                    >
-                      {field.content}
-                    </SettingsItemContainer>
-                  ))}
+                          ) : undefined
+                        }
+                        iconBackgroundColor={field.iconBackgroundColor}
+                        disabled={field.disabled}
+                        onClick={field.avatar ? () => fileInputRef.current?.click() : undefined}
+                        trailing={
+                          inlineEditing ? (
+                            <span className="flex items-center gap-1">
+                              <SettingsItemIconButton label={spec.editorSaveLabel} icon={Check} onClick={commitEdit} />
+                              <SettingsItemIconButton label={spec.editorCancelLabel} icon={X} onClick={cancelEdit} />
+                            </span>
+                          ) : (
+                            field.trailing ??
+                            (field.edit ? (
+                              <SettingsItemIconButton label={field.title} icon={Pencil} onClick={() => beginEdit(field)} />
+                            ) : undefined)
+                          )
+                        }
+                      >
+                        {inlineEditing ? (
+                          <Input
+                            value={draft}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraft(e.target.value)}
+                            disabled={spec.running}
+                            autoComplete={field.edit?.autoComplete}
+                            autoFocus
+                            className="h-7 py-1"
+                          />
+                        ) : (
+                          field.content
+                        )}
+                      </SettingsItemContainer>
+                    );
+                  })}
                 </SettingsItemGroup>
                 {avatarField && (
                   <input
@@ -131,7 +171,7 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
           )}
         </DialogPopup>
       </DialogPortal>
-      {editingField?.edit && (
+      {multilineEditing && editingField && (
         <EditValueDialog
           open={editKey !== null}
           onOpenChange={(o) => {
