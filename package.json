@@ -21,7 +21,7 @@
     "@karasu-lab/api-permissions": "0.1.0-4b04f47",
     "@karasu-lab/flags-sdk": "0.1.0-dab071f",
     "@karasu-lab/types": "0.1.0-5fc5494",
-    "@karasu-lab/ui": "0.1.0-df38f4a",
+    "@karasu-lab/ui": "0.1.0-79651ef",
     "@karasu-lab/utils": "0.1.0-be51f04",
     "@simplewebauthn/browser": "^13.3.0",
     "better-auth": "^1.7.12",
