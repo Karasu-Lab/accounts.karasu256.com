@@ -76,7 +76,14 @@ function signAppToken(userId: string, method: string, url: URL, body: string): s
 async function fetchSessionToken(): Promise<string> {
   const authApiUrl = process.env.AUTH_API_URL;
   if (!authApiUrl) throw new MissingEnvError('AUTH_API_URL');
-  const cookie = (await headers()).get('cookie');
+  const requestHeaders = await headers();
+  let cookie = requestHeaders.get('cookie');
+  if (!cookie) {
+    const authorization = requestHeaders.get('authorization');
+    if (authorization?.startsWith('Bearer ')) {
+      cookie = `better-auth.session_token=${authorization.slice('Bearer '.length)}`;
+    }
+  }
   if (!cookie) throw new Error('api-auth session token exchange failed: the request has no session cookie');
 
   const res = await fetch(`${authApiUrl}/api/auth/token`, {

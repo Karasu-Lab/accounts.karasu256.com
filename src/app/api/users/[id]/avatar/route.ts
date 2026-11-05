@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchUploadStatus } from '@/lib/api/internal';
 import { requireSession } from '@/lib/api/require-session';
 import { notFound } from '@/lib/api/responses';
-import { avatarCdnPath } from '@/lib/avatar/paths';
+import { getVerifiedAvatar } from '@/lib/avatar/icon';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { error } = await requireSession();
@@ -14,20 +13,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   }
 
   const { id } = await params;
-  const path = avatarCdnPath(id);
-  const status = await fetchUploadStatus(path, id);
-  if (!status) return notFound();
-
   const version = request.nextUrl.searchParams.get('v');
-  const source = new URL(`${cdnUrl}/${path}`);
-  if (version) source.searchParams.set('v', version);
+  const avatar = await getVerifiedAvatar(id, version, cdnUrl);
+  if (!avatar) return notFound();
 
-  const res = await fetch(source, { cache: 'no-store' });
-  if (!res.ok || !res.body) return notFound();
-
-  return new NextResponse(res.body, {
+  return new NextResponse(avatar.body, {
     headers: {
-      'content-type': res.headers.get('content-type') ?? status.contentType ?? 'application/octet-stream',
+      'content-type': avatar.contentType,
       'cache-control': 'private, no-store',
     },
   });
