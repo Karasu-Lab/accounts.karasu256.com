@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { SettingsItemContainer, SettingsItemGroup } from './settings-item-container';
 import { useSettingsMenu } from './settings-menu-context';
 import { useSettingsUser } from './user-context';
+import { avatarSrc } from '@/lib/avatar/avatar-src';
 
 /**
  * The settings menu shown at `/settings`, built entirely from
@@ -48,7 +49,7 @@ export function SettingsMenu() {
           <SettingsItemContainer
             href="/settings/profile"
             icon={User}
-            iconImageSrc={user.image ?? undefined}
+            iconImageSrc={avatarSrc(user.image ?? null) ?? undefined}
             iconBackgroundColor="#2563eb"
             title={user.name || user.email || user.id}
             description={user.email}

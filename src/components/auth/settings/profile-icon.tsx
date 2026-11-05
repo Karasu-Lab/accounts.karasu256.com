@@ -13,8 +13,10 @@ import {
   UserAvatar,
   toast,
 } from '@karasu-lab/ui';
-import { uploadUserIcon, deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
+import { deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
+import { avatarSrc } from '@/lib/avatar/avatar-src';
+import { uploadUserIcon } from '@/lib/avatar/upload-client';
 
 /** Imperative handle of {@link ProfileIcon}, for callers that host the icon inside their own item row. */
 export interface ProfileIconHandle {
@@ -113,7 +115,7 @@ export const ProfileIcon = forwardRef<ProfileIconHandle>(function ProfileIcon(_,
           aria-disabled={!ready}
           className={!ready ? 'pointer-events-none opacity-50' : undefined}
         >
-          <UserAvatar uid={user.id} iconUrl={user.image ?? null} size={48} className="border border-border" />
+          <UserAvatar uid={user.id} iconUrl={avatarSrc(user.image ?? null)} size={48} className="border border-border" />
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={openFilePicker}>{t('profile.uploadIcon')}</ContextMenuItem>
