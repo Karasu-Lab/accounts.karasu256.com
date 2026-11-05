@@ -163,11 +163,14 @@
         "popupClosed": "Popup was closed before authorization completed.",
         "noCallbackUri": "No callback URI is registered for this client.",
         "clientSecret": "Client secret",
+        "userCode": "User code",
+        "openDevicePage": "Open the device authorization page",
         "result": "Debug info",
         "copyResult": "Copy result",
         "resultCopied": "Result copied",
         "steps": {
           "authorize": "Authorize on consent page",
+          "device_code": "Issue a device code",
           "access_token": "Exchange for access token"
         }
       }
