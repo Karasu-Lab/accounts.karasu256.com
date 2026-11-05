@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, LoaderCircle, Settings, type LucideIcon } from 'lucide-react';
-import { Checkbox } from '@karasu-lab/ui';
+import { Checkbox, RadioGroupItem } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/lib/use-is-mobile';
 
@@ -18,7 +18,7 @@ export interface SettingsItemNestedItemData {
   iconBackgroundColor?: string;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-  onClick?: () => void | Promise<void>;
+  radioValue?: string;
   disabled?: boolean;
   trailing?: React.ReactNode;
   content?: React.ReactNode;
@@ -171,7 +171,8 @@ export function SettingsItemContainer({
       data-slot="settings-item-container"
       aria-disabled={disabled || undefined}
       className={cn(
-        'relative flex items-center gap-3 border border-border bg-card px-4 py-3 text-card-foreground',
+        'relative flex gap-3 border border-border bg-card px-4 py-3 text-card-foreground',
+        children !== undefined || itemsVisible ? 'items-start' : 'items-center',
         'rounded-xl',
         hasItemAbove && 'rounded-t-none border-t-0',
         hasItemBelow && 'rounded-b-none border-b-0',
@@ -203,7 +204,6 @@ export function SettingsItemContainer({
             style={{ backgroundColor: iconBackgroundColor }}
           >
             {iconImageSrc ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={iconImageSrc} alt="" className="size-full object-cover" />
             ) : iconNode !== undefined ? (
               <span className="flex items-center justify-center text-white">{iconNode}</span>
@@ -232,17 +232,17 @@ export function SettingsItemContainer({
               <span className="block">
                 {items?.map((item) =>
                   item.checked !== undefined ? (
-                    <CheckSettingsItem
-                      key={item.key}
-                      title={item.title}
-                      description={item.description}
-                      icon={item.icon ?? null}
-                      iconBackgroundColor={item.iconBackgroundColor}
-                      checked={item.checked}
-                      onCheckedChange={item.onCheckedChange}
-                      disabled={item.disabled}
-                      className="border-0 bg-transparent px-0"
-                    />
+                    <label key={item.key} className="flex items-center gap-1.5 py-1 text-sm">
+                      <Checkbox checked={item.checked} onCheckedChange={item.onCheckedChange} disabled={item.disabled} aria-label={item.title} />
+                      {item.title}
+                      {item.description !== undefined && <span className="text-muted-foreground">{item.description}</span>}
+                    </label>
+                  ) : item.radioValue !== undefined ? (
+                    <label key={item.key} className="flex items-center gap-1.5 py-1 text-sm">
+                      <RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />
+                      {item.title}
+                      {item.description !== undefined && <span className="text-muted-foreground">{item.description}</span>}
+                    </label>
                   ) : (
                     <SettingsItemContainer
                       key={item.key}
@@ -251,7 +251,6 @@ export function SettingsItemContainer({
                       icon={item.icon ?? null}
                       iconBackgroundColor={item.iconBackgroundColor}
                       disabled={item.disabled}
-                      onClick={item.onClick}
                       trailing={item.trailing}
                       className="border-0 bg-transparent px-0"
                     >
@@ -277,55 +276,6 @@ export function SettingsItemContainer({
         <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
       ) : null}
     </div>
-  );
-}
-
-export interface CheckSettingsItemProps {
-  title: string;
-  description?: string;
-  icon?: LucideIcon | null;
-  iconBackgroundColor?: string;
-  checked: boolean;
-  onCheckedChange?: (checked: boolean) => void;
-  disabled?: boolean;
-  hasItemAbove?: boolean;
-  hasItemBelow?: boolean;
-  className?: string;
-}
-
-export function CheckSettingsItem({
-  title,
-  description,
-  icon,
-  iconBackgroundColor,
-  checked,
-  onCheckedChange,
-  disabled = false,
-  hasItemAbove,
-  hasItemBelow,
-  className,
-}: CheckSettingsItemProps) {
-  const interactive = onCheckedChange !== undefined;
-
-  return (
-    <SettingsItemContainer
-      title={title}
-      description={description}
-      icon={icon}
-      iconBackgroundColor={iconBackgroundColor}
-      onClick={interactive && !disabled ? () => onCheckedChange(!checked) : undefined}
-      trailing={
-        <Checkbox
-          checked={checked}
-          disabled={disabled || !interactive}
-          onCheckedChange={interactive ? onCheckedChange : undefined}
-          aria-label={title}
-        />
-      }
-      hasItemAbove={hasItemAbove}
-      hasItemBelow={hasItemBelow}
-      className={className}
-    />
   );
 }
 

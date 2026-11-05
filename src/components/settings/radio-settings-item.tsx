@@ -1,6 +1,6 @@
 'use client';
 
-import { RadioGroup, RadioGroupItem } from '@karasu-lab/ui';
+import { RadioGroup } from '@karasu-lab/ui';
 import { SettingsItemContainer, type SettingsItemContainerProps } from './settings-item-container';
 
 export interface RadioSettingsItemOption {
@@ -52,9 +52,8 @@ export function RadioSettingsItem({
         items={options.map((option) => ({
           key: option.value,
           title: option.label,
+          radioValue: option.value,
           disabled,
-          trailing: <RadioGroupItem value={option.value} aria-label={option.label} />,
-          onClick: disabled || onValueChange === undefined ? undefined : () => onValueChange(option.value),
         }))}
         hasItemAbove={hasItemAbove}
         hasItemBelow={hasItemBelow}

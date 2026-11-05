@@ -15,6 +15,14 @@ interface UseCreateApiKeyDialogArgs {
   onCreated: (key: ApiKeyCreated) => void;
 }
 
+function groupByResource(permissions: ApiKeyPermission[]): [string, ApiKeyPermission[]][] {
+  const groups = new Map<string, ApiKeyPermission[]>();
+  for (const permission of permissions) {
+    groups.set(permission.resource, [...(groups.get(permission.resource) ?? []), permission]);
+  }
+  return [...groups.entries()];
+}
+
 export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCreateApiKeyDialogArgs): {
   spec: SettingsDialogSpec;
   done?: React.ReactNode;
@@ -86,26 +94,20 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
           },
         ],
       },
-      ...(grantable.length > 0
-        ? [
-            {
-              fields: [
-                {
-                  key: 'permissions',
-                  title: t('settings.developer.dialog.permissions'),
-                  icon: KeyRound,
-                  items: grantable.map((permission) => ({
-                    key: permission.publicId,
-                    title: t(`permissions.sections.${permission.resource}.label`),
-                    description: t(`settings.developer.dialog.${permission.action}`),
-                    checked: selected.has(permission.publicId),
-                    onCheckedChange: () => togglePermission(permission.publicId),
-                  })),
-                },
-              ],
-            },
-          ]
-        : []),
+      {
+        title: t('settings.developer.dialog.permissions'),
+        fields: groupByResource(grantable).map(([resource, permissions]) => ({
+          key: `permissions.${resource}`,
+          title: t(`permissions.sections.${resource}.label`),
+          icon: KeyRound,
+          items: permissions.map((permission) => ({
+            key: permission.publicId,
+            title: t(`settings.developer.dialog.${permission.action}`),
+            checked: selected.has(permission.publicId),
+            onCheckedChange: () => togglePermission(permission.publicId),
+          })),
+        })),
+      },
     ],
   };
 

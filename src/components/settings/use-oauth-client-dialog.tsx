@@ -199,43 +199,36 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
             : []),
         ],
       },
-      ...(sections.length > 0
-        ? [
-            {
-              fields: [
-                {
-                  key: 'permissions',
-                  title: t('settings.developer.dialog.permissions'),
-                  icon: KeyRound,
-                  items: sections.flatMap((s) => [
-                    ...(s.canRead
-                      ? [
-                          {
-                            key: `read:${s.key}`,
-                            title: t(`permissions.sections.${s.key}.label`),
-                            description: t('settings.developer.dialog.read'),
-                            checked: scopes.has(`read:${s.key}`),
-                            onCheckedChange: () => toggleScope(`read:${s.key}`),
-                          },
-                        ]
-                      : []),
-                    ...(s.canWrite
-                      ? [
-                          {
-                            key: `write:${s.key}`,
-                            title: t(`permissions.sections.${s.key}.label`),
-                            description: t('settings.developer.dialog.write'),
-                            checked: scopes.has(`write:${s.key}`),
-                            onCheckedChange: () => toggleScope(`write:${s.key}`),
-                          },
-                        ]
-                      : []),
-                  ]),
-                },
-              ],
-            },
-          ]
-        : []),
+      {
+        title: t('settings.developer.dialog.permissions'),
+        fields: sections.map((s) => ({
+          key: `permissions.${s.key}`,
+          title: t(`permissions.sections.${s.key}.label`),
+          icon: KeyRound,
+          items: [
+            ...(s.canRead
+              ? [
+                  {
+                    key: 'read',
+                    title: t('settings.developer.dialog.read'),
+                    checked: scopes.has(`read:${s.key}`),
+                    onCheckedChange: () => toggleScope(`read:${s.key}`),
+                  },
+                ]
+              : []),
+            ...(s.canWrite
+              ? [
+                  {
+                    key: 'write',
+                    title: t('settings.developer.dialog.write'),
+                    checked: scopes.has(`write:${s.key}`),
+                    onCheckedChange: () => toggleScope(`write:${s.key}`),
+                  },
+                ]
+              : []),
+          ],
+        })),
+      },
     ],
   };
 
