@@ -171,7 +171,8 @@ export function SettingsItemContainer({
       data-slot="settings-item-container"
       aria-disabled={disabled || undefined}
       className={cn(
-        'relative flex items-center gap-3 border border-border bg-card px-4 py-3 text-card-foreground',
+        'relative flex gap-3 border border-border bg-card px-4 py-3 text-card-foreground',
+        children !== undefined || itemsVisible ? 'items-start' : 'items-center',
         'rounded-xl',
         hasItemAbove && 'rounded-t-none border-t-0',
         hasItemBelow && 'rounded-b-none border-b-0',
