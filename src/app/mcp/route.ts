@@ -18,6 +18,12 @@ export async function POST(request: Request): Promise<Response> {
       (await resolveUserFromAccessToken(token).catch(() => null)) ??
       (await resolveUserFromSessionToken(token).catch(() => null));
   }
+  if (!user) {
+    return Response.json(
+      { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Unauthorized' } },
+      { status: 401, headers: { 'www-authenticate': 'Bearer' } },
+    );
+  }
 
   const response = await handleMcpMessage(message, { user, cookieHeader: request.headers.get('cookie') });
   if (!response.body) return new Response(null, { status: response.status });
