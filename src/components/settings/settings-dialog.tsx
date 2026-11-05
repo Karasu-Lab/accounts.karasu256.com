@@ -75,7 +75,13 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next && spec.running) return;
+        onOpenChange(next);
+      }}
+    >
       <DialogPortal>
         <DialogBackdrop />
         <DialogPopup className="max-w-lg w-full p-6 space-y-4 max-h-[90dvh] overflow-y-auto">
