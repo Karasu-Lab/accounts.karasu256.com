@@ -47,7 +47,7 @@ export const MCP_TOOLS: ToolDefinition[] = [
   {
     name: 'poll_device_token',
     description:
-      'Polls the device sign-in started by start_device_authorization. While the user has not approved yet, the result reports authorization_pending. Once approved, the result carries the session access token and session cookie issued by the sign-in; send the cookie as the Cookie header, or the access token as a Bearer token, on later MCP requests.',
+      'Polls the device authorization started by start_device_authorization, exchanging the device code at the OAuth token endpoint. While the user has not approved yet, the result reports authorization_pending. Once approved, the result carries the OAuth access token and refresh token issued for this server\'s OAuth client; send the access token as a Bearer token on later MCP requests.',
     inputSchema: {
       type: 'object',
       properties: { deviceCode: { type: 'string', description: 'The device_code returned by start_device_authorization.' } },

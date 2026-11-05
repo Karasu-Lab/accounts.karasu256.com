@@ -10,7 +10,7 @@ export interface DeviceAuthorization {
 }
 
 export type DeviceTokenResult =
-  | { status: 'authorized'; accessToken: string; tokenType: string; expiresIn: number; scope: string; sessionCookie: string | null }
+  | { status: 'authorized'; accessToken: string; tokenType: string; expiresIn: number; scope: string; refreshToken: string | null }
   | { status: 'pending'; error: string; errorDescription: string };
 
 function authApiUrl(): string {
@@ -47,7 +47,7 @@ export async function startDeviceAuthorization(): Promise<DeviceAuthorization> {
 }
 
 export async function pollDeviceToken(deviceCode: string): Promise<DeviceTokenResult> {
-  const res = await fetch(`${authApiUrl()}/api/auth/device/token`, {
+  const res = await fetch(`${authApiUrl()}/api/auth/oauth2/token`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
@@ -67,21 +67,12 @@ export async function pollDeviceToken(deviceCode: string): Promise<DeviceTokenRe
     throw new Error(`Device token request failed: ${error}: ${errorDescription}`);
   }
 
-  let sessionCookie: string | null = null;
-  for (const cookie of res.headers.getSetCookie()) {
-    const pair = cookie.split(';')[0];
-    if (pair.startsWith('better-auth.session_token=') || pair.startsWith('__Secure-better-auth.session_token=')) {
-      sessionCookie = pair;
-      break;
-    }
-  }
-
   return {
     status: 'authorized',
     accessToken: String(data?.access_token ?? ''),
     tokenType: String(data?.token_type ?? 'Bearer'),
     expiresIn: Number(data?.expires_in ?? 0),
     scope: String(data?.scope ?? ''),
-    sessionCookie,
+    refreshToken: typeof data?.refresh_token === 'string' ? data.refresh_token : null,
   };
 }
