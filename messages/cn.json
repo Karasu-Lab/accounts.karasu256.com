@@ -114,6 +114,10 @@
       "keyPrefix": "密钥前缀",
       "dialog": {
         "clientName": "客户端名称",
+        "clientType": "OAuth 类型",
+        "clientTypeWeb": "网页",
+        "clientTypeDevice": "设备",
+        "clientCreated": "客户端已创建",
         "callbackUris": "回调 URI",
         "callbackUrisHelp": "每行一个 URI",
         "icon": "图标",

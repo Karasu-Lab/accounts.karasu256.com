@@ -17,7 +17,7 @@ import {
   R2Image,
   useR2Storage,
 } from '@karasu-lab/ui';
-import { createOAuthClient, type OAuthClientCreated, type PermissionSection } from '@/lib/api/developer';
+import { createOAuthClient, type OAuthClientCreated, type OAuthClientType, type PermissionSection } from '@/lib/api/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
 interface CreateOAuthClientDialogProps {
@@ -30,7 +30,8 @@ interface CreateOAuthClientDialogProps {
 /**
  * Dialog for creating a new OAuth client. Handles icon upload to the image API,
  * scope selection, and displays the raw secret once after creation.
- * Accepts multiple redirect URIs, one per line.
+ * Web clients accept multiple redirect URIs, one per line; device clients
+ * register for the device code grant instead and have no redirect URIs.
  */
 export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreated }: CreateOAuthClientDialogProps) {
   const auth = useAuthClient();
@@ -38,6 +39,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   const { uploading, upload } = useR2Storage();
 
   const [name, setName] = useState('');
+  const [clientType, setClientType] = useState<OAuthClientType>('web');
   const [redirectUrisText, setRedirectUrisText] = useState('');
   const [iconUrl, setIconUrl] = useState('');
   const [iconPreview, setIconPreview] = useState('');
@@ -72,6 +74,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   function handleClose() {
     onOpenChange(false);
     setName('');
+    setClientType('web');
     setRedirectUrisText('');
     setIconUrl('');
     setIconPreview('');
@@ -83,7 +86,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const uris = parseUris(redirectUrisText);
-    if (uris.length === 0) return;
+    if (clientType === 'web' && uris.length === 0) return;
     setLoading(true);
     try {
       const result = await createOAuthClient(auth, {
@@ -91,6 +94,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
         redirect_uris: uris,
         logo_uri: iconUrl || undefined,
         scope: [...scopes].join(' '),
+        type: clientType,
       });
       setCreated(result);
       onCreated(result);
@@ -100,7 +104,7 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
   }
 
   async function handleCopy() {
-    if (!created) return;
+    if (!created?.client_secret) return;
     await navigator.clipboard.writeText(created.client_secret);
     setCopied(true);
   }
@@ -122,18 +126,46 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="callback-uris">{t('settings.developer.dialog.callbackUris')}</Label>
-                <textarea
-                  id="callback-uris"
-                  value={redirectUrisText}
-                  onChange={(e) => setRedirectUrisText(e.target.value)}
-                  rows={3}
-                  placeholder="https://example.com/callback"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                  required
-                />
-                <p className="text-xs text-muted-foreground">{t('settings.developer.dialog.callbackUrisHelp')}</p>
+                <Label>{t('settings.developer.dialog.clientType')}</Label>
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input
+                      type="radio"
+                      name="client-type"
+                      checked={clientType === 'web'}
+                      onChange={() => setClientType('web')}
+                      className="accent-primary"
+                    />
+                    {t('settings.developer.dialog.clientTypeWeb')}
+                  </label>
+                  <label className="flex items-center gap-1.5 text-sm">
+                    <input
+                      type="radio"
+                      name="client-type"
+                      checked={clientType === 'device'}
+                      onChange={() => setClientType('device')}
+                      className="accent-primary"
+                    />
+                    {t('settings.developer.dialog.clientTypeDevice')}
+                  </label>
+                </div>
               </div>
+
+              {clientType === 'web' && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="callback-uris">{t('settings.developer.dialog.callbackUris')}</Label>
+                  <textarea
+                    id="callback-uris"
+                    value={redirectUrisText}
+                    onChange={(e) => setRedirectUrisText(e.target.value)}
+                    rows={3}
+                    placeholder="https://example.com/callback"
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">{t('settings.developer.dialog.callbackUrisHelp')}</p>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <Label>{t('settings.developer.dialog.icon')}</Label>
@@ -184,12 +216,12 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
                     </Button>
                   }
                 />
-                <Button type="submit" disabled={loading || !name.trim() || uris.length === 0}>
+                <Button type="submit" disabled={loading || !name.trim() || (clientType === 'web' && uris.length === 0)}>
                   {t('settings.developer.dialog.create')}
                 </Button>
               </div>
             </form>
-          ) : (
+          ) : created.client_secret ? (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">{t('settings.developer.dialog.secretNotice')}</p>
               <Input readOnly value={created.client_secret} className="font-mono text-xs" />
@@ -197,6 +229,13 @@ export function CreateOAuthClientDialog({ open, onOpenChange, sections, onCreate
                 <Button variant="secondary" onClick={handleCopy}>
                   {copied ? '✓' : t('settings.developer.dialog.copySecret')}
                 </Button>
+                <Button onClick={handleClose}>{t('settings.developer.dialog.done')}</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">{t('settings.developer.dialog.clientCreated')}</p>
+              <div className="flex justify-end gap-2">
                 <Button onClick={handleClose}>{t('settings.developer.dialog.done')}</Button>
               </div>
             </div>

@@ -17,7 +17,7 @@ import {
   R2Image,
   useR2Storage,
 } from '@karasu-lab/ui';
-import { updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
+import { oauthClientType, updateOAuthClient, type OAuthClientSummary, type PermissionSection } from '@/lib/api/developer';
 import { useAuthClient } from '@/lib/auth/client';
 
 interface EditOAuthClientDialogProps {
@@ -77,15 +77,17 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
     setIconPreview(URL.createObjectURL(file));
   }
 
+  const clientType = oauthClientType(client);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const uris = parseUris(redirectUrisText);
-    if (uris.length === 0) return;
+    if (clientType === 'web' && uris.length === 0) return;
     setLoading(true);
     try {
       const updated = await updateOAuthClient(auth, client.client_id, {
         client_name: name.trim(),
-        redirect_uris: uris,
+        ...(clientType === 'web' ? { redirect_uris: uris } : {}),
         logo_uri: iconUrl.trim(),
         scope: [...scopes].join(' '),
       });
@@ -111,19 +113,21 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
               <Input id="edit-client-name" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="edit-callback-uris">{t('settings.developer.dialog.callbackUris')}</Label>
-              <textarea
-                id="edit-callback-uris"
-                value={redirectUrisText}
-                onChange={(e) => setRedirectUrisText(e.target.value)}
-                rows={3}
-                placeholder="https://example.com/callback"
-                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                required
-              />
-              <p className="text-xs text-muted-foreground">{t('settings.developer.dialog.callbackUrisHelp')}</p>
-            </div>
+            {clientType === 'web' && (
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-callback-uris">{t('settings.developer.dialog.callbackUris')}</Label>
+                <textarea
+                  id="edit-callback-uris"
+                  value={redirectUrisText}
+                  onChange={(e) => setRedirectUrisText(e.target.value)}
+                  rows={3}
+                  placeholder="https://example.com/callback"
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">{t('settings.developer.dialog.callbackUrisHelp')}</p>
+              </div>
+            )}
 
             <div className="space-y-1.5">
               <Label>{t('settings.developer.dialog.icon')}</Label>
@@ -174,7 +178,7 @@ export function EditOAuthClientDialog({ open, onOpenChange, client, sections, on
                   </Button>
                 }
               />
-              <Button type="submit" disabled={loading || !name.trim() || uris.length === 0}>
+              <Button type="submit" disabled={loading || !name.trim() || (clientType === 'web' && uris.length === 0)}>
                 {t('settings.developer.dialog.save')}
               </Button>
             </div>

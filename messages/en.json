@@ -114,6 +114,10 @@
       "keyPrefix": "Key prefix",
       "dialog": {
         "clientName": "Client name",
+        "clientType": "OAuth type",
+        "clientTypeWeb": "Web",
+        "clientTypeDevice": "Device",
+        "clientCreated": "Client created",
         "callbackUris": "Callback URIs",
         "callbackUrisHelp": "One URI per line",
         "icon": "Icon",
