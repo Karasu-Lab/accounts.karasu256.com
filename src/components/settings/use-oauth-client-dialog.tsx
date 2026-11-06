@@ -2,11 +2,12 @@
 
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { AlignLeft, Globe, ImagePlus, KeyRound, Link2, Type } from 'lucide-react';
+import { AlignLeft, Globe, ImagePlus, KeyRound, Link2, LockOpen, Type } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Input } from '@karasu-lab/ui';
 import {
   createOAuthClient,
+  oauthClientIsPublic,
   oauthClientType,
   updateOAuthClient,
   type OAuthClientCreated,
@@ -45,6 +46,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
   const [description, setDescription] = useState('');
   const [resource, setResource] = useState('');
   const [clientType, setClientType] = useState<OAuthClientType>('web');
+  const [publicClient, setPublicClient] = useState(false);
   const [redirectUrisText, setRedirectUrisText] = useState('');
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState('');
@@ -59,6 +61,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
     setDescription(client?.description ?? '');
     setResource(client?.resource ?? '');
     setClientType(client ? oauthClientType(client) : 'web');
+    setPublicClient(client ? oauthClientIsPublic(client) : false);
     setRedirectUrisText(client?.redirect_uris.join('\n') ?? '');
     setIconFile(null);
     setIconPreview(client?.icon_url ?? client?.logo_uri ?? '');
@@ -89,7 +92,9 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
       const saved = client
         ? await updateOAuthClient(auth, client.client_id, {
             client_name: name.trim(),
-            ...(clientType === 'web' ? { redirect_uris: uris } : {}),
+            ...(clientType === 'web'
+              ? { redirect_uris: uris, token_endpoint_auth_method: publicClient ? 'none' : 'client_secret_basic' }
+              : {}),
             scope: [...scopes].join(' '),
           })
         : await createOAuthClient(auth, {
@@ -97,6 +102,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
             redirect_uris: uris,
             scope: [...scopes].join(' '),
             type: clientType,
+            publicClient,
           });
       const iconUrl = iconFile ? await onUploadIcon(saved.client_id, iconFile) : (client?.icon_url ?? client?.logo_uri ?? null);
       if (iconFile && iconUrl) await updateOAuthClient(auth, saved.client_id, { logo_uri: iconUrl });
@@ -177,6 +183,16 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
           },
           ...(clientType === 'web'
             ? [
+                {
+                  key: 'publicClient',
+                  title: t('settings.developer.dialog.publicClient'),
+                  description: t('settings.developer.dialog.publicClientDescription'),
+                  icon: LockOpen,
+                  switch: {
+                    checked: publicClient,
+                    onCheckedChange: setPublicClient,
+                  },
+                },
                 {
                   key: 'callbackUris',
                   title: t('settings.developer.dialog.callbackUris'),
