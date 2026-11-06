@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AppWindow, Bug, Code2, ExternalLink, Link as LinkIcon, LogOut, Pencil, Shield, User, UserPlus, X } from 'lucide-react';
+import { AppWindow, Bug, Code2, ExternalLink, Link as LinkIcon, LogOut, MonitorSmartphone, Pencil, Shield, User, UserPlus, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { SettingsItemContainer, SettingsItemGroup } from './settings-item-container';
 import { useSettingsMenu } from './settings-menu-context';
@@ -59,6 +59,12 @@ export function SettingsMenu() {
           icon={AppWindow}
           iconBackgroundColor="#ea580c"
           title={t('settings.sections.authorizedApps')}
+        />
+        <SettingsItemContainer
+          href="/settings/active-sessions"
+          icon={MonitorSmartphone}
+          iconBackgroundColor="#0891b2"
+          title={t('settings.sections.activeSessions')}
         />
       </SettingsItemGroup>
 

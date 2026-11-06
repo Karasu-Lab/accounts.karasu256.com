@@ -69,6 +69,7 @@
       "security": "Security",
       "connections": "Connections",
       "authorizedApps": "Authorized apps",
+      "activeSessions": "Active sessions",
       "debug": "Debug",
       "developer": "Developer"
     },
@@ -262,6 +263,29 @@
     "loadError": "Failed to load",
     "retry": "Retry",
     "done": "Done"
+  },
+  "activeSessions": {
+    "title": "Active sessions",
+    "empty": "No active sessions",
+    "createdAt": "Created on",
+    "current": "Current session",
+    "sources": {
+      "browser": "Browser",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "app": "App",
+      "api-key": "API key"
+    },
+    "revoke": "Revoke session",
+    "revoked": "Revoked the {name} session.",
+    "revokeConfirm": {
+      "title": "Revoke this session?",
+      "description": "Revoking the {name} session will sign that client out.",
+      "confirm": "Revoke",
+      "cancel": "Cancel"
+    },
+    "loadError": "Failed to load",
+    "retry": "Retry"
   },
   "debug": {
     "title": "Debug",

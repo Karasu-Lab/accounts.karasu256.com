@@ -69,6 +69,7 @@
       "security": "安全",
       "connections": "账户关联",
       "authorizedApps": "已授权的应用",
+      "activeSessions": "活跃会话",
       "debug": "调试",
       "developer": "开发者"
     },
@@ -262,6 +263,29 @@
     "loadError": "加载失败",
     "retry": "重试",
     "done": "完成"
+  },
+  "activeSessions": {
+    "title": "活跃会话",
+    "empty": "暂无活跃会话",
+    "createdAt": "创建日期",
+    "current": "当前会话",
+    "sources": {
+      "browser": "浏览器",
+      "desktop": "桌面设备",
+      "mobile": "移动设备",
+      "app": "应用",
+      "api-key": "API 密钥"
+    },
+    "revoke": "撤销会话",
+    "revoked": "已撤销{name}会话。",
+    "revokeConfirm": {
+      "title": "撤销此会话？",
+      "description": "撤销{name}会话后，该客户端将被退出登录。",
+      "confirm": "撤销",
+      "cancel": "取消"
+    },
+    "loadError": "加载失败",
+    "retry": "重试"
   },
   "debug": {
     "title": "调试",
