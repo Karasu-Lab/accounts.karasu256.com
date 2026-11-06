@@ -39,7 +39,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 } {
   const auth = useAuthClient();
   const t = useTranslations();
-  const sections = usePermissionSections(open);
+  const { sections, baseScopes } = usePermissionSections(open);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -201,33 +201,44 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
       },
       {
         title: t('settings.developer.dialog.permissions'),
-        fields: sections.map((s) => ({
-          key: `permissions.${s.key}`,
-          title: t(`permissions.sections.${s.key}.label`),
-          icon: KeyRound,
-          items: [
-            ...(s.canRead
-              ? [
-                  {
-                    key: 'read',
-                    title: t('settings.developer.dialog.read'),
-                    checked: scopes.has(`read:${s.key}`),
-                    onCheckedChange: () => toggleScope(`read:${s.key}`),
-                  },
-                ]
-              : []),
-            ...(s.canWrite
-              ? [
-                  {
-                    key: 'write',
-                    title: t('settings.developer.dialog.write'),
-                    checked: scopes.has(`write:${s.key}`),
-                    onCheckedChange: () => toggleScope(`write:${s.key}`),
-                  },
-                ]
-              : []),
-          ],
-        })),
+        fields: [
+          ...sections.map((s) => ({
+            key: `permissions.${s.key}`,
+            title: t(`permissions.sections.${s.key}.label`),
+            icon: KeyRound,
+            items: [
+              ...(s.canRead
+                ? [
+                    {
+                      key: 'read',
+                      title: t('settings.developer.dialog.read'),
+                      checked: scopes.has(`read:${s.key}`),
+                      onCheckedChange: () => toggleScope(`read:${s.key}`),
+                    },
+                  ]
+                : []),
+              ...(s.canWrite
+                ? [
+                    {
+                      key: 'write',
+                      title: t('settings.developer.dialog.write'),
+                      checked: scopes.has(`write:${s.key}`),
+                      onCheckedChange: () => toggleScope(`write:${s.key}`),
+                    },
+                  ]
+                : []),
+            ],
+          })),
+          ...baseScopes.map((scope) => ({
+            key: `scopes.${scope}`,
+            title: t.has(`authorizedApps.scopes.${scope}`) ? t(`authorizedApps.scopes.${scope}`) : scope,
+            icon: KeyRound,
+            switch: {
+              checked: scopes.has(scope),
+              onCheckedChange: () => toggleScope(scope),
+            },
+          })),
+        ],
       },
     ],
   };
