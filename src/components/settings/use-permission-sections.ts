@@ -7,6 +7,7 @@ import { groupScopesBySection, type PermissionSection } from '@/lib/api/develope
 export interface PermissionScopes {
   sections: PermissionSection[];
   baseScopes: string[];
+  loaded: boolean;
 }
 
 export interface PermissionOperationGroup {
@@ -26,25 +27,29 @@ export function groupSectionsByOperation(sections: PermissionSection[]): Permiss
 export function usePermissionSections(open: boolean): PermissionScopes {
   const [sections, setSections] = useState<PermissionSection[]>([]);
   const [baseScopes, setBaseScopes] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     if (!open) return;
     let active = true;
+    setLoaded(false);
     loadOAuthClients()
       .then(({ scopes, baseScopes: loadedBaseScopes }) => {
         if (!active) return;
         setSections(groupScopesBySection(scopes));
         setBaseScopes(loadedBaseScopes);
+        setLoaded(true);
       })
       .catch(() => {
         if (!active) return;
         setSections([]);
         setBaseScopes([]);
+        setLoaded(true);
       });
     return () => {
       active = false;
     };
   }, [open]);
 
-  return { sections, baseScopes };
+  return { sections, baseScopes, loaded };
 }

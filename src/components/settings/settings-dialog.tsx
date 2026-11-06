@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Check, LoaderCircle, Pencil, X, type LucideIcon } from 'lucide-react';
-import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, Label, R2Image } from '@karasu-lab/ui';
+import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Input, Label, R2Image, Skeleton } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { EditValueDialog } from './edit-value-dialog';
 import { RadioSettingsItem, type RadioSettingsItemOption } from './radio-settings-item';
@@ -38,6 +38,7 @@ export interface SettingsDialogSwitchSpec {
 export interface SettingsDialogFieldSpec {
   key: string;
   title: string;
+  skeleton?: boolean;
   icon?: LucideIcon;
   iconBackgroundColor?: string;
   disabled?: boolean;
@@ -66,6 +67,23 @@ export interface SettingsDialogSpec {
   cancelLabel: string;
   editorSaveLabel: string;
   editorCancelLabel: string;
+}
+
+function SkeletonSettingsField({ hasItemAbove = false, hasItemBelow = false }: { hasItemAbove?: boolean; hasItemBelow?: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cn(
+        'flex items-center gap-3 border border-border bg-card px-4 py-3',
+        'rounded-xl',
+        hasItemAbove && 'rounded-t-none border-t-0',
+        hasItemBelow && 'rounded-b-none border-b-0'
+      )}
+    >
+      <Skeleton className="size-8 shrink-0 rounded-md" />
+      <Skeleton className="h-4 w-32" />
+    </div>
+  );
 }
 
 export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: SettingsDialogSpec; open: boolean; onOpenChange: (open: boolean) => void; done?: React.ReactNode }) {
@@ -122,6 +140,9 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
                     <SettingsItemGroup>
                       {section.fields.map((field) => {
                     const inlineEditing = editKey === field.key && !field.edit?.multiline;
+                    if (field.skeleton) {
+                      return <SkeletonSettingsField key={field.key} />;
+                    }
                     if (field.radio) {
                       return (
                         <RadioSettingsItem
