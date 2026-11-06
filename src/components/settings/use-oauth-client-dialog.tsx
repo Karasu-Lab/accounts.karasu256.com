@@ -111,8 +111,9 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
         iconUrl,
         description: description.trim() || null,
         resource: resource.trim() || null,
+        public: clientType === 'device' ? true : publicClient,
       });
-      const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null, resource: resource.trim() || null };
+      const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null, resource: resource.trim() || null, public: clientType === 'device' ? true : publicClient };
       onSaved(result);
       if (client) onOpenChange(false);
       else setCreated(result);

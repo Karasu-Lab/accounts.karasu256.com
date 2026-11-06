@@ -20,6 +20,7 @@ export interface OAuthClientSummary {
   description?: string | null;
   icon_url?: string | null;
   resource?: string | null;
+  public?: boolean;
 }
 
 export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>): OAuthClientType {
@@ -27,8 +28,8 @@ export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>)
   return grantTypes.includes(DEVICE_CODE_GRANT_TYPE) && !grantTypes.includes('authorization_code') ? 'device' : 'web';
 }
 
-export function oauthClientIsPublic(client: Pick<OAuthClientSummary, 'token_endpoint_auth_method'>): boolean {
-  return client.token_endpoint_auth_method === 'none';
+export function oauthClientIsPublic(client: Pick<OAuthClientSummary, 'token_endpoint_auth_method' | 'public'>): boolean {
+  return client.public === true || client.token_endpoint_auth_method === 'none';
 }
 
 export interface OAuthClientCreated extends OAuthClientSummary {
