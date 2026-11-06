@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { AppWindow, Unlink } from 'lucide-react';
+import { AppWindow, ChevronRight, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
 import { listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp } from '@/lib/api/authorized-apps';
@@ -73,13 +73,16 @@ export function AuthorizedAppsClient() {
               iconBackgroundColor={APP_ICON_BACKGROUND_COLOR}
               onClick={() => setInfoApp(app)}
               trailing={
-                <SettingsItemIconButton
-                  label={t('authorizedApps.revoke')}
-                  icon={Unlink}
-                  loading={revokingId === app.id}
-                  onClick={() => setPendingRevoke(app)}
-                  className="hover:bg-destructive/10 hover:text-destructive"
-                />
+                <span className="flex items-center gap-1">
+                  <SettingsItemIconButton
+                    label={t('authorizedApps.revoke')}
+                    icon={Unlink}
+                    loading={revokingId === app.id}
+                    onClick={() => setPendingRevoke(app)}
+                    className="hover:bg-destructive/10 hover:text-destructive"
+                  />
+                  <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                </span>
               }
             />
           ))}
