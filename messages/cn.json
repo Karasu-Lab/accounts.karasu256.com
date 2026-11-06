@@ -244,7 +244,7 @@
       "openid": "使用 OpenID Connect 登录",
       "profile": "读取您的个人资料信息",
       "email": "读取您的电子邮箱地址",
-      "offline_access": "离线访问（刷新令牌）",
+      "offline_access": "离线访问",
       "read:profile": "读取个人资料",
       "write:profile": "更新个人资料"
     },

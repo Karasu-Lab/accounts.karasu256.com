@@ -244,7 +244,7 @@
       "openid": "Sign in with OpenID Connect",
       "profile": "Read your profile information",
       "email": "Read your email address",
-      "offline_access": "Access while you are offline (refresh token)",
+      "offline_access": "Access while you are offline",
       "read:profile": "Read your profile",
       "write:profile": "Update your profile"
     },
