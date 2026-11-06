@@ -1,12 +1,7 @@
-import { z } from 'zod';
 import { createApiFlags } from '@karasu-lab/flags-sdk/server';
+import { appFlagsSchema } from '@karasu-lab/types/shared';
 
-export const appFlagsSchema = z.object({
-  testFlag: z.boolean(),
-  useMinecraftAuth: z.boolean(),
-});
-
-export type AppFlags = z.infer<typeof appFlagsSchema>;
+export { appFlagsSchema };
 
 export function getAppFlags() {
   return createApiFlags(appFlagsSchema, {

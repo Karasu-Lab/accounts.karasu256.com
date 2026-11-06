@@ -1,7 +1,10 @@
 import { createHash, createPrivateKey, randomUUID, sign } from 'node:crypto';
 import { headers } from 'next/headers';
+import type { FirebasePhotoResult, UploadStatus, UploadVerifyRequest, VerifiedUpload } from '@karasu-lab/types/shared';
 import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 import { InternalApiError } from './internal-api-error';
+
+export type { FirebasePhotoResult, UploadStatus, UploadVerifyRequest, VerifiedUpload };
 
 function internalUrl(path: string): string {
   const base = process.env.API_URL;
@@ -99,11 +102,6 @@ export async function fetchUnlinkProvider(userId: string, providerId: string): P
   return true;
 }
 
-export interface FirebasePhotoResult {
-  linked: boolean;
-  previousPhotoURL: string | null;
-}
-
 export async function fetchSetFirebasePhoto(userId: string, photoURL: string | null): Promise<FirebasePhotoResult> {
   const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/firebase-photo`, userId, {
     method: 'POST',
@@ -132,21 +130,6 @@ async function uploadFetch(path: string, init: RequestInit = {}): Promise<Respon
   });
 }
 
-export interface UploadVerifyRequest {
-  path: string;
-  sha256: string;
-  contentType: string;
-  size: number;
-  uploaderId?: string;
-}
-
-export interface VerifiedUpload {
-  url: string;
-  sha256: string;
-  contentType: string;
-  size: number;
-}
-
 export async function fetchVerifyUpload(upload: UploadVerifyRequest): Promise<VerifiedUpload | null> {
   const res = await uploadFetch('/upload/verify', {
     method: 'POST',
@@ -156,14 +139,6 @@ export async function fetchVerifyUpload(upload: UploadVerifyRequest): Promise<Ve
   if (res.status === 422) return null;
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
   return (await res.json()) as VerifiedUpload;
-}
-
-export interface UploadStatus {
-  valid: true;
-  url: string;
-  sha256?: string;
-  contentType?: string;
-  size?: number;
 }
 
 export async function fetchUploadStatus(path: string, uploaderId: string): Promise<UploadStatus | null> {

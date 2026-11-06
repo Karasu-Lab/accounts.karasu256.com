@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import type { CompleteIconUploadResult, IconFileValidationError, PreparedIconUpload } from '@karasu-lab/types/shared';
 import { deleteUploadedImage } from '@karasu-lab/utils/server';
 import { fetchSetFirebasePhoto, fetchSetUserImage, fetchUploadStatus, fetchVerifyUpload } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
@@ -9,17 +10,12 @@ import { presignUploadUrl } from './presign';
 export const MAX_ICON_FILE_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_ICON_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
-export type IconFileValidationError = 'unsupported_media_type' | 'payload_too_large';
+export type { CompleteIconUploadResult, IconFileValidationError, PreparedIconUpload };
 
 export function validateIconFile(contentType: string, size: number): IconFileValidationError | null {
   if (!ALLOWED_ICON_TYPES.has(contentType)) return 'unsupported_media_type';
   if (size === 0 || size > MAX_ICON_FILE_BYTES) return 'payload_too_large';
   return null;
-}
-
-export interface PreparedIconUpload {
-  uploadUrl: string;
-  intent: string;
 }
 
 export async function prepareIconUpload(userId: string, bytes: Buffer, contentType: string): Promise<PreparedIconUpload> {
@@ -29,8 +25,6 @@ export async function prepareIconUpload(userId: string, bytes: Buffer, contentTy
   const intent = signUploadIntent({ userId, path, sha256, contentType, size: bytes.byteLength });
   return { uploadUrl, intent };
 }
-
-export type CompleteIconUploadResult = { ok: true; photoURL: string } | { ok: false; error: 'invalid_intent' | 'upload_verification_failed' };
 
 export async function completeIconUpload(userId: string, intentToken: string, cdnUrl: string): Promise<CompleteIconUploadResult> {
   const intent = verifyUploadIntent(intentToken, userId);
