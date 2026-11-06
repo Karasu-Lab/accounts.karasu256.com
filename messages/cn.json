@@ -251,11 +251,17 @@
       "offline_access": "离线访问",
       "read:profile": "读取个人资料",
       "write:profile": "更新个人资料",
-      "read:users.profile": "读取个人资料",
-      "write:users.profile": "更新个人资料",
-      "read:github.user": "读取您的 GitHub 用户信息",
-      "read:github.avatar": "读取您的 GitHub 头像",
-      "read:github.repositories": "读取您的 GitHub 仓库列表"
+      "read:users": {
+        "profile": "读取个人资料"
+      },
+      "write:users": {
+        "profile": "更新个人资料"
+      },
+      "read:github": {
+        "user": "读取您的 GitHub 用户信息",
+        "avatar": "读取您的 GitHub 头像",
+        "repositories": "读取您的 GitHub 仓库列表"
+      }
     },
     "revoke": "解除关联",
     "revoked": "已解除 {name} 的关联。",

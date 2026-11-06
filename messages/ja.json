@@ -251,11 +251,17 @@
       "offline_access": "オフラインでアクセスする",
       "read:profile": "プロフィールを読み取る",
       "write:profile": "プロフィールを更新する",
-      "read:users.profile": "プロフィールを読み取る",
-      "write:users.profile": "プロフィールを更新する",
-      "read:github.user": "GitHub のユーザー情報を読み取る",
-      "read:github.avatar": "GitHub のアイコンを読み取る",
-      "read:github.repositories": "GitHub のリポジトリ一覧を読み取る"
+      "read:users": {
+        "profile": "プロフィールを読み取る"
+      },
+      "write:users": {
+        "profile": "プロフィールを更新する"
+      },
+      "read:github": {
+        "user": "GitHub のユーザー情報を読み取る",
+        "avatar": "GitHub のアイコンを読み取る",
+        "repositories": "GitHub のリポジトリ一覧を読み取る"
+      }
     },
     "revoke": "連携解除",
     "revoked": "{name} の連携を解除しました",
