@@ -5,11 +5,11 @@ import dynamic from 'next/dynamic';
 import { faGoogle, faGithub, faMicrosoft, faXbox } from '@fortawesome/free-brands-svg-icons';
 import { faCube } from '@fortawesome/free-solid-svg-icons';
 import { useFeatureFlags } from '@karasu-lab/flags-sdk/client';
-import { toast } from '@karasu-lab/ui';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
 import { appFlagsSchema } from '@/lib/flags';
+import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
 function ProviderSectionLoading() {
@@ -25,6 +25,7 @@ const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/pro
 type ProfilesState = { status: 'loading' } | { status: 'loaded'; profiles: Record<string, ProviderProfile | null> };
 
 export function ProviderSectionClient() {
+  const reportError = useReportError();
   const flags = useFeatureFlags<typeof appFlagsSchema>();
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const [state, setState] = useState<ProfilesState>({ status: 'loading' });
@@ -55,7 +56,7 @@ export function ProviderSectionClient() {
       })
       .catch((err) => {
         if (cancelled) return;
-        toast.error(err instanceof Error ? err.message : String(err));
+        reportError(err, 'linking');
         setState({ status: 'loaded', profiles: {} });
       });
     return () => {

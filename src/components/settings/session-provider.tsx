@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { toast } from '@karasu-lab/ui';
 import { useAuthClient } from '@/lib/auth/client';
 import { buildSignInUrl } from '@/lib/auth/client-config';
 import { takePendingAddAccount } from '@/lib/add-account';
@@ -12,6 +11,7 @@ import { SwitchingAccountOverlay } from '@karasu-lab/ui';
 import { AddAccountDialog } from '@/components/settings/add-account-dialog';
 import { SettingsMenuContext } from '@/components/settings/settings-menu-context';
 import { UserContext, type SettingsUser } from '@/components/settings/user-context';
+import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 import type { SessionUser } from '@/lib/session-user';
 
@@ -27,6 +27,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   const pathname = usePathname();
   const t = useTranslations();
   const { data: session, isPending, refetch } = authClient.useSession();
+  const reportError = useReportError();
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
@@ -79,7 +80,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       router.replace(pathname);
       void completeAddAccount();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function completeAddAccount() {
@@ -100,7 +100,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
     } catch (err) {
       setSigningOut(false);
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err, 'sign-out');
     }
   }
 
@@ -111,7 +111,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       await refetch();
       await refreshAccounts(result.uid);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
       await refreshAccounts(session?.user.id);
     } finally {
       setSwitchingAccount(false);
@@ -131,7 +131,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       await removeAccount(target.sessionToken);
       await refreshAccounts(session?.user.id);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
       await refreshAccounts(session?.user.id);
     }
   }
@@ -175,7 +175,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       onAddAccount: () => setAddDialogOpen(true),
       onRemoveAccount: handleRemoveAccount,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [appUrl, accounts, session?.user.id]
   );
 

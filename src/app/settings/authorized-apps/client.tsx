@@ -8,6 +8,7 @@ import { listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp } from '@/l
 import { useAuthClient } from '@/lib/auth/client';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { AuthorizedAppInfoDialog } from '@/components/settings/authorized-app-info-dialog';
+import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
 type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; apps: AuthorizedApp[] };
@@ -17,6 +18,7 @@ const APP_ICON_BACKGROUND_COLOR = '#ea580c';
 export function AuthorizedAppsClient() {
   const auth = useAuthClient();
   const t = useTranslations();
+  const reportError = useReportError();
   const [state, setState] = useState<ListState>({ status: 'loading' });
   useReportLoading('authorized-apps', state.status === 'loading');
   const [infoApp, setInfoApp] = useState<AuthorizedApp | null>(null);
@@ -44,7 +46,7 @@ export function AuthorizedAppsClient() {
       setState((prev) => (prev.status === 'loaded' ? { status: 'loaded', apps: prev.apps.filter((app) => app.id !== pendingRevoke.id) } : prev));
       toast.success(t('authorizedApps.revoked', { name: pendingRevoke.clientName ?? pendingRevoke.clientId }), { autoClose: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err, 'authorized-apps');
     } finally {
       setRevokingId(null);
     }

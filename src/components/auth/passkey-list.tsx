@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog, DeleteIconButton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
 import { useAuthClient } from '@/lib/auth/client';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
+import { useReportError } from '@/components/settings/error-context';
 
 interface CredentialSummary {
   id: string;
@@ -13,25 +14,14 @@ interface CredentialSummary {
 }
 
 interface PasskeyListProps {
-  /** Incrementing this value causes the list to re-fetch from the server. */
   version: number;
-  /** Action rendered at the right end of the section's header item, e.g. the register-passkey control. */
   createAction?: React.ReactNode;
 }
 
-/**
- * Fetches and displays all passkey credentials for the signed-in user,
- * with a remove button for each entry, as editable settings items under
- * a header item that carries the register control.
- *
- * While the credentials load, only the header item is shown, disabled —
- * the list is never replaced with skeleton rows. Re-fetches whenever
- * {@link PasskeyListProps.version} changes, which allows the parent to
- * trigger a refresh after a new registration.
- */
 export function PasskeyList({ version, createAction }: PasskeyListProps) {
   const { authClient } = useAuthClient();
   const t = useTranslations();
+  const reportError = useReportError();
   const [credentials, setCredentials] = useState<CredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
@@ -51,7 +41,7 @@ export function PasskeyList({ version, createAction }: PasskeyListProps) {
       setLoading(true);
     }
     fetchCredentials()
-      .catch((err) => toast.error(err instanceof Error ? err.message : String(err)))
+      .catch((err) => reportError(err))
       .finally(() => {
         initialized.current = true;
         setLoading(false);

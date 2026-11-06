@@ -9,6 +9,7 @@ import { useSettingsUser } from '@/components/settings/user-context';
 import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Label, PasswordInput } from '@karasu-lab/ui';
 import { LocalizedPasswordStrengthIndicator } from '@/components/auth/localized-password-strength-indicator';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
+import { useReportError } from '@/components/settings/error-context';
 
 export interface PasswordSectionProps {
   hasPasswordProvider: boolean;
@@ -18,6 +19,7 @@ export interface PasswordSectionProps {
 export function PasswordSection({ hasPasswordProvider, onPasswordSet }: PasswordSectionProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();
+  const reportError = useReportError();
   const { user, ready } = useSettingsUser();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -57,7 +59,7 @@ export function PasswordSection({ hasPasswordProvider, onPasswordSet }: Password
       }
       handleOpenChange(false);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
     } finally {
       setSaving(false);
     }

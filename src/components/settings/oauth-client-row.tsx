@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button, DropdownMenu, DropdownMenuItem, DropdownMenuPopup, DropdownMenuPortal, DropdownMenuPositioner, DropdownMenuSeparator, DropdownMenuTrigger, toast } from '@karasu-lab/ui';
 import { oauthClientIsPublic, oauthClientType, type OAuthClientSummary } from '@/lib/api/developer';
 import { SettingsItemContainer } from './settings-item-container';
+import { useReportError } from './error-context';
 
 interface OAuthClientRowProps {
   client: OAuthClientSummary;
@@ -21,6 +22,7 @@ const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
 
 export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onRotateSecret, hasItemAbove, hasItemBelow }: OAuthClientRowProps) {
   const t = useTranslations();
+  const reportError = useReportError();
   const TypeIcon = oauthClientType(client) === 'device' ? Smartphone : Globe;
   const iconImageSrc = client.icon_url ?? client.logo_uri ?? undefined;
 
@@ -29,7 +31,7 @@ export function OAuthClientRow({ client, onSelect, onTest, onEdit, onDelete, onR
       await navigator.clipboard.writeText(client.client_id);
       toast.success(t('settings.developer.clientIdCopied'));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
     }
   }
 
