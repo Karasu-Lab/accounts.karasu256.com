@@ -197,7 +197,7 @@ export function SettingsItemContainer({
         />
       ) : null}
 
-      <div className={cn('flex gap-3', children !== undefined || itemsVisible ? 'items-start' : 'items-center')}>
+      <div className={cn('flex gap-3', children !== undefined ? 'items-start' : 'items-center')}>
         {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
           <span aria-hidden="true" className="pointer-events-none relative shrink-0">
             <span
