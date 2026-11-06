@@ -71,7 +71,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
 export async function saveOAuthClientInfo(
   clientId: string,
   info: { name: string; iconUrl: string | null; description: string | null; resource: string | null; public: boolean }
-): Promise<void> {
+): Promise<{ client_secret?: string }> {
   const cookieHeader = (await cookies()).toString();
   const base = authApiBase();
 
@@ -85,6 +85,7 @@ export async function saveOAuthClientInfo(
   if (!res.ok) {
     throw new Error(`Failed to save OAuth client info: HTTP ${res.status}`);
   }
+  return (await res.json().catch(() => ({}))) as { client_secret?: string };
 }
 
 export async function prepareOAuthClientIcon(clientId: string, form: FormData): Promise<{ uploadUrl: string; intent: string }> {
