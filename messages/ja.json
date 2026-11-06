@@ -244,7 +244,7 @@
       "openid": "OpenID Connect でサインインする",
       "profile": "プロフィール情報を取得する",
       "email": "メールアドレスを取得する",
-      "offline_access": "オフラインでアクセスする（リフレッシュトークン）",
+      "offline_access": "オフラインでアクセスする",
       "read:profile": "プロフィールを読み取る",
       "write:profile": "プロフィールを更新する"
     },
