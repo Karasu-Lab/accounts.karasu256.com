@@ -250,7 +250,12 @@
       "email": "Read your email address",
       "offline_access": "Access while you are offline",
       "read:profile": "Read your profile",
-      "write:profile": "Update your profile"
+      "write:profile": "Update your profile",
+      "read:users.profile": "Read your profile",
+      "write:users.profile": "Update your profile",
+      "read:github.user": "Read your GitHub user information",
+      "read:github.avatar": "Read your GitHub icon",
+      "read:github.repositories": "Read your GitHub repositories"
     },
     "revoke": "Disconnect",
     "revoked": "Disconnected {name}.",
@@ -368,6 +373,23 @@
       "images": {
         "label": "Images",
         "description": "Upload and manage images"
+      },
+      "users": {
+        "profile": {
+          "label": "Profile",
+          "description": "Read and update profile information"
+        }
+      },
+      "github": {
+        "user": {
+          "label": "GitHub user"
+        },
+        "avatar": {
+          "label": "GitHub icon"
+        },
+        "repositories": {
+          "label": "GitHub repositories"
+        }
       }
     }
   }
