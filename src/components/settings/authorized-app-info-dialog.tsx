@@ -4,17 +4,14 @@ import { AppWindow, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle } from '@karasu-lab/ui';
 import type { AuthorizedApp } from '@/lib/api/authorized-apps';
-import { LoadingButton } from '@/components/ui/loading-button';
 
 interface AuthorizedAppInfoDialogProps {
   open: boolean;
   onOpenChange: (_open: boolean) => void;
   app: AuthorizedApp;
-  revoking: boolean;
-  onRevoke: (_app: AuthorizedApp) => void;
 }
 
-export function AuthorizedAppInfoDialog({ open, onOpenChange, app, revoking, onRevoke }: AuthorizedAppInfoDialogProps) {
+export function AuthorizedAppInfoDialog({ open, onOpenChange, app }: AuthorizedAppInfoDialogProps) {
   const t = useTranslations();
   const name = app.clientName ?? app.clientId;
 
@@ -68,10 +65,7 @@ export function AuthorizedAppInfoDialog({ open, onOpenChange, app, revoking, onR
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <LoadingButton variant="destructive" size="sm" disabled={revoking} loading={revoking} onClick={() => onRevoke(app)}>
-              {t('authorizedApps.revoke')}
-            </LoadingButton>
+          <div className="flex items-center justify-end">
             <DialogClose render={<Button variant="ghost">{t('authorizedApps.done')}</Button>} />
           </div>
         </DialogPopup>
