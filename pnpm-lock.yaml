@@ -196,8 +196,8 @@ importers:
         specifier: 0.1.0-dab071f
         version: 0.1.0-dab071f(@opentelemetry/api@1.10.0)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@karasu-lab/types':
-        specifier: 0.1.0-5448699
-        version: 0.1.0-5448699
+        specifier: 0.1.0-fda6f7a
+        version: 0.1.0-fda6f7a
       '@karasu-lab/ui':
         specifier: 0.1.0-f85edee
         version: 0.1.0-f85edee(@better-auth/core@1.7.14(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@opentelemetry/api@1.10.0)(better-call@1.4.4(zod@4.6.7))(jose@6.2.14)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.5.1)(@better-fetch/fetch@1.3.3)(@karasu-lab/api-permissions@0.1.0-4b04f47)(@opentelemetry/api@1.10.0)(@types/react@19.3.0)(better-call@1.4.4(zod@4.6.7))(nanostores@1.5.5)(next@16.2.9(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.64.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(supports-color@10.2.2)(vitest@3.2.7(@types/node@20.19.43)(jiti@2.7.0)(jsdom@26.1.0(supports-color@10.2.2))(lightningcss@1.32.0)(supports-color@10.2.2)(terser@5.36.0)(yaml@2.9.1))
@@ -1738,8 +1738,8 @@ packages:
       next: ^15.3.9
       react: ^19
 
-  '@karasu-lab/types@0.1.0-5448699':
-    resolution: {integrity: sha512-rZ6VFjNYFhjpHuufDz2Cjl60k0ciU07owgsN0dNF0OH1YKV6/hmBa5j9UZ3F188MXNjYb3TA8rVV1hdiFTh5CA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-5448699/43278958fa1697c300347524cfa04ee65650ea58}
+  '@karasu-lab/types@0.1.0-fda6f7a':
+    resolution: {integrity: sha512-pk0iuieSIYJa7XX3nVyMOfPDW3TL+1FkaxrANcOJSapRqtvkP8VceBAycXDYpEXOpFIJtb7MWgsOuxI+ilsIzw==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-fda6f7a/fa502acd03cc5421add0240c0f8235dfe3651d13}
 
   '@karasu-lab/ui@0.1.0-f85edee':
     resolution: {integrity: sha512-xD8+OgrtWZy5g1T+j+w84zBRRCViQe2t6mf14KothSH9TLCTHP4Sb4yuUinu1KmAlXi7VWZ6AByD/qTXw2z5bA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-f85edee/1270aac7a081322364f9ac0cd04527b0ac31e06c}
@@ -6757,7 +6757,7 @@ snapshots:
       - '@opentelemetry/api'
       - react-dom
 
-  '@karasu-lab/types@0.1.0-5448699':
+  '@karasu-lab/types@0.1.0-fda6f7a':
     dependencies:
       zod: 4.6.7
 
