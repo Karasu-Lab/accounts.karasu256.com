@@ -69,6 +69,7 @@
       "security": "セキュリティ",
       "connections": "アカウント連携",
       "authorizedApps": "認可したアプリ",
+      "activeSessions": "有効なセッション",
       "debug": "デバッグ",
       "developer": "デベロッパー"
     },
@@ -262,6 +263,30 @@
     "loadError": "読み込みに失敗しました",
     "retry": "再試行",
     "done": "閉じる"
+  },
+  "activeSessions": {
+    "title": "有効なセッション",
+    "empty": "有効なセッションはありません",
+    "createdAt": "作成日時",
+    "current": "現在のセッション",
+    "sources": {
+      "browser": "ブラウザ",
+      "desktop": "デスクトップ",
+      "mobile": "モバイル",
+      "app": "アプリ",
+      "api-key": "APIキー",
+      "unknown": "不明"
+    },
+    "revoke": "セッションを破棄",
+    "revoked": "{name}のセッションを破棄しました",
+    "revokeConfirm": {
+      "title": "セッションを破棄しますか？",
+      "description": "{name}のセッションを破棄すると、そのクライアントはサインアウトされます。",
+      "confirm": "破棄",
+      "cancel": "キャンセル"
+    },
+    "loadError": "読み込みに失敗しました",
+    "retry": "再試行"
   },
   "debug": {
     "title": "デバッグ",

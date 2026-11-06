@@ -1,6 +1,14 @@
 import { createHash, createPrivateKey, randomUUID, sign } from 'node:crypto';
 import { headers } from 'next/headers';
-import type { FirebasePhotoResult, UploadStatus, UploadVerifyRequest, VerifiedUpload } from '@karasu-lab/types/shared';
+import { z } from 'zod';
+import {
+  activeSessionSchema,
+  type ActiveSession,
+  type FirebasePhotoResult,
+  type UploadStatus,
+  type UploadVerifyRequest,
+  type VerifiedUpload,
+} from '@karasu-lab/types/shared';
 import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 import { InternalApiError } from './internal-api-error';
 
@@ -101,6 +109,27 @@ export async function fetchUnlinkProvider(userId: string, providerId: string): P
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
   return true;
 }
+
+const combinedSessionsSchema = z.array(activeSessionSchema.omit({ current: true }));
+
+export type CombinedSession = z.infer<typeof combinedSessionsSchema>[number];
+
+export async function fetchActiveSessions(userId: string): Promise<CombinedSession[]> {
+  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/sessions`, userId);
+  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
+  return combinedSessionsSchema.parse(await res.json());
+}
+
+export async function fetchRevokeActiveSession(userId: string, sessionId: string): Promise<boolean> {
+  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/sessions/${encodeURIComponent(sessionId)}`, userId, {
+    method: 'DELETE',
+  });
+  if (res.status === 404) return false;
+  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
+  return true;
+}
+
+export type { ActiveSession };
 
 export async function fetchSetFirebasePhoto(userId: string, photoURL: string | null): Promise<FirebasePhotoResult> {
   const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/firebase-photo`, userId, {
