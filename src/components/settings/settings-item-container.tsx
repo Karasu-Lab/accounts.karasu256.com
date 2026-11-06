@@ -23,6 +23,7 @@ export interface SettingsItemNestedItemData {
   disabled?: boolean;
   trailing?: React.ReactNode;
   content?: React.ReactNode;
+  items?: SettingsItemNestedItemData[];
 }
 
 export interface SettingsItemContainerProps {
@@ -279,6 +280,7 @@ export function SettingsItemContainer({
                 disabled={item.disabled}
                 onClick={item.onClick}
                 trailing={item.trailing}
+                items={item.items}
                 className="border-0 bg-transparent px-0"
               >
                 {item.content}

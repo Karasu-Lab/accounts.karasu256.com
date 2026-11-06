@@ -9,6 +9,20 @@ export interface PermissionScopes {
   baseScopes: string[];
 }
 
+export interface PermissionOperationGroup {
+  operation: string;
+  sections: PermissionSection[];
+}
+
+export function groupSectionsByOperation(sections: PermissionSection[]): PermissionOperationGroup[] {
+  const groups = new Map<string, PermissionSection[]>();
+  for (const section of sections) {
+    const operation = section.key.split('.')[0];
+    groups.set(operation, [...(groups.get(operation) ?? []), section]);
+  }
+  return [...groups.entries()].map(([operation, grouped]) => ({ operation, sections: grouped }));
+}
+
 export function usePermissionSections(open: boolean): PermissionScopes {
   const [sections, setSections] = useState<PermissionSection[]>([]);
   const [baseScopes, setBaseScopes] = useState<string[]>([]);
