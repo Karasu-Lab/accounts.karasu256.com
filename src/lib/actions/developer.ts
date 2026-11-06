@@ -9,6 +9,7 @@ import type { ApiKeyCreated, ApiKeyPermission, ApiKeySummary, OAuthClientSummary
 export interface OAuthClientsData {
   clients: OAuthClientSummary[];
   scopes: string[];
+  baseScopes: string[];
 }
 
 interface OAuthClientInfoRow {
@@ -23,7 +24,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
   const cookieHeader = (await cookies()).toString();
   const authApiBase = (process.env.AUTH_API_URL ?? '').replace(/\/$/, '');
 
-  const [clientsRes, infoRes, scopes] = await Promise.all([
+  const [clientsRes, infoRes, scopes, discoveryRes] = await Promise.all([
     fetch(`${authApiBase}/api/auth/oauth2/get-clients`, {
       headers: { cookie: cookieHeader },
       cache: 'no-store',
@@ -33,6 +34,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
       cache: 'no-store',
     }).catch(() => null),
     listOauthScopes(),
+    fetch(`${authApiBase}/api/auth/.well-known/openid-configuration`, { cache: 'no-store' }).catch(() => null),
   ]);
 
   if (!clientsRes.ok) {
@@ -47,6 +49,12 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
     for (const row of rows) infoByClientId.set(row.client_id, row);
   }
 
+  let supportedScopes: string[] = [];
+  if (discoveryRes?.ok) {
+    const discovery = (await discoveryRes.json()) as { scopes_supported?: string[] };
+    supportedScopes = discovery.scopes_supported ?? [];
+  }
+
   return {
     clients: clients.map((client) => {
       const info = infoByClientId.get(client.client_id);
@@ -54,6 +62,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
       return { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description };
     }),
     scopes,
+    baseScopes: supportedScopes.filter((scope) => !scopes.includes(scope)),
   };
 }
 

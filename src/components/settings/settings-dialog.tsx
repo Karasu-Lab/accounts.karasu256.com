@@ -6,6 +6,7 @@ import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle,
 import { cn } from '@/lib/utils';
 import { EditValueDialog } from './edit-value-dialog';
 import { RadioSettingsItem, type RadioSettingsItemOption } from './radio-settings-item';
+import { SwitchSettingsItem } from './switch-settings-item';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton, type SettingsItemNestedItemData } from './settings-item-container';
 
 export interface SettingsDialogAvatarSpec {
@@ -29,6 +30,11 @@ export interface SettingsDialogRadioSpec {
   onValueChange: (value: string) => void;
 }
 
+export interface SettingsDialogSwitchSpec {
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}
+
 export interface SettingsDialogFieldSpec {
   key: string;
   title: string;
@@ -41,6 +47,7 @@ export interface SettingsDialogFieldSpec {
   content?: React.ReactNode;
   items?: SettingsItemNestedItemData[];
   radio?: SettingsDialogRadioSpec;
+  switch?: SettingsDialogSwitchSpec;
   edit?: SettingsDialogValueEditSpec;
 }
 
@@ -126,6 +133,20 @@ export function SettingsDialog({ spec, open, onOpenChange, done }: { spec: Setti
                           options={field.radio.options}
                           value={field.radio.value}
                           onValueChange={field.radio.onValueChange}
+                          disabled={field.disabled}
+                        />
+                      );
+                    }
+                    if (field.switch) {
+                      return (
+                        <SwitchSettingsItem
+                          key={field.key}
+                          title={field.title}
+                          description={field.description}
+                          icon={field.icon}
+                          iconBackgroundColor={field.iconBackgroundColor}
+                          checked={field.switch.checked}
+                          onCheckedChange={field.switch.onCheckedChange}
                           disabled={field.disabled}
                         />
                       );

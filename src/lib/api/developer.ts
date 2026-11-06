@@ -9,12 +9,6 @@ export type OAuthClientType = 'web' | 'device';
 
 export const DEVICE_CODE_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code';
 
-const BASE_SCOPES = ['openid', 'profile', 'email', 'offline_access'];
-
-function withBaseScopes(scope: string): string {
-  return [...new Set([...BASE_SCOPES, ...scope.split(' ').filter(Boolean)])].join(' ');
-}
-
 export interface OAuthClientSummary {
   client_id: string;
   client_name?: string;
@@ -44,11 +38,10 @@ export async function createOAuthClient({ authClient, bridgeFirebaseSession }: A
 }): Promise<OAuthClientCreated> {
   await bridgeFirebaseSession();
   const { type, redirect_uris, ...rest } = input;
-  const scoped = { ...rest, scope: withBaseScopes(rest.scope) };
   const payload =
     type === 'device'
-      ? { ...scoped, grant_types: [DEVICE_CODE_GRANT_TYPE], token_endpoint_auth_method: 'none' }
-      : { ...scoped, redirect_uris };
+      ? { ...rest, grant_types: [DEVICE_CODE_GRANT_TYPE], token_endpoint_auth_method: 'none' }
+      : { ...rest, redirect_uris };
   const { data, error } = await authClient.oauth2.createClient(payload);
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as OAuthClientCreated;
@@ -65,8 +58,7 @@ export async function updateOAuthClient(
   }>
 ): Promise<OAuthClientSummary> {
   await bridgeFirebaseSession();
-  const normalized = update.scope === undefined ? update : { ...update, scope: withBaseScopes(update.scope) };
-  const { data, error } = await authClient.oauth2.updateClient({ client_id: clientId, update: normalized });
+  const { data, error } = await authClient.oauth2.updateClient({ client_id: clientId, update });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as OAuthClientSummary;
 }
