@@ -43,6 +43,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [resource, setResource] = useState('');
   const [clientType, setClientType] = useState<OAuthClientType>('web');
   const [redirectUrisText, setRedirectUrisText] = useState('');
   const [iconFile, setIconFile] = useState<File | null>(null);
@@ -56,6 +57,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
     if (!open) return;
     setName(client?.client_name ?? '');
     setDescription(client?.description ?? '');
+    setResource(client?.resource ?? '');
     setClientType(client ? oauthClientType(client) : 'web');
     setRedirectUrisText(client?.redirect_uris.join('\n') ?? '');
     setIconFile(null);
@@ -102,8 +104,9 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
         name: name.trim(),
         iconUrl,
         description: description.trim() || null,
+        resource: resource.trim() || null,
       });
-      const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null };
+      const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null, resource: resource.trim() || null };
       onSaved(result);
       if (client) onOpenChange(false);
       else setCreated(result);
@@ -197,6 +200,13 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
                 },
               ]
             : []),
+          {
+            key: 'resource',
+            title: t('settings.developer.dialog.resource'),
+            description: resource || undefined,
+            icon: Link2,
+            edit: { value: resource, placeholder: 'https://example.com/mcp', onSave: setResource },
+          },
         ],
       },
       {
