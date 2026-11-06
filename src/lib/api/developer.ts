@@ -18,6 +18,7 @@ export interface OAuthClientSummary {
   grant_types?: string[];
   description?: string | null;
   icon_url?: string | null;
+  resource?: string | null;
 }
 
 export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>): OAuthClientType {

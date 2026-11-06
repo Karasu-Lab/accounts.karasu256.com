@@ -121,6 +121,7 @@
         "clientCreated": "クライアントを作成しました",
         "callbackUris": "コールバック URI",
         "callbackUrisHelp": "1 行に 1 つの URI を入力してください",
+        "resource": "リソース",
         "icon": "アイコン",
         "permissions": "権限",
         "read": "読み取り",

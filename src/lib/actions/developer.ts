@@ -18,6 +18,7 @@ interface OAuthClientInfoRow {
   author_id: string | null;
   icon_url: string | null;
   description: string | null;
+  resource: string | null;
 }
 
 export async function loadOAuthClients(): Promise<OAuthClientsData> {
@@ -59,7 +60,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
     clients: clients.map((client) => {
       const info = infoByClientId.get(client.client_id);
       if (!info) return client;
-      return { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description };
+      return { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description, resource: info.resource };
     }),
     scopes,
     baseScopes: supportedScopes.filter((scope) => !scopes.includes(scope)),
@@ -68,7 +69,7 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
 
 export async function saveOAuthClientInfo(
   clientId: string,
-  info: { name: string; iconUrl: string | null; description: string | null }
+  info: { name: string; iconUrl: string | null; description: string | null; resource: string | null }
 ): Promise<void> {
   const cookieHeader = (await cookies()).toString();
   const base = authApiBase();
@@ -76,7 +77,7 @@ export async function saveOAuthClientInfo(
   const res = await fetch(`${base}/api/oauth-client-info/${encodeURIComponent(clientId)}`, {
     method: 'PUT',
     headers: { cookie: cookieHeader, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: info.name, icon_url: info.iconUrl, description: info.description }),
+    body: JSON.stringify({ name: info.name, icon_url: info.iconUrl, description: info.description, resource: info.resource }),
     cache: 'no-store',
   });
 
