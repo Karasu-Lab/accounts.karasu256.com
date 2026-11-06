@@ -5,15 +5,15 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuthClient } from '@/lib/auth/client';
+import { avatarSrc } from '@/lib/avatar/avatar-src';
 import { Button } from '@karasu-lab/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@karasu-lab/ui';
-import { Identicon } from '@karasu-lab/ui';
 import { Separator } from '@karasu-lab/ui';
 import { Skeleton } from '@karasu-lab/ui';
+import { UserAvatar } from '@karasu-lab/ui';
 import { PasskeyList } from './passkey-list';
 import { PasskeyCreateDialog } from './passkey-create-dialog';
 
-/** Account management card for authenticated users, driven by the better-auth session. */
 export function AccountCard() {
   const { authClient } = useAuthClient();
   const router = useRouter();
@@ -65,7 +65,7 @@ export function AccountCard() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col items-start gap-3">
-          <Identicon value={session.user.id} size={64} className="border border-border" />
+          <UserAvatar uid={session.user.id} iconUrl={avatarSrc(session.user.image ?? null)} size={64} className="border border-border" />
           <p className="text-sm text-muted-foreground break-all">{session.user.email ?? session.user.id}</p>
         </div>
         <Separator />
