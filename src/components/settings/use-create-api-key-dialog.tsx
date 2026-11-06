@@ -127,6 +127,7 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
               title: t(`settings.developer.dialog.${permission.action}`),
               checked: selected.has(permission.publicId),
               onCheckedChange: () => togglePermission(permission.publicId),
+              toggle: true,
             })),
           })),
         })),

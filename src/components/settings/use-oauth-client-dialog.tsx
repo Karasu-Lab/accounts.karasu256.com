@@ -248,6 +248,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
                         title: t('settings.developer.dialog.read'),
                         checked: scopes.has(`read:${s.key}`),
                         onCheckedChange: () => toggleScope(`read:${s.key}`),
+                        toggle: true,
                       },
                     ]
                   : []),
@@ -258,6 +259,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
                         title: t('settings.developer.dialog.write'),
                         checked: scopes.has(`write:${s.key}`),
                         onCheckedChange: () => toggleScope(`write:${s.key}`),
+                        toggle: true,
                       },
                     ]
                   : []),

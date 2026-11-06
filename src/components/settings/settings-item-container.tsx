@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronDown, ChevronRight, LoaderCircle, Settings, type LucideIcon } from 'lucide-react';
-import { Checkbox, RadioGroupItem } from '@karasu-lab/ui';
+import { Checkbox, RadioGroupItem, Switch } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/lib/use-is-mobile';
 
@@ -18,6 +18,7 @@ export interface SettingsItemNestedItemData {
   iconBackgroundColor?: string;
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  toggle?: boolean;
   radioValue?: string;
   onClick?: () => void | Promise<void>;
   disabled?: boolean;
@@ -246,7 +247,30 @@ export function SettingsItemContainer({
       {itemsVisible && (
         <span className="relative z-10 mt-1 ml-11 block">
           {items?.map((item) =>
-            item.checked !== undefined ? (
+            item.checked !== undefined && item.toggle ? (
+              <SettingsItemContainer
+                key={item.key}
+                title={item.title}
+                description={item.description}
+                icon={item.icon ?? null}
+                iconBackgroundColor={item.iconBackgroundColor}
+                disabled={item.disabled}
+                onClick={
+                  item.onCheckedChange !== undefined && !item.disabled
+                    ? () => item.onCheckedChange?.(!item.checked)
+                    : undefined
+                }
+                trailing={
+                  <Switch
+                    checked={item.checked}
+                    disabled={item.disabled || item.onCheckedChange === undefined}
+                    onCheckedChange={item.onCheckedChange}
+                    aria-label={item.title}
+                  />
+                }
+                className="border-0 bg-transparent px-0"
+              />
+            ) : item.checked !== undefined ? (
               <CheckSettingsItem
                 key={item.key}
                 title={item.title}
