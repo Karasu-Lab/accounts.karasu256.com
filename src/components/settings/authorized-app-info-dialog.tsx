@@ -45,7 +45,7 @@ export function AuthorizedAppInfoDialog({ open, onOpenChange, app, revoking, onR
             </div>
             <div className="flex gap-2">
               <dt className="shrink-0 text-muted-foreground">{t('authorizedApps.authorizedAt')}</dt>
-              <dd>{new Date(app.createdAt).toLocaleDateString()}</dd>
+              <dd>{new Date(app.createdAt).toLocaleString()}</dd>
             </div>
           </dl>
 

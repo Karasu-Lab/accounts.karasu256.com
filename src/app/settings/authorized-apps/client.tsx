@@ -86,7 +86,7 @@ export function AuthorizedAppsClient() {
             <SettingsItemContainer
               key={app.id}
               title={app.clientName ?? app.clientId}
-              description={`${t('authorizedApps.authorizedAt')}: ${new Date(app.createdAt).toLocaleDateString()}`}
+              description={`${t('authorizedApps.authorizedAt')}: ${new Date(app.createdAt).toLocaleString()}`}
               icon={AppWindow}
               iconImageSrc={app.logoUri}
               iconBackgroundColor={APP_ICON_BACKGROUND_COLOR}
