@@ -371,6 +371,14 @@
     }
   },
   "permissions": {
+    "operations": {
+      "users": {
+        "label": "ユーザー"
+      },
+      "github": {
+        "label": "GitHub"
+      }
+    },
     "sections": {
       "profile": {
         "label": "プロフィール",

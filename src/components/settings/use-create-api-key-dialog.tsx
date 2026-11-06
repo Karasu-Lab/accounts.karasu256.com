@@ -15,12 +15,28 @@ interface UseCreateApiKeyDialogArgs {
   onCreated: (key: ApiKeyCreated) => void;
 }
 
-function groupByResource(permissions: ApiKeyPermission[]): [string, ApiKeyPermission[]][] {
-  const groups = new Map<string, ApiKeyPermission[]>();
+interface PermissionResourceGroup {
+  resource: string;
+  permissions: ApiKeyPermission[];
+}
+
+interface PermissionOperationGroup {
+  operation: string;
+  resources: PermissionResourceGroup[];
+}
+
+function groupByOperation(permissions: ApiKeyPermission[]): PermissionOperationGroup[] {
+  const operations = new Map<string, Map<string, ApiKeyPermission[]>>();
   for (const permission of permissions) {
-    groups.set(permission.resource, [...(groups.get(permission.resource) ?? []), permission]);
+    const operation = permission.resource.split('.')[0];
+    const resources = operations.get(operation) ?? new Map<string, ApiKeyPermission[]>();
+    resources.set(permission.resource, [...(resources.get(permission.resource) ?? []), permission]);
+    operations.set(operation, resources);
   }
-  return [...groups.entries()];
+  return [...operations.entries()].map(([operation, resources]) => ({
+    operation,
+    resources: [...resources.entries()].map(([resource, grouped]) => ({ resource, permissions: grouped })),
+  }));
 }
 
 export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCreateApiKeyDialogArgs): {
@@ -96,15 +112,22 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
       },
       {
         title: t('settings.developer.dialog.permissions'),
-        fields: groupByResource(grantable).map(([resource, permissions]) => ({
-          key: `permissions.${resource}`,
-          title: t(`permissions.sections.${resource}.label`),
+        fields: groupByOperation(grantable).map((group) => ({
+          key: `permissions.${group.operation}`,
+          title: t.has(`permissions.operations.${group.operation}.label`)
+            ? t(`permissions.operations.${group.operation}.label`)
+            : group.operation,
           icon: KeyRound,
-          items: permissions.map((permission) => ({
-            key: permission.publicId,
-            title: t(`settings.developer.dialog.${permission.action}`),
-            checked: selected.has(permission.publicId),
-            onCheckedChange: () => togglePermission(permission.publicId),
+          items: group.resources.map((resourceGroup) => ({
+            key: resourceGroup.resource,
+            title: t(`permissions.sections.${resourceGroup.resource}.label`),
+            icon: null,
+            items: resourceGroup.permissions.map((permission) => ({
+              key: permission.publicId,
+              title: t(`settings.developer.dialog.${permission.action}`),
+              checked: selected.has(permission.publicId),
+              onCheckedChange: () => togglePermission(permission.publicId),
+            })),
           })),
         })),
       },
