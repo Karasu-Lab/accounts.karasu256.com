@@ -258,9 +258,9 @@
         "profile": "プロフィールを更新する"
       },
       "read:github": {
-        "user": "GitHub のユーザー情報を読み取る",
-        "avatar": "GitHub のアイコンを読み取る",
-        "repositories": "GitHub のリポジトリ一覧を読み取る"
+        "user": "ユーザー情報を読み取る",
+        "avatar": "アイコンを読み取る",
+        "repositories": "リポジトリ一覧を読み取る"
       }
     },
     "revoke": "連携解除",
@@ -396,13 +396,13 @@
       },
       "github": {
         "user": {
-          "label": "GitHub ユーザー情報"
+          "label": "ユーザー情報"
         },
         "avatar": {
-          "label": "GitHub アイコン"
+          "label": "アイコン"
         },
         "repositories": {
-          "label": "GitHub リポジトリ"
+          "label": "リポジトリ"
         }
       }
     }

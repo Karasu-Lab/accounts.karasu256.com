@@ -258,9 +258,9 @@
         "profile": "更新个人资料"
       },
       "read:github": {
-        "user": "读取您的 GitHub 用户信息",
-        "avatar": "读取您的 GitHub 头像",
-        "repositories": "读取您的 GitHub 仓库列表"
+        "user": "读取您的用户信息",
+        "avatar": "读取您的头像",
+        "repositories": "读取您的仓库列表"
       }
     },
     "revoke": "解除关联",
@@ -396,13 +396,13 @@
       },
       "github": {
         "user": {
-          "label": "GitHub 用户信息"
+          "label": "用户信息"
         },
         "avatar": {
-          "label": "GitHub 头像"
+          "label": "头像"
         },
         "repositories": {
-          "label": "GitHub 仓库"
+          "label": "仓库"
         }
       }
     }
