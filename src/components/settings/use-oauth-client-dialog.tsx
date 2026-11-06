@@ -106,7 +106,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
           });
       const iconUrl = iconFile ? await onUploadIcon(saved.client_id, iconFile) : (client?.icon_url ?? client?.logo_uri ?? null);
       if (iconFile && iconUrl) await updateOAuthClient(auth, saved.client_id, { logo_uri: iconUrl });
-      await saveOAuthClientInfo(saved.client_id, {
+      const infoSave = await saveOAuthClientInfo(saved.client_id, {
         name: name.trim(),
         iconUrl,
         description: description.trim() || null,
@@ -115,7 +115,8 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
       });
       const result = { ...saved, client_name: name.trim(), logo_uri: iconUrl ?? undefined, icon_url: iconUrl, description: description.trim() || null, resource: resource.trim() || null, public: clientType === 'device' ? true : publicClient };
       onSaved(result);
-      if (client) onOpenChange(false);
+      if (infoSave.client_secret) setCreated({ ...result, client_secret: infoSave.client_secret });
+      else if (client) onOpenChange(false);
       else setCreated(result);
     } finally {
       setLoading(false);
