@@ -1,20 +1,3 @@
-/**
- * Regression tests for the linking page's linked-state judgment.
- *
- * The page judges the linked state solely by auth.karasu256.com's
- * provider profile API: a provider counts as linked exactly when a
- * profile comes back for it (see ./page.tsx). Linked providers were
- * reported as not linked when that API did not return profiles, so
- * this contract is pinned down end to end — the real page, the real
- * profile fetch, and the real server-side session resolution, against
- * a stub of the auth API that returns a profile for the linked
- * provider (GitHub) and 404 for the unlinked one (Google):
- *
- * 1. The page hands the client section an initial profile for the
- *    linked provider and null for the unlinked one.
- * 2. Without a signed-in user, no profiles are fetched and every
- *    provider starts unlinked.
- */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const requestCookie: { value: string | null } = { value: 'better-auth.session_token=test-session-token' };
@@ -49,12 +32,11 @@ vi.mock('@karasu-lab/utils/server', async () => {
   };
 });
 
-import LinkingPage from './page';
+import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
 
 const sessionUser = { id: 'user-1', name: 'Test User', email: 'test@example.com', image: null };
 const githubProfile = { name: 'GitHub User', email: 'github@example.com', image: null };
 
-/** A stub of the two auth services the page reads from, keyed by path. */
 function authServicesStub(url: string): Promise<Response> {
   const { pathname } = new URL(url);
   const json = (body: unknown, status: number) =>
@@ -86,9 +68,9 @@ describe('linking page linked-state judgment', () => {
   });
 
   it('marks a provider as linked exactly when its profile comes back', async () => {
-    const element = await LinkingPage();
+    const profiles = await loadLinkedProviderProfiles();
 
-    expect((element.props as { initialProfiles: unknown }).initialProfiles).toEqual({
+    expect(profiles).toEqual({
       google: null,
       github: githubProfile,
       microsoft: null,
@@ -100,9 +82,9 @@ describe('linking page linked-state judgment', () => {
   it('fetches no profiles without a signed-in user', async () => {
     requestCookie.value = null;
 
-    const element = await LinkingPage();
+    const profiles = await loadLinkedProviderProfiles();
 
-    expect((element.props as { initialProfiles: unknown }).initialProfiles).toEqual({});
+    expect(profiles).toEqual({});
     expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/details'))).toBe(false);
   });
 });
