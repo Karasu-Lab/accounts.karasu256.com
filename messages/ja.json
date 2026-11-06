@@ -118,6 +118,8 @@
         "clientType": "OAuth タイプ",
         "clientTypeWeb": "ウェブ",
         "clientTypeDevice": "デバイス",
+        "publicClient": "公開クライアント",
+        "publicClientDescription": "シークレットは発行されません。",
         "clientCreated": "クライアントを作成しました",
         "callbackUris": "コールバック URI",
         "callbackUrisHelp": "1 行に 1 つの URI を入力してください",

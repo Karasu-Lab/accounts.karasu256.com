@@ -16,6 +16,7 @@ export interface OAuthClientSummary {
   redirect_uris: string[];
   scope?: string;
   grant_types?: string[];
+  token_endpoint_auth_method?: string;
   description?: string | null;
   icon_url?: string | null;
   resource?: string | null;
@@ -24,6 +25,10 @@ export interface OAuthClientSummary {
 export function oauthClientType(client: Pick<OAuthClientSummary, 'grant_types'>): OAuthClientType {
   const grantTypes = client.grant_types ?? [];
   return grantTypes.includes(DEVICE_CODE_GRANT_TYPE) && !grantTypes.includes('authorization_code') ? 'device' : 'web';
+}
+
+export function oauthClientIsPublic(client: Pick<OAuthClientSummary, 'token_endpoint_auth_method'>): boolean {
+  return client.token_endpoint_auth_method === 'none';
 }
 
 export interface OAuthClientCreated extends OAuthClientSummary {
@@ -36,13 +41,14 @@ export async function createOAuthClient({ authClient, bridgeFirebaseSession }: A
   logo_uri?: string;
   scope: string;
   type: OAuthClientType;
+  publicClient?: boolean;
 }): Promise<OAuthClientCreated> {
   await bridgeFirebaseSession();
-  const { type, redirect_uris, ...rest } = input;
+  const { type, redirect_uris, publicClient, ...rest } = input;
   const payload =
     type === 'device'
       ? { ...rest, grant_types: [DEVICE_CODE_GRANT_TYPE], token_endpoint_auth_method: 'none' }
-      : { ...rest, redirect_uris };
+      : { ...rest, redirect_uris, token_endpoint_auth_method: publicClient ? 'none' : 'client_secret_basic' };
   const { data, error } = await authClient.oauth2.createClient(payload);
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as OAuthClientCreated;
@@ -56,6 +62,7 @@ export async function updateOAuthClient(
     redirect_uris: string[];
     logo_uri: string;
     scope: string;
+    token_endpoint_auth_method: string;
   }>
 ): Promise<OAuthClientSummary> {
   await bridgeFirebaseSession();

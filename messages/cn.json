@@ -118,6 +118,8 @@
         "clientType": "OAuth 类型",
         "clientTypeWeb": "网页",
         "clientTypeDevice": "设备",
+        "publicClient": "公开客户端",
+        "publicClientDescription": "不会签发密钥。",
         "clientCreated": "客户端已创建",
         "callbackUris": "回调 URI",
         "callbackUrisHelp": "每行一个 URI",
