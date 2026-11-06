@@ -16,7 +16,7 @@ import {
 } from '@/lib/api/developer';
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
-import type { SettingsDialogSpec } from './settings-dialog';
+import type { SettingsDialogFieldSpec, SettingsDialogSpec } from './settings-dialog';
 import { groupSectionsByOperation, usePermissionSections } from './use-permission-sections';
 
 interface UseOAuthClientDialogArgs {
@@ -40,7 +40,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 } {
   const auth = useAuthClient();
   const t = useTranslations();
-  const { sections, baseScopes } = usePermissionSections(open);
+  const { sections, baseScopes, loaded } = usePermissionSections(open);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -131,6 +131,56 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 
   const uris = parseUris(redirectUrisText);
   const typeLocked = client !== undefined;
+
+  const permissionFields: SettingsDialogFieldSpec[] = loaded
+    ? [
+        ...groupSectionsByOperation(sections).map((group) => ({
+          key: `permissions.${group.operation}`,
+          title: t.has(`permissions.operations.${group.operation}.label`)
+            ? t(`permissions.operations.${group.operation}.label`)
+            : group.operation,
+          icon: KeyRound,
+          items: group.sections.map((s) => ({
+            key: s.key,
+            title: t(`permissions.sections.${s.key}.label`),
+            icon: null,
+            items: [
+              ...(s.canRead
+                ? [
+                    {
+                      key: 'read',
+                      title: t('settings.developer.dialog.read'),
+                      checked: scopes.has(`read:${s.key}`),
+                      onCheckedChange: () => toggleScope(`read:${s.key}`),
+                      toggle: true,
+                    },
+                  ]
+                : []),
+              ...(s.canWrite
+                ? [
+                    {
+                      key: 'write',
+                      title: t('settings.developer.dialog.write'),
+                      checked: scopes.has(`write:${s.key}`),
+                      onCheckedChange: () => toggleScope(`write:${s.key}`),
+                      toggle: true,
+                    },
+                  ]
+                : []),
+            ],
+          })),
+        })),
+        ...baseScopes.map((scope) => ({
+          key: `scopes.${scope}`,
+          title: t.has(`authorizedApps.scopes.${scope}`) ? t(`authorizedApps.scopes.${scope}`) : scope,
+          icon: KeyRound,
+          switch: {
+            checked: scopes.has(scope),
+            onCheckedChange: () => toggleScope(scope),
+          },
+        })),
+      ]
+    : [{ key: 'permissions.loading', title: '', skeleton: true }];
 
   const spec: SettingsDialogSpec = {
     title: t(client ? 'settings.developer.editClient' : 'settings.developer.createClient'),
@@ -229,53 +279,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
       },
       {
         title: t('settings.developer.dialog.permissions'),
-        fields: [
-          ...groupSectionsByOperation(sections).map((group) => ({
-            key: `permissions.${group.operation}`,
-            title: t.has(`permissions.operations.${group.operation}.label`)
-              ? t(`permissions.operations.${group.operation}.label`)
-              : group.operation,
-            icon: KeyRound,
-            items: group.sections.map((s) => ({
-              key: s.key,
-              title: t(`permissions.sections.${s.key}.label`),
-              icon: null,
-              items: [
-                ...(s.canRead
-                  ? [
-                      {
-                        key: 'read',
-                        title: t('settings.developer.dialog.read'),
-                        checked: scopes.has(`read:${s.key}`),
-                        onCheckedChange: () => toggleScope(`read:${s.key}`),
-                        toggle: true,
-                      },
-                    ]
-                  : []),
-                ...(s.canWrite
-                  ? [
-                      {
-                        key: 'write',
-                        title: t('settings.developer.dialog.write'),
-                        checked: scopes.has(`write:${s.key}`),
-                        onCheckedChange: () => toggleScope(`write:${s.key}`),
-                        toggle: true,
-                      },
-                    ]
-                  : []),
-              ],
-            })),
-          })),
-          ...baseScopes.map((scope) => ({
-            key: `scopes.${scope}`,
-            title: t.has(`authorizedApps.scopes.${scope}`) ? t(`authorizedApps.scopes.${scope}`) : scope,
-            icon: KeyRound,
-            switch: {
-              checked: scopes.has(scope),
-              onCheckedChange: () => toggleScope(scope),
-            },
-          })),
-        ],
+        fields: permissionFields,
       },
     ],
   };
