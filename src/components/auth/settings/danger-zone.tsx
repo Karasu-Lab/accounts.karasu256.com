@@ -8,6 +8,7 @@ import { Button } from '@karasu-lab/ui';
 import { Input } from '@karasu-lab/ui';
 import { Label } from '@karasu-lab/ui';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
+import { useReportError } from '@/components/settings/error-context';
 
 export interface DangerZoneProps {
   hasPasswordProvider: boolean;
@@ -16,6 +17,7 @@ export interface DangerZoneProps {
 export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
   const { authClient } = useAuthClient();
   const t = useTranslations();
+  const reportError = useReportError();
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -31,7 +33,7 @@ export function DangerZone({ hasPasswordProvider }: DangerZoneProps) {
         setDeleting(false);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
       setDeleting(false);
     }
   }

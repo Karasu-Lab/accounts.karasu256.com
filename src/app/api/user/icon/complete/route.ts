@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { intentTokenBodySchema } from '@karasu-lab/types/shared';
 import { requireSession } from '@/lib/api/require-session';
 import { badRequest } from '@/lib/api/responses';
 import { completeIconUpload } from '@/lib/avatar/icon';
 
-const bodySchema = z.object({ intent: z.string().min(1) });
+const bodySchema = intentTokenBodySchema;
 
 export async function POST(request: NextRequest) {
   const { user, error } = await requireSession();

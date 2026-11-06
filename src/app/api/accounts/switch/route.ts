@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
+import { sessionTokenBodySchema } from '@karasu-lab/types/shared';
 import { listDeviceSessions, postMultiSession } from '@/lib/auth/device-sessions';
 import { handlePreflight, withCors } from '@/lib/auth/cors';
 import { forwardSetCookies } from '@/lib/auth/forward-set-cookies';
 
-const bodySchema = z.object({ sessionToken: z.string().min(1) });
+const bodySchema = sessionTokenBodySchema;
 
-/**
- * Switches the active account on this device by flipping better-auth's own
- * active `multiSession` session — its cookie is the sole source of truth for
- * "who is logged in" everywhere, so no other client-side sync is needed.
- *
- * POST /api/accounts/switch
- * Body: { sessionToken: string }
- */
 async function handlePOST(request: NextRequest) {
   const parsedBody = bodySchema.safeParse(await request.json().catch(() => null));
   if (!parsedBody.success) {

@@ -1,9 +1,7 @@
+import type { DeviceSession } from '@karasu-lab/types/shared';
 import { authFetch } from '@/lib/auth/remote';
 
-export interface DeviceSession {
-  session: { token: string; createdAt: string };
-  user: { id: string; name: string | null; email: string | null; image: string | null };
-}
+export type { DeviceSession };
 
 export async function listDeviceSessions(request: Request): Promise<DeviceSession[]> {
   const res = await authFetch('/api/auth/multi-session/list-device-sessions', request);

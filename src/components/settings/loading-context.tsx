@@ -45,3 +45,7 @@ export function useIsLoading(): boolean {
 export function useIsLoadingKey(key: string): boolean {
   return useContext(LoadingStateContext).has(key);
 }
+
+export function useLoadingPendingKeys(): ReadonlySet<string> {
+  return useContext(LoadingStateContext);
+}

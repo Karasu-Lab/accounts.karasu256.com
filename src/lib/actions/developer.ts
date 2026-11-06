@@ -2,6 +2,7 @@
 
 import { createHash } from 'node:crypto';
 import { cookies } from 'next/headers';
+import type { OAuthClientInfo } from '@karasu-lab/types/shared';
 import { listOauthScopes } from '@/lib/api/api-client';
 import { AuthApiError } from '@/lib/api/auth-api-error';
 import type { ApiKeyCreated, ApiKeyPermission, ApiKeySummary, OAuthClientSummary } from '@/lib/api/developer';
@@ -10,16 +11,6 @@ export interface OAuthClientsData {
   clients: OAuthClientSummary[];
   scopes: string[];
   baseScopes: string[];
-}
-
-interface OAuthClientInfoRow {
-  client_id: string;
-  name: string;
-  author_id: string | null;
-  icon_url: string | null;
-  description: string | null;
-  resource: string | null;
-  public: boolean;
 }
 
 export async function loadOAuthClients(): Promise<OAuthClientsData> {
@@ -45,9 +36,9 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
 
   const clients = (await clientsRes.json()) as OAuthClientSummary[];
 
-  const infoByClientId = new Map<string, OAuthClientInfoRow>();
+  const infoByClientId = new Map<string, OAuthClientInfo>();
   if (infoRes?.ok) {
-    const rows = (await infoRes.json()) as OAuthClientInfoRow[];
+    const rows = (await infoRes.json()) as OAuthClientInfo[];
     for (const row of rows) infoByClientId.set(row.client_id, row);
   }
 

@@ -6,12 +6,14 @@ import { toast } from '@karasu-lab/ui';
 import { useAuthClient } from '@/lib/auth/client';
 import { useSettingsUser } from '@/components/settings/user-context';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
+import { useReportError } from '@/components/settings/error-context';
 import { EditValueDialog } from '@/components/settings/edit-value-dialog';
 import { ProfileIcon, type ProfileIconHandle } from './profile-icon';
 
 export function ProfileSection() {
   const { authClient } = useAuthClient();
   const t = useTranslations();
+  const reportError = useReportError();
   const { user, ready, updateUser } = useSettingsUser();
   const profileIconRef = useRef<ProfileIconHandle>(null);
   const [nameDialogOpen, setNameDialogOpen] = useState(false);
@@ -23,7 +25,7 @@ export function ProfileSection() {
       updateUser({ name });
       toast.success(t('profile.saved'), { autoClose: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
       throw err;
     }
   }

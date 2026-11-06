@@ -1,19 +1,7 @@
+import type { SignedAuthRequest, SignedAuthRequestOptions } from '@karasu-lab/types/server';
 import { MissingEnvError, signRequest, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 
-export interface SignedAuthRequest {
-  method: string;
-  url: string;
-  headers: Record<string, string>;
-  body?: string;
-}
-
-export interface SignedAuthRequestOptions {
-  method?: string;
-  body?: string;
-  cookie?: string | null;
-  origin?: string;
-  timestamp?: number;
-}
+export type { SignedAuthRequest, SignedAuthRequestOptions };
 
 export function authUrl(path: string): string {
   return `${process.env.AUTH_API_URL ?? ''}${path}`;

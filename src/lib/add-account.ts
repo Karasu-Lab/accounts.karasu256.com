@@ -1,9 +1,8 @@
-const STORAGE_KEY = 'pendingAddAccount';
+import { pendingAddAccountSchema, type PendingAddAccount } from '@karasu-lab/types/client';
 
-export interface PendingAddAccount {
-  previousSessionToken: string | null;
-  switchToNewAccount: boolean;
-}
+export type { PendingAddAccount };
+
+const STORAGE_KEY = 'pendingAddAccount';
 
 export function savePendingAddAccount(pending: PendingAddAccount): void {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(pending));
@@ -14,7 +13,8 @@ export function takePendingAddAccount(): PendingAddAccount | null {
   sessionStorage.removeItem(STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as PendingAddAccount;
+    const result = pendingAddAccountSchema.safeParse(JSON.parse(raw));
+    return result.success ? result.data : null;
   } catch {
     return null;
   }

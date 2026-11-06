@@ -15,6 +15,7 @@ import {
 } from '@karasu-lab/ui';
 import { deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
+import { useReportError } from '@/components/settings/error-context';
 import { avatarSrc } from '@/lib/avatar/avatar-src';
 import { uploadUserIcon } from '@/lib/avatar/upload-client';
 
@@ -33,6 +34,7 @@ function providerLabel(providerId: string, profile: ProviderProfile): string {
 
 export const ProfileIcon = forwardRef<ProfileIconHandle, ProfileIconProps>(function ProfileIcon({ onBusyChange }, ref) {
   const t = useTranslations();
+  const reportError = useReportError();
   const { user, ready, updateUser } = useSettingsUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [providers, setProviders] = useState<Record<string, ProviderProfile>>({});
@@ -58,7 +60,7 @@ export const ProfileIcon = forwardRef<ProfileIconHandle, ProfileIconProps>(funct
       updateUser({ image: photoURL });
       toast.success(t('profile.iconChanged'), { autoClose: true });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
+      reportError(err);
     } finally {
       setBusy(false);
     }
