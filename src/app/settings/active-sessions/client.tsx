@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { AppWindow, Globe, KeyRound, Monitor, Smartphone, Unlink, type LucideIcon } from 'lucide-react';
+import { AppWindow, Globe, KeyRound, Monitor, MonitorSmartphone, Smartphone, Unlink, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
 import type { ActiveSession, SessionSource } from '@karasu-lab/types/shared';
@@ -18,6 +18,11 @@ const SOURCE_ICONS: Record<SessionSource, { icon: LucideIcon; iconBackgroundColo
   mobile: { icon: Smartphone, iconBackgroundColor: '#16a34a' },
   app: { icon: AppWindow, iconBackgroundColor: '#ea580c' },
   'api-key': { icon: KeyRound, iconBackgroundColor: '#9333ea' },
+};
+
+const UNKNOWN_SOURCE_ICON: { icon: LucideIcon; iconBackgroundColor: string } = {
+  icon: MonitorSmartphone,
+  iconBackgroundColor: '#64748b',
 };
 
 export function ActiveSessionsClient() {
@@ -49,13 +54,17 @@ export function ActiveSessionsClient() {
       setState((prev) =>
         prev.status === 'loaded' ? { status: 'loaded', sessions: prev.sessions.filter((session) => session.id !== pendingRevoke.id) } : prev
       );
-      toast.success(t('activeSessions.revoked', { name: t(`activeSessions.sources.${pendingRevoke.source}`) }), { autoClose: true });
+      toast.success(t('activeSessions.revoked', { name: sourceName(pendingRevoke.source) }), { autoClose: true });
     } catch (err) {
       reportError(err, 'active-sessions');
     } finally {
       setRevokingId(null);
       setPendingRevoke(null);
     }
+  }
+
+  function sourceName(source: SessionSource | null): string {
+    return source ? t(`activeSessions.sources.${source}`) : t('activeSessions.sources.unknown');
   }
 
   function description(session: ActiveSession): string {
@@ -79,11 +88,11 @@ export function ActiveSessionsClient() {
       ) : state.status === 'loaded' ? (
         <SettingsItemGroup>
           {state.sessions.map((session) => {
-            const sourceIcon = SOURCE_ICONS[session.source];
+            const sourceIcon = session.source ? SOURCE_ICONS[session.source] : UNKNOWN_SOURCE_ICON;
             return (
               <SettingsItemContainer
                 key={session.id}
-                title={t(`activeSessions.sources.${session.source}`)}
+                title={sourceName(session.source)}
                 description={description(session)}
                 icon={sourceIcon.icon}
                 iconBackgroundColor={sourceIcon.iconBackgroundColor}
@@ -112,7 +121,7 @@ export function ActiveSessionsClient() {
         }}
         title={t('activeSessions.revokeConfirm.title')}
         description={t('activeSessions.revokeConfirm.description', {
-          name: pendingRevoke ? t(`activeSessions.sources.${pendingRevoke.source}`) : '',
+          name: pendingRevoke ? sourceName(pendingRevoke.source) : '',
         })}
         confirmLabel={t('activeSessions.revokeConfirm.confirm')}
         cancelLabel={t('activeSessions.revokeConfirm.cancel')}

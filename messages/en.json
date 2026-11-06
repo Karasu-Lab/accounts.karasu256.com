@@ -274,7 +274,8 @@
       "desktop": "Desktop",
       "mobile": "Mobile",
       "app": "App",
-      "api-key": "API key"
+      "api-key": "API key",
+      "unknown": "Unknown"
     },
     "revoke": "Revoke session",
     "revoked": "Revoked the {name} session.",

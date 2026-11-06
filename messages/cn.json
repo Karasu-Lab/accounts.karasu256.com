@@ -274,7 +274,8 @@
       "desktop": "桌面设备",
       "mobile": "移动设备",
       "app": "应用",
-      "api-key": "API 密钥"
+      "api-key": "API 密钥",
+      "unknown": "未知"
     },
     "revoke": "撤销会话",
     "revoked": "已撤销{name}会话。",

@@ -274,7 +274,8 @@
       "desktop": "デスクトップ",
       "mobile": "モバイル",
       "app": "アプリ",
-      "api-key": "APIキー"
+      "api-key": "APIキー",
+      "unknown": "不明"
     },
     "revoke": "セッションを破棄",
     "revoked": "{name}のセッションを破棄しました",
