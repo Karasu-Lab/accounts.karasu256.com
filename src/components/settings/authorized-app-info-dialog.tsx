@@ -49,17 +49,17 @@ export function AuthorizedAppInfoDialog({ open, onOpenChange, app, detail, iconS
             )}
           </div>
 
-          <dl className="space-y-1.5 text-sm">
-            <div className="flex items-center justify-between gap-4">
-              <dt className="shrink-0 text-muted-foreground">{t('authorizedApps.clientId')}</dt>
-              <dd className="min-w-0 flex-1">
-                <FittingText text={app.clientId} autoFit className="text-right font-mono text-xs leading-5" />
+          <dl className="space-y-3 text-sm">
+            <div>
+              <dt className="text-muted-foreground">{t('authorizedApps.clientId')}</dt>
+              <dd className="min-w-0">
+                <FittingText text={app.clientId} autoFit className="font-mono text-xs leading-5" />
               </dd>
             </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="shrink-0 text-muted-foreground">{t('authorizedApps.authorizedAt')}</dt>
-              <dd className="min-w-0 flex-1">
-                <FittingText text={new Date(app.createdAt).toLocaleString()} autoFit className="text-right" />
+            <div>
+              <dt className="text-muted-foreground">{t('authorizedApps.authorizedAt')}</dt>
+              <dd className="min-w-0">
+                <FittingText text={new Date(app.createdAt).toLocaleString()} autoFit />
               </dd>
             </div>
           </dl>
