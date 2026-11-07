@@ -5,8 +5,8 @@
  *
  * Loading is managed through the common loading interface: providers
  * and screens report their loading under their own keys, and the
- * shell presents the aggregate as a spinner at the center of the
- * screen. The content itself always renders — loading never swaps it
+ * shell presents the aggregate as a spinner next to the header title.
+ * The content itself always renders — loading never swaps it
  * for a skeleton.
  *
  * The contract pinned down here, for the session provider's reporting:
