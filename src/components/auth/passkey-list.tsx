@@ -6,6 +6,7 @@ import { toast, ConfirmDialog, DeleteIconButton, AnimatedList, AnimatedListItem 
 import { useAuthClient } from '@/lib/auth/client';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 import { useReportError } from '@/components/settings/error-context';
+import { useReportLoading } from '@/components/settings/loading-context';
 
 interface CredentialSummary {
   id: string;
@@ -24,6 +25,7 @@ export function PasskeyList({ version, createAction }: PasskeyListProps) {
   const reportError = useReportError();
   const [credentials, setCredentials] = useState<CredentialSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  useReportLoading('security-passkeys', loading);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
   const [pendingDelete, setPendingDelete] = useState<CredentialSummary | null>(null);
@@ -73,7 +75,7 @@ export function PasskeyList({ version, createAction }: PasskeyListProps) {
   }
 
   if (loading) {
-    return <EditableSettingsItem label={t('passkey.title')} value="" disabled />;
+    return <EditableSettingsItem label={t('passkey.title')} value="" />;
   }
 
   return (

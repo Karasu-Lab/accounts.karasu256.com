@@ -7,8 +7,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('settings.developer.title') };
 }
 
-/** Developer settings page — manages OAuth clients and API keys. */
-export default async function DeveloperPage() {
+export default function DeveloperPage() {
   return (
     <div className="space-y-6">
       <DeveloperSection />

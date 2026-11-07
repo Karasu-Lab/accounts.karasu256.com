@@ -1,8 +1,9 @@
 'use client';
 
-import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { ApiKeyPermission } from '@/lib/api/developer';
-import type { PermissionCatalog } from '@/lib/actions/developer';
+import { loadPermissionCatalog, type PermissionCatalog } from '@/lib/actions/developer';
+import { useReportLoading } from './loading-context';
 
 export interface DeveloperPermissions {
   scopes: string[];
@@ -11,9 +12,30 @@ export interface DeveloperPermissions {
   grantable: ApiKeyPermission[];
 }
 
+const EMPTY_CATALOG: PermissionCatalog = { scopes: [], baseScopes: [], scopeUniverse: [], grantable: [] };
+
 const DeveloperPermissionsContext = createContext<DeveloperPermissions | null>(null);
 
-export function DeveloperPermissionsProvider({ catalog, children }: { catalog: PermissionCatalog; children: ReactNode }) {
+export function DeveloperPermissionsProvider({ children }: { children: ReactNode }) {
+  const [catalog, setCatalog] = useState<PermissionCatalog>(EMPTY_CATALOG);
+  const [loading, setLoading] = useState(true);
+  useReportLoading('developer-permissions', loading);
+
+  useEffect(() => {
+    let cancelled = false;
+    loadPermissionCatalog()
+      .then((loaded) => {
+        if (!cancelled) setCatalog(loaded);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const value = useMemo<DeveloperPermissions>(
     () => ({ scopes: catalog.scopes, baseScopes: catalog.baseScopes, scopeUniverse: catalog.scopeUniverse, grantable: catalog.grantable }),
     [catalog]
