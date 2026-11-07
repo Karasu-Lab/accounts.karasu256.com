@@ -22,7 +22,7 @@ export type { ApiKeyCreated, ApiKeyDetail, ApiKeySummary, OAuthClientCreated, OA
 export type ApiKeyPermission = PermissionSummary;
 export { DEVICE_CODE_GRANT_TYPE, decodePermissionBitmask, groupScopesBySection, oauthClientIsPublic, oauthClientType };
 
-export async function createOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, input: {
+export async function createOAuthClient({ authClient }: AuthClientHandle, input: {
   client_name: string;
   redirect_uris: string[];
   logo_uri?: string;
@@ -30,7 +30,6 @@ export async function createOAuthClient({ authClient, bridgeFirebaseSession }: A
   type: OAuthClientType;
   publicClient?: boolean;
 }): Promise<OAuthClientCreated> {
-  await bridgeFirebaseSession();
   const { type, redirect_uris, publicClient, ...rest } = input;
   const payload =
     type === 'device'
@@ -42,7 +41,7 @@ export async function createOAuthClient({ authClient, bridgeFirebaseSession }: A
 }
 
 export async function updateOAuthClient(
-  { authClient, bridgeFirebaseSession }: AuthClientHandle,
+  { authClient }: AuthClientHandle,
   clientId: string,
   update: Partial<{
     client_name: string;
@@ -52,20 +51,17 @@ export async function updateOAuthClient(
     token_endpoint_auth_method: string;
   }>
 ): Promise<OAuthClientSummary> {
-  await bridgeFirebaseSession();
   const { data, error } = await authClient.oauth2.updateClient({ client_id: clientId, update });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as OAuthClientSummary;
 }
 
-export async function deleteOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, clientId: string): Promise<void> {
-  await bridgeFirebaseSession();
+export async function deleteOAuthClient({ authClient }: AuthClientHandle, clientId: string): Promise<void> {
   const { error } = await authClient.oauth2.deleteClient({ client_id: clientId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
 }
 
-export async function rotateOAuthClientSecret({ authClient, bridgeFirebaseSession }: AuthClientHandle, clientId: string): Promise<{ client_secret: string }> {
-  await bridgeFirebaseSession();
+export async function rotateOAuthClientSecret({ authClient }: AuthClientHandle, clientId: string): Promise<{ client_secret: string }> {
   const { data, error } = await authClient.oauth2.client.rotateSecret({ client_id: clientId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
   return data as { client_secret: string };

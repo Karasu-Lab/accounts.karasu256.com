@@ -18,7 +18,6 @@
         "AUTH_API_URL": "https://dev-api-auth.karasu256.com",
         "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
         "FEATURE_FLAGS_ORIGIN": "https://dev.accounts.karasu256.com",
-        "FIREBASE_APP_ID": "karasu-lab-application",
         "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
         "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
         "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"
@@ -42,7 +41,6 @@
       "AUTH_API_URL": "https://dev-api-auth.karasu256.com",
       "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
       "FEATURE_FLAGS_ORIGIN": "https://dev.accounts.karasu256.com",
-      "FIREBASE_APP_ID": "karasu-lab-application",
       "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
       "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
       "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"
@@ -56,7 +54,6 @@
     "AUTH_API_URL": "https://api-auth.karasu256.com",
     "FEATURE_FLAGS_API_URL": "https://flags.karasu256.com",
     "FEATURE_FLAGS_ORIGIN": "https://accounts.karasu256.com",
-    "FIREBASE_APP_ID": "karasu-lab-application",
     "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
     "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
     "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"

@@ -51,6 +51,7 @@ vi.mock('next/link', () => ({
 
 vi.mock('@/lib/api/authorized-apps', () => ({
   listAuthorizedApps: () => api.list(),
+  getAuthorizedApp: async (_auth: unknown, id: string) => apps.find((app) => app.id === id),
   revokeAuthorizedApp: async (_auth: unknown, id: string) => {
     api.revokeCalls.push(id);
   },
