@@ -4,32 +4,22 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { faGoogle, faGithub, faMicrosoft, faXbox } from '@fortawesome/free-brands-svg-icons';
 import { faCube } from '@fortawesome/free-solid-svg-icons';
+import { toast } from '@karasu-lab/ui';
 import { useAppFlags } from '@/components/flags-client-provider';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
 import { useRuntimeClientConfig } from '@/lib/client-config';
-import { useReportError } from '@/components/settings/error-context';
-import { useReportLoading } from '@/components/settings/loading-context';
-
-function ProviderSectionLoading() {
-  useReportLoading('linking', true);
-  return null;
-}
 
 const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/provider-section').then((m) => m.ProviderSection), {
   ssr: false,
-  loading: () => <ProviderSectionLoading />,
 });
 
 export function ProviderSectionClient() {
-  const reportError = useReportError();
   const config = useRuntimeClientConfig();
   const flags = useAppFlags();
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
-  const [loaded, setLoaded] = useState(false);
-  useReportLoading('linking', !loaded);
   const providers = useMemo<Provider[]>(() => {
     const available: Provider[] = [];
     if (config.googleClientId) available.push({ id: 'google', label: 'Google', icon: faGoogle });
@@ -55,14 +45,11 @@ export function ProviderSectionClient() {
     let cancelled = false;
     loadLinkedProviderProfiles()
       .then((profiles) => {
-        if (cancelled) return;
-        setProfiles(profiles);
-        setLoaded(true);
+        if (!cancelled) setProfiles(profiles);
       })
       .catch((err) => {
         if (cancelled) return;
-        reportError(err, 'linking');
-        setLoaded(true);
+        toast.error(err instanceof Error ? err.message : String(err));
       });
     return () => {
       cancelled = true;
