@@ -5,20 +5,22 @@ import {
   oauthClientType,
   type PermissionSection,
 } from '@karasu-lab/types/client';
-import type {
-  ApiKeyCreated,
-  ApiKeySummary,
-  OAuthClientCreated,
-  OAuthClientSummary,
-  OAuthClientType,
-  PermissionSummary,
+import {
+  decodePermissionBitmask,
+  type ApiKeyCreated,
+  type ApiKeyDetail,
+  type ApiKeySummary,
+  type OAuthClientCreated,
+  type OAuthClientSummary,
+  type OAuthClientType,
+  type PermissionSummary,
 } from '@karasu-lab/types/shared';
 import { ApiError } from '@karasu-lab/utils/client';
 import type { AuthClientHandle } from '@/lib/auth/client';
 
-export type { ApiKeyCreated, ApiKeySummary, OAuthClientCreated, OAuthClientSummary, OAuthClientType, PermissionSection };
+export type { ApiKeyCreated, ApiKeyDetail, ApiKeySummary, OAuthClientCreated, OAuthClientSummary, OAuthClientType, PermissionSection };
 export type ApiKeyPermission = PermissionSummary;
-export { DEVICE_CODE_GRANT_TYPE, groupScopesBySection, oauthClientIsPublic, oauthClientType };
+export { DEVICE_CODE_GRANT_TYPE, decodePermissionBitmask, groupScopesBySection, oauthClientIsPublic, oauthClientType };
 
 export async function createOAuthClient({ authClient, bridgeFirebaseSession }: AuthClientHandle, input: {
   client_name: string;

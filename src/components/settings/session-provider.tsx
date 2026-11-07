@@ -41,13 +41,21 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   }, [isPending]);
   useReportLoading('session', isPending && (sessionLoadedOnce || !initialUser));
 
+  const accountsLoadedRef = useRef(false);
+
   const refreshAccounts = useCallback(async (activeUid: string | undefined) => {
     try {
       const result = await listAccounts();
+      accountsLoadedRef.current = true;
       setAccounts(result.accounts.filter((a) => a.uid !== activeUid));
     } catch {
     }
   }, []);
+
+  const ensureAccounts = useCallback(() => {
+    if (accountsLoadedRef.current) return;
+    void refreshAccounts(session?.user.id);
+  }, [refreshAccounts, session?.user.id]);
 
   const sessionRetriedRef = useRef(false);
 
@@ -64,10 +72,6 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       }
       return;
     }
-    const activeUid = session.user.id;
-    listAccounts()
-      .then((result) => setAccounts(result.accounts.filter((a) => a.uid !== activeUid)))
-      .catch(() => {});
   }, [isPending, session, router, initialUser, refetch]);
 
   useEffect(() => {
@@ -170,12 +174,13 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     () => ({
       appUrl,
       accounts,
+      onAccountsMenuOpen: ensureAccounts,
       onSignOut: handleSignOut,
       onSwitchAccount: handleSwitchAccount,
       onAddAccount: () => setAddDialogOpen(true),
       onRemoveAccount: handleRemoveAccount,
     }),
-    [appUrl, accounts, session?.user.id]
+    [appUrl, accounts, ensureAccounts, session?.user.id]
   );
 
   return (

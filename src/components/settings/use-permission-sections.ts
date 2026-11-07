@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { loadOAuthClients } from '@/lib/actions/developer';
+import { useMemo } from 'react';
 import { groupScopesBySection, type PermissionSection } from '@/lib/api/developer';
+import { useDeveloperPermissions } from './developer-permissions-context';
 
 export interface PermissionScopes {
   sections: PermissionSection[];
   baseScopes: string[];
-  loaded: boolean;
 }
 
 export interface PermissionOperationGroup {
@@ -24,32 +23,8 @@ export function groupSectionsByOperation(sections: PermissionSection[]): Permiss
   return [...groups.entries()].map(([operation, grouped]) => ({ operation, sections: grouped }));
 }
 
-export function usePermissionSections(open: boolean): PermissionScopes {
-  const [sections, setSections] = useState<PermissionSection[]>([]);
-  const [baseScopes, setBaseScopes] = useState<string[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    let active = true;
-    setLoaded(false);
-    loadOAuthClients()
-      .then(({ scopes, baseScopes: loadedBaseScopes }) => {
-        if (!active) return;
-        setSections(groupScopesBySection(scopes));
-        setBaseScopes(loadedBaseScopes);
-        setLoaded(true);
-      })
-      .catch(() => {
-        if (!active) return;
-        setSections([]);
-        setBaseScopes([]);
-        setLoaded(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [open]);
-
-  return { sections, baseScopes, loaded };
+export function usePermissionSections(): PermissionScopes {
+  const { scopes, baseScopes } = useDeveloperPermissions();
+  const sections = useMemo(() => groupScopesBySection(scopes), [scopes]);
+  return { sections, baseScopes };
 }

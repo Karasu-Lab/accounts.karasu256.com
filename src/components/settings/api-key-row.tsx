@@ -1,13 +1,14 @@
 'use client';
 
-import { KeyRound } from 'lucide-react';
+import { KeyRound, Pencil } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { DeleteIconButton } from '@karasu-lab/ui';
+import { Button, DeleteIconButton } from '@karasu-lab/ui';
 import type { ApiKeySummary } from '@/lib/api/developer';
 import { SettingsItemContainer } from './settings-item-container';
 
 interface ApiKeyRowProps {
   apiKey: ApiKeySummary;
+  onEdit: (_key: ApiKeySummary) => void;
   onDelete: (_id: string) => void;
   hasItemAbove?: boolean;
   hasItemBelow?: boolean;
@@ -15,12 +16,11 @@ interface ApiKeyRowProps {
 
 const DEVELOPER_ICON_BACKGROUND_COLOR = '#475569';
 
-export function ApiKeyRow({ apiKey, onDelete, hasItemAbove, hasItemBelow }: ApiKeyRowProps) {
+export function ApiKeyRow({ apiKey, onEdit, onDelete, hasItemAbove, hasItemBelow }: ApiKeyRowProps) {
   const t = useTranslations();
 
   const description = [
     `${apiKey.start}…`,
-    ...apiKey.permissions.map((permission) => `${permission.resource}:${permission.action}`),
     `${t('settings.developer.created')}: ${new Date(apiKey.createdAt).toLocaleDateString()}`,
     `${t('settings.developer.lastUsed')}: ${apiKey.lastRequest ? new Date(apiKey.lastRequest).toLocaleDateString() : t('settings.developer.neverUsed')}`,
   ].join(' · ');
@@ -33,7 +33,14 @@ export function ApiKeyRow({ apiKey, onDelete, hasItemAbove, hasItemBelow }: ApiK
       iconBackgroundColor={DEVELOPER_ICON_BACKGROUND_COLOR}
       hasItemAbove={hasItemAbove}
       hasItemBelow={hasItemBelow}
-      trailing={<DeleteIconButton size="icon" aria-label={t('settings.developer.delete')} onClick={() => onDelete(apiKey.id)} />}
+      trailing={
+        <div className="flex items-center gap-1">
+          <Button size="icon" variant="ghost" aria-label={t('settings.developer.edit')} onClick={() => onEdit(apiKey)}>
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <DeleteIconButton size="icon" aria-label={t('settings.developer.delete')} onClick={() => onDelete(apiKey.id)} />
+        </div>
+      }
     />
   );
 }
