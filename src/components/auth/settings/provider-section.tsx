@@ -10,7 +10,6 @@ import { unlinkProvider } from '@karasu-lab/utils/client';
 import { useAuthClient } from '@/lib/auth/client';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
-import { useReportError } from '@/components/settings/error-context';
 import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
 
 export interface Provider {
@@ -39,7 +38,6 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
 export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();
-  const reportError = useReportError();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -117,7 +115,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
         setLoading(null);
       }
     } catch (err) {
-      reportError(err);
+      toast.error(err instanceof Error ? err.message : String(err));
       setLoading(null);
     }
   }
@@ -140,7 +138,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
         return next;
       });
     } catch (err) {
-      reportError(err);
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(null);
     }
