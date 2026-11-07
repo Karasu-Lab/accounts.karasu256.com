@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AppWindow, ChevronRight, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
-import { getAuthorizedApp, listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp, type AuthorizedAppSummary } from '@/lib/api/authorized-apps';
+import { authorizedAppIconUrl, getAuthorizedApp, listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp, type AuthorizedAppSummary } from '@/lib/api/authorized-apps';
 import { useAuthClient } from '@/lib/auth/client';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { AuthorizedAppInfoDialog } from '@/components/settings/authorized-app-info-dialog';
@@ -21,7 +21,8 @@ export function AuthorizedAppsClient() {
   const reportError = useReportError();
   const [state, setState] = useState<ListState>({ status: 'loading' });
   useReportLoading('authorized-apps', state.status === 'loading');
-  const [infoApp, setInfoApp] = useState<AuthorizedApp | null>(null);
+  const [infoApp, setInfoApp] = useState<AuthorizedAppSummary | null>(null);
+  const [infoDetail, setInfoDetail] = useState<AuthorizedApp | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [pendingRevoke, setPendingRevoke] = useState<AuthorizedAppSummary | null>(null);
 
@@ -37,6 +38,17 @@ export function AuthorizedAppsClient() {
   useEffect(() => {
     void reload();
   }, [reload]);
+
+  function openInfo(app: AuthorizedAppSummary) {
+    setInfoApp(app);
+    setInfoDetail(null);
+    getAuthorizedApp(auth, app.id)
+      .then(setInfoDetail)
+      .catch((err) => {
+        setInfoApp(null);
+        reportError(err, 'authorized-apps');
+      });
+  }
 
   async function confirmRevoke() {
     if (!pendingRevoke) return;
@@ -72,12 +84,9 @@ export function AuthorizedAppsClient() {
               description={new Date(app.createdAt).toLocaleString()}
               autoFitText
               icon={AppWindow}
+              iconImageSrc={authorizedAppIconUrl(auth.config.cdnUrl, app.clientId)}
               iconBackgroundColor={APP_ICON_BACKGROUND_COLOR}
-              onClick={() => {
-                getAuthorizedApp(auth, app.id)
-                  .then(setInfoApp)
-                  .catch((err) => reportError(err, 'authorized-apps'));
-              }}
+              onClick={() => openInfo(app)}
               trailing={
                 <span className="flex items-center gap-1">
                   <SettingsItemIconButton
@@ -99,9 +108,14 @@ export function AuthorizedAppsClient() {
         <AuthorizedAppInfoDialog
           open={infoApp !== null}
           onOpenChange={(open) => {
-            if (!open) setInfoApp(null);
+            if (!open) {
+              setInfoApp(null);
+              setInfoDetail(null);
+            }
           }}
           app={infoApp}
+          detail={infoDetail}
+          iconSrc={authorizedAppIconUrl(auth.config.cdnUrl, infoApp.clientId)}
         />
       )}
 
