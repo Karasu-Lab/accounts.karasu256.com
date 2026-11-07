@@ -135,7 +135,8 @@ describe('authorized apps screen', () => {
     expect(items()).toHaveLength(2);
     expect(container.textContent).toContain('One App');
     expect(container.textContent).toContain('client-two');
-    expect(container.textContent).toContain('authorizedApps.authorizedAt');
+    expect(container.textContent).not.toContain('authorizedApps.authorizedAt');
+    expect(container.textContent).toContain(new Date('2026-01-02T00:00:00.000Z').toLocaleString());
     /* The second item is joined to the first: it drops its top rounding. */
     expect(items()[1].className).toContain('rounded-t-none');
   });

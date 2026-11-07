@@ -69,7 +69,8 @@ export function AuthorizedAppsClient() {
             <SettingsItemContainer
               key={app.id}
               title={app.clientName ?? app.clientId}
-              description={`${t('authorizedApps.authorizedAt')}: ${new Date(app.createdAt).toLocaleString()}`}
+              description={new Date(app.createdAt).toLocaleString()}
+              autoFitText
               icon={AppWindow}
               iconImageSrc={app.logoUri}
               iconBackgroundColor={APP_ICON_BACKGROUND_COLOR}
