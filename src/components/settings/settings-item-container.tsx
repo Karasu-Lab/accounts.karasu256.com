@@ -132,10 +132,15 @@ export function SettingsItemContainer({
   const isInteractive = (href !== undefined || onClick !== undefined || collapsible) && !disabled;
   const pathname = usePathname();
   const [activating, setActivating] = React.useState(false);
+  const [iconImageFailed, setIconImageFailed] = React.useState(false);
 
   React.useEffect(() => {
     setActivating(false);
   }, [pathname]);
+
+  React.useEffect(() => {
+    setIconImageFailed(false);
+  }, [iconImageSrc]);
 
   function handleLinkClick(e: React.MouseEvent) {
     if (activating) {
@@ -206,8 +211,8 @@ export function SettingsItemContainer({
               className="flex size-8 items-center justify-center overflow-hidden rounded-md"
               style={{ backgroundColor: iconBackgroundColor }}
             >
-              {iconImageSrc ? (
-                <img src={iconImageSrc} alt="" className="size-full object-cover" />
+              {iconImageSrc && !iconImageFailed ? (
+                <img src={iconImageSrc} alt="" className="size-full object-cover" onError={() => setIconImageFailed(true)} />
               ) : iconNode !== undefined ? (
                 <span className="flex items-center justify-center text-white">{iconNode}</span>
               ) : Icon !== null ? (

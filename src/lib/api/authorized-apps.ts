@@ -4,6 +4,10 @@ import type { AuthClientHandle } from '@/lib/auth/client';
 
 export type { AuthorizedApp, AuthorizedAppSummary };
 
+export function authorizedAppIconUrl(cdnUrl: string, clientId: string): string {
+  return `${cdnUrl.replace(/\/+$/, '')}/i/oauth/${encodeURIComponent(clientId)}/avatar.png`;
+}
+
 export async function listAuthorizedApps({ config }: AuthClientHandle): Promise<AuthorizedAppSummary[]> {
   const response = await fetch(`${config.authApiUrl.replace(/\/+$/, '')}/api/users/me/authorized-apps`, {
     credentials: 'include',

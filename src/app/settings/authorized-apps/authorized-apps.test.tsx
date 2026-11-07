@@ -50,6 +50,7 @@ vi.mock('next/link', () => ({
 }));
 
 vi.mock('@/lib/api/authorized-apps', () => ({
+  authorizedAppIconUrl: (cdnUrl: string, clientId: string) => `${cdnUrl}/i/oauth/${clientId}/avatar.png`,
   listAuthorizedApps: () => api.list(),
   getAuthorizedApp: async (_auth: unknown, id: string) => apps.find((app) => app.id === id),
   revokeAuthorizedApp: async (_auth: unknown, id: string) => {
@@ -61,7 +62,7 @@ vi.mock('@/lib/auth/client', () => ({
   useAuthClient: () => ({
     authClient: {},
     bridgeFirebaseSession: async () => {},
-    config: { authApiUrl: 'https://api-auth.karasu256.com', authUrl: 'https://auth.karasu256.com' },
+    config: { authApiUrl: 'https://api-auth.karasu256.com', authUrl: 'https://auth.karasu256.com', cdnUrl: 'https://cdn.karasu256.com' },
   }),
 }));
 
