@@ -44,6 +44,10 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>(initialProfiles);
+
+  useEffect(() => {
+    setProfiles(initialProfiles);
+  }, [initialProfiles]);
   const [loading, setLoading] = useState<string | null>(null);
   const [unlinkTarget, setUnlinkTarget] = useState<Provider | null>(null);
   const [hasPasskeys, setHasPasskeys] = useState(false);

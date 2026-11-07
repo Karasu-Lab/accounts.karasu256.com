@@ -8,6 +8,9 @@ const clientConfigEnvSchema = z.object({
   CDN_URL: z.url(),
   FEATURE_FLAGS_API_URL: z.url(),
   FEATURE_FLAGS_ORIGIN: z.url(),
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GITHUB_CLIENT_ID: z.string().min(1).optional(),
+  MICROSOFT_CLIENT_ID: z.string().min(1).optional(),
 });
 
 export interface ClientConfig {
@@ -17,6 +20,9 @@ export interface ClientConfig {
   cdnUrl: string;
   featureFlagsApiUrl: string;
   featureFlagsOrigin: string;
+  googleClientId?: string;
+  githubClientId?: string;
+  microsoftClientId?: string;
 }
 
 export function getClientConfig(): ClientConfig {
@@ -28,6 +34,9 @@ export function getClientConfig(): ClientConfig {
     cdnUrl: env.CDN_URL,
     featureFlagsApiUrl: env.FEATURE_FLAGS_API_URL,
     featureFlagsOrigin: env.FEATURE_FLAGS_ORIGIN,
+    googleClientId: env.GOOGLE_CLIENT_ID,
+    githubClientId: env.GITHUB_CLIENT_ID,
+    microsoftClientId: env.MICROSOFT_CLIENT_ID,
   };
 }
 
