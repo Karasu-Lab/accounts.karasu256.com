@@ -5,15 +5,22 @@ import { useEffect, useState } from 'react';
 import { KeyRound, Type } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Input } from '@karasu-lab/ui';
-import { createApiKey } from '@/lib/actions/developer';
-import type { ApiKeyCreated, ApiKeyPermission } from '@/lib/api/developer';
+import { createApiKey, updateApiKeyPermissions } from '@/lib/actions/developer';
+import { decodePermissionBitmask, type ApiKeyCreated, type ApiKeyPermission, type ApiKeySummary } from '@/lib/api/developer';
 import type { SettingsDialogSpec } from './settings-dialog';
 import { useDeveloperPermissions } from './developer-permissions-context';
+
+export interface ApiKeyEditTarget {
+  summary: ApiKeySummary;
+  permissionsBitmask: string;
+}
 
 interface UseCreateApiKeyDialogArgs {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: (key: ApiKeyCreated) => void;
+  apiKey?: ApiKeyEditTarget | null;
+  onUpdated?: () => void;
 }
 
 interface PermissionResourceGroup {
@@ -40,7 +47,7 @@ function groupByOperation(permissions: ApiKeyPermission[]): PermissionOperationG
   }));
 }
 
-export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCreateApiKeyDialogArgs): {
+export function useCreateApiKeyDialog({ open, onOpenChange, onCreated, apiKey, onUpdated }: UseCreateApiKeyDialogArgs): {
   spec: SettingsDialogSpec;
   done?: React.ReactNode;
 } {
@@ -60,6 +67,12 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
     setCopied(false);
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !apiKey) return;
+    setName(apiKey.summary.name ?? '');
+    setSelected(new Set(decodePermissionBitmask(grantable.map((permission) => permission.publicId), apiKey.permissionsBitmask)));
+  }, [open, apiKey, grantable]);
+
   function togglePermission(publicId: string) {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -70,12 +83,18 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
   }
 
   async function handlePrimary() {
-    if (!name.trim()) return;
+    if (!apiKey && !name.trim()) return;
     setLoading(true);
     try {
-      const result = await createApiKey(name.trim(), [...selected]);
-      setCreatedKey(result);
-      onCreated(result);
+      if (apiKey) {
+        await updateApiKeyPermissions(apiKey.summary.id, [...selected]);
+        onUpdated?.();
+        onOpenChange(false);
+      } else {
+        const result = await createApiKey(name.trim(), [...selected]);
+        setCreatedKey(result);
+        onCreated(result);
+      }
     } finally {
       setLoading(false);
     }
@@ -88,26 +107,30 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
   }
 
   const spec: SettingsDialogSpec = {
-    title: t('settings.developer.createKey'),
+    title: apiKey ? (apiKey.summary.name ?? t('settings.developer.createKey')) : t('settings.developer.createKey'),
     running: loading,
-    primaryLabel: t('settings.developer.dialog.create'),
-    primaryDisabled: !name.trim(),
+    primaryLabel: apiKey ? t('settings.developer.dialog.save') : t('settings.developer.dialog.create'),
+    primaryDisabled: apiKey ? false : !name.trim(),
     onPrimary: handlePrimary,
     cancelLabel: t('settings.developer.dialog.cancel'),
     editorSaveLabel: t('settings.developer.dialog.save'),
     editorCancelLabel: t('settings.developer.dialog.cancel'),
     sections: [
-      {
-        fields: [
-          {
-            key: 'name',
-            title: t('settings.developer.dialog.keyName'),
-            description: name || undefined,
-            icon: Type,
-            edit: { value: name, onSave: setName },
-          },
-        ],
-      },
+      ...(apiKey
+        ? []
+        : [
+            {
+              fields: [
+                {
+                  key: 'name',
+                  title: t('settings.developer.dialog.keyName'),
+                  description: name || undefined,
+                  icon: Type,
+                  edit: { value: name, onSave: setName },
+                },
+              ],
+            },
+          ]),
       {
         title: t('settings.developer.dialog.permissions'),
         fields: groupByOperation(grantable).map((group) => ({

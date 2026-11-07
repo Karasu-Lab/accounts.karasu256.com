@@ -4,14 +4,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog } from '@karasu-lab/ui';
-import { deleteApiKey, loadApiKeys, loadOAuthClientInfo, loadOAuthClients } from '@/lib/actions/developer';
+import { deleteApiKey, loadApiKeyDetail, loadApiKeys, loadOAuthClientInfo, loadOAuthClients } from '@/lib/actions/developer';
 import {
+  decodePermissionBitmask,
   deleteOAuthClient,
   type ApiKeyCreated,
   type ApiKeySummary,
   type OAuthClientCreated,
   type OAuthClientSummary,
 } from '@/lib/api/developer';
+import { useDeveloperPermissions } from './developer-permissions-context';
+import type { ApiKeyEditTarget } from './use-create-api-key-dialog';
 import { useAuthClient } from '@/lib/auth/client';
 import { uploadOAuthClientIcon } from '@/lib/avatar/oauth-client-icon-upload';
 import { ApiKeyRow } from './api-key-row';
@@ -30,6 +33,7 @@ type ListState<T> = { status: 'loading' } | { status: 'error' } | { status: 'loa
 export function DeveloperSection() {
   const auth = useAuthClient();
   const t = useTranslations();
+  const { scopeUniverse } = useDeveloperPermissions();
 
   const [clientsState, setClientsState] = useState<ListState<OAuthClientSummary>>({ status: 'loading' });
   const [keysState, setKeysState] = useState<ListState<ApiKeySummary>>({ status: 'loading' });
@@ -39,6 +43,7 @@ export function DeveloperSection() {
   const [testingClient, setTestingClient] = useState<OAuthClientSummary | null>(null);
   const [rotatingClient, setRotatingClient] = useState<OAuthClientSummary | null>(null);
   const [keyDialogOpen, setKeyDialogOpen] = useState(false);
+  const [editingKey, setEditingKey] = useState<ApiKeyEditTarget | null>(null);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
 
   const reloadClients = useCallback(async () => {
@@ -71,11 +76,25 @@ export function DeveloperSection() {
 
   async function openEditClient(client: OAuthClientSummary) {
     const info = await loadOAuthClientInfo(client.client_id).catch(() => null);
-    setEditingClient(
-      info
-        ? { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description, resource: info.resource, public: info.public }
-        : client
-    );
+    if (!info) {
+      setEditingClient(client);
+      return;
+    }
+    setEditingClient({
+      ...client,
+      client_name: info.name,
+      icon_url: info.icon_url,
+      description: info.description,
+      resource: info.resource,
+      public: info.public,
+      scope: info.scope_bitmask ? decodePermissionBitmask(scopeUniverse, info.scope_bitmask).join(' ') : client.scope,
+    });
+  }
+
+  async function openEditKey(key: ApiKeySummary) {
+    const detail = await loadApiKeyDetail(key.id).catch(() => null);
+    if (!detail) return;
+    setEditingKey({ summary: key, permissionsBitmask: detail.permissions_bitmask });
   }
 
   function updateClients(update: (_prev: OAuthClientSummary[]) => OAuthClientSummary[]) {
@@ -169,7 +188,12 @@ export function DeveloperSection() {
         ) : keysState.status === 'loaded' ? (
           <SettingsItemGroup>
             {keysState.items.map((k) => (
-              <ApiKeyRow key={k.id} apiKey={k} onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })} />
+              <ApiKeyRow
+                key={k.id}
+                apiKey={k}
+                onEdit={(key) => void openEditKey(key)}
+                onDelete={(id) => setPendingDelete({ type: 'key', id, name: k.name ?? '' })}
+              />
             ))}
           </SettingsItemGroup>
         ) : null}
@@ -211,6 +235,17 @@ export function DeveloperSection() {
         />
       )}
       <CreateApiKeyDialog open={keyDialogOpen} onOpenChange={setKeyDialogOpen} onCreated={handleKeyCreated} />
+      {editingKey && (
+        <CreateApiKeyDialog
+          open={editingKey !== null}
+          onOpenChange={(open) => {
+            if (!open) setEditingKey(null);
+          }}
+          onCreated={handleKeyCreated}
+          apiKey={editingKey}
+          onUpdated={() => void reloadKeys()}
+        />
+      )}
       {rotatingClient && (
         <RotateSecretDialog
           open={rotatingClient !== null}

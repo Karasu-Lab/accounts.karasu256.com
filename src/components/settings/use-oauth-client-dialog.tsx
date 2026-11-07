@@ -17,7 +17,7 @@ import {
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 import type { SettingsDialogFieldSpec, SettingsDialogSpec } from './settings-dialog';
-import { groupSectionsByOperation, useDeveloperPermissions } from './developer-permissions-context';
+import { groupSectionsByOperation, usePermissionSections } from './use-permission-sections';
 
 interface UseOAuthClientDialogArgs {
   open: boolean;
@@ -40,7 +40,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 } {
   const auth = useAuthClient();
   const t = useTranslations();
-  const { sections, baseScopes } = useDeveloperPermissions();
+  const { sections, baseScopes } = usePermissionSections();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
