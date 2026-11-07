@@ -30,12 +30,13 @@ interface HeaderAccountMenuProps {
   appUrl: string | undefined;
   onSignOut: () => void | Promise<void>;
   accounts?: AccountSummary[];
+  onAccountsMenuOpen?: () => void;
   onSwitchAccount?: (uid: string) => void | Promise<void>;
   onAddAccount?: () => void;
   onRemoveAccount?: (uid: string) => void | Promise<void>;
 }
 
-export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsProp, onSwitchAccount, onAddAccount, onRemoveAccount }: HeaderAccountMenuProps) {
+export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsProp, onAccountsMenuOpen, onSwitchAccount, onAddAccount, onRemoveAccount }: HeaderAccountMenuProps) {
   const t = useTranslations();
   const [switchingUid, setSwitchingUid] = React.useState<string | null>(null);
   const [removingUid, setRemovingUid] = React.useState<string | null>(null);
@@ -79,7 +80,11 @@ export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsP
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu
+      onOpenChange={(open) => {
+        if (open) onAccountsMenuOpen?.();
+      }}
+    >
       <DropdownMenuTrigger
         aria-label={t('settings.accountMenu')}
         className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"

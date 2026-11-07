@@ -20,7 +20,6 @@ export function ApiKeyRow({ apiKey, onDelete, hasItemAbove, hasItemBelow }: ApiK
 
   const description = [
     `${apiKey.start}…`,
-    ...apiKey.permissions.map((permission) => `${permission.resource}:${permission.action}`),
     `${t('settings.developer.created')}: ${new Date(apiKey.createdAt).toLocaleDateString()}`,
     `${t('settings.developer.lastUsed')}: ${apiKey.lastRequest ? new Date(apiKey.lastRequest).toLocaleDateString() : t('settings.developer.neverUsed')}`,
   ].join(' · ');

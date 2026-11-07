@@ -4,10 +4,10 @@ import { vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 
 export type { ProviderProfile };
 
-export async function getLinkedProviderProfile(providerId: string): Promise<ProviderProfile | null> {
+export async function getLinkedProviderProfiles(): Promise<Record<string, ProviderProfile | null> | null> {
   const cookie = (await headers()).get('cookie');
   const base = (process.env.AUTH_URL ?? '').replace(/\/+$/, '');
-  const res = await fetch(`${base}/api/users/me/providers/${encodeURIComponent(providerId)}/details`, {
+  const res = await fetch(`${base}/api/users/me/providers`, {
     headers: {
       ...(cookie ? { cookie } : {}),
       ...vercelProtectionBypassHeaders(process.env.VERCEL_PROTECTION_BYPASS_SECRET),
@@ -15,5 +15,5 @@ export async function getLinkedProviderProfile(providerId: string): Promise<Prov
     cache: 'no-store',
   }).catch(() => null);
   if (!res?.ok) return null;
-  return (await res.json()) as ProviderProfile;
+  return (await res.json()) as Record<string, ProviderProfile | null>;
 }

@@ -6,6 +6,7 @@ import type { AccountSummary } from '@/lib/api/accounts';
 interface SettingsMenuContextValue {
   appUrl: string;
   accounts: AccountSummary[];
+  onAccountsMenuOpen: () => void;
   onSignOut: () => void | Promise<void>;
   onSwitchAccount: (uid: string) => void | Promise<void>;
   onAddAccount: () => void;

@@ -37,7 +37,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const t = useTranslations();
   const userContext = useSettingsUser();
-  const { appUrl, accounts, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
+  const { appUrl, accounts, onAccountsMenuOpen, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
   const isLoading = useIsLoading();
   const signingOut = useIsLoadingKey('sign-out');
   const errors = useErrors();
@@ -95,6 +95,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
               appUrl={appUrl}
               onSignOut={onSignOut}
               accounts={accounts}
+              onAccountsMenuOpen={onAccountsMenuOpen}
               onSwitchAccount={onSwitchAccount}
               onAddAccount={onAddAccount}
               onRemoveAccount={onRemoveAccount}

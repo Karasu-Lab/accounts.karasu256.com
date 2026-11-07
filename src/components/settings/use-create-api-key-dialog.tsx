@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 import { KeyRound, Type } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Input } from '@karasu-lab/ui';
-import { createApiKey, loadGrantablePermissions } from '@/lib/actions/developer';
+import { createApiKey } from '@/lib/actions/developer';
 import type { ApiKeyCreated, ApiKeyPermission } from '@/lib/api/developer';
 import type { SettingsDialogSpec } from './settings-dialog';
+import { useDeveloperPermissions } from './developer-permissions-context';
 
 interface UseCreateApiKeyDialogArgs {
   open: boolean;
@@ -44,18 +45,15 @@ export function useCreateApiKeyDialog({ open, onOpenChange, onCreated }: UseCrea
   done?: React.ReactNode;
 } {
   const t = useTranslations();
+  const { grantable } = useDeveloperPermissions();
   const [name, setName] = useState('');
-  const [grantable, setGrantable] = useState<ApiKeyPermission[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [createdKey, setCreatedKey] = useState<ApiKeyCreated | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      loadGrantablePermissions().then(setGrantable);
-      return;
-    }
+    if (open) return;
     setName('');
     setSelected(new Set());
     setCreatedKey(null);

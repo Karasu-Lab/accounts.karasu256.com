@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog } from '@karasu-lab/ui';
-import { deleteApiKey, loadApiKeys, loadOAuthClients } from '@/lib/actions/developer';
+import { deleteApiKey, loadApiKeys, loadOAuthClientInfo, loadOAuthClients } from '@/lib/actions/developer';
 import {
   deleteOAuthClient,
   type ApiKeyCreated,
@@ -44,7 +44,7 @@ export function DeveloperSection() {
   const reloadClients = useCallback(async () => {
     setClientsState({ status: 'loading' });
     try {
-      const { clients } = await loadOAuthClients();
+      const clients = await loadOAuthClients();
       setClientsState({ status: 'loaded', items: clients });
     } catch {
       setClientsState({ status: 'error' });
@@ -68,6 +68,15 @@ export function DeveloperSection() {
   useEffect(() => {
     void reloadKeys();
   }, [reloadKeys]);
+
+  async function openEditClient(client: OAuthClientSummary) {
+    const info = await loadOAuthClientInfo(client.client_id).catch(() => null);
+    setEditingClient(
+      info
+        ? { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description, resource: info.resource, public: info.public }
+        : client
+    );
+  }
 
   function updateClients(update: (_prev: OAuthClientSummary[]) => OAuthClientSummary[]) {
     setClientsState((prev) => (prev.status === 'loaded' ? { status: 'loaded', items: update(prev.items) } : prev));
@@ -132,7 +141,7 @@ export function DeveloperSection() {
                 client={c}
                 onSelect={setInfoClient}
                 onTest={setTestingClient}
-                onEdit={setEditingClient}
+                onEdit={(client) => void openEditClient(client)}
                 onDelete={(clientId) => setPendingDelete({ type: 'client', id: clientId, name: c.client_name ?? c.client_id })}
                 onRotateSecret={setRotatingClient}
               />

@@ -7,40 +7,50 @@ import { listOauthScopes } from '@/lib/api/api-client';
 import { AuthApiError } from '@/lib/api/auth-api-error';
 import type { ApiKeyCreated, ApiKeyPermission, ApiKeySummary, OAuthClientSummary } from '@/lib/api/developer';
 
-export interface OAuthClientsData {
-  clients: OAuthClientSummary[];
-  scopes: string[];
-  baseScopes: string[];
-}
-
-export async function loadOAuthClients(): Promise<OAuthClientsData> {
+export async function loadOAuthClients(): Promise<OAuthClientSummary[]> {
   const cookieHeader = (await cookies()).toString();
   const authApiBase = (process.env.AUTH_API_URL ?? '').replace(/\/$/, '');
 
-  const [clientsRes, infoRes, scopes, discoveryRes] = await Promise.all([
-    fetch(`${authApiBase}/api/auth/oauth2/get-clients`, {
-      headers: { cookie: cookieHeader },
-      cache: 'no-store',
-    }),
-    fetch(`${authApiBase}/api/oauth-client-info`, {
-      headers: { cookie: cookieHeader },
-      cache: 'no-store',
-    }).catch(() => null),
-    listOauthScopes(),
-    fetch(`${authApiBase}/api/auth/.well-known/openid-configuration`, { cache: 'no-store' }).catch(() => null),
-  ]);
+  const clientsRes = await fetch(`${authApiBase}/api/auth/oauth2/get-clients`, {
+    headers: { cookie: cookieHeader },
+    cache: 'no-store',
+  });
 
   if (!clientsRes.ok) {
     throw new Error(`Failed to load OAuth clients: HTTP ${clientsRes.status}`);
   }
 
-  const clients = (await clientsRes.json()) as OAuthClientSummary[];
+  return (await clientsRes.json()) as OAuthClientSummary[];
+}
 
-  const infoByClientId = new Map<string, OAuthClientInfo>();
-  if (infoRes?.ok) {
-    const rows = (await infoRes.json()) as OAuthClientInfo[];
-    for (const row of rows) infoByClientId.set(row.client_id, row);
-  }
+export async function loadOAuthClientInfo(clientId: string): Promise<OAuthClientInfo | null> {
+  const cookieHeader = (await cookies()).toString();
+  const res = await fetch(`${authApiBase()}/api/oauth-client-info/${encodeURIComponent(clientId)}`, {
+    headers: { cookie: cookieHeader },
+    cache: 'no-store',
+  }).catch(() => null);
+  if (!res?.ok) return null;
+  return (await res.json()) as OAuthClientInfo;
+}
+
+export interface PermissionCatalog {
+  scopes: string[];
+  baseScopes: string[];
+  grantable: ApiKeyPermission[];
+}
+
+export async function loadPermissionCatalog(): Promise<PermissionCatalog> {
+  const cookieHeader = (await cookies()).toString();
+  const authApiBase = (process.env.AUTH_API_URL ?? '').replace(/\/$/, '');
+
+  const [scopes, discoveryRes, grantableRes] = await Promise.all([
+    listOauthScopes().catch(() => [] as string[]),
+    fetch(`${authApiBase}/api/auth/.well-known/openid-configuration`, { cache: 'no-store' }).catch(() => null),
+    fetch(`${authApiBase}/api/permissions`, {
+      headers: { cookie: cookieHeader },
+      cache: 'no-store',
+    }).catch(() => null),
+  ]);
 
   let supportedScopes: string[] = [];
   if (discoveryRes?.ok) {
@@ -48,14 +58,12 @@ export async function loadOAuthClients(): Promise<OAuthClientsData> {
     supportedScopes = discovery.scopes_supported ?? [];
   }
 
+  const grantable = grantableRes?.ok ? ((await grantableRes.json()) as ApiKeyPermission[]) : [];
+
   return {
-    clients: clients.map((client) => {
-      const info = infoByClientId.get(client.client_id);
-      if (!info) return client;
-      return { ...client, client_name: info.name, icon_url: info.icon_url, description: info.description, resource: info.resource, public: info.public };
-    }),
     scopes,
     baseScopes: supportedScopes.filter((scope) => !scopes.includes(scope)),
+    grantable,
   };
 }
 
@@ -125,16 +133,6 @@ export async function loadApiKeys(): Promise<ApiKeySummary[]> {
   });
   if (!res.ok) throw new Error(`api-auth.karasu256.com responded ${res.status} for api-keys`);
   return (await res.json()) as ApiKeySummary[];
-}
-
-export async function loadGrantablePermissions(): Promise<ApiKeyPermission[]> {
-  const cookieHeader = (await cookies()).toString();
-  const res = await fetch(`${authApiBase()}/api/permissions`, {
-    headers: { cookie: cookieHeader },
-    cache: 'no-store',
-  });
-  if (!res.ok) throw new Error(`api-auth.karasu256.com responded ${res.status} for permissions`);
-  return (await res.json()) as ApiKeyPermission[];
 }
 
 export async function createApiKey(name: string, permissionPublicIds: string[]): Promise<ApiKeyCreated> {

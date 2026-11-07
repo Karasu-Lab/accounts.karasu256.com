@@ -34,7 +34,6 @@ vi.mock('@karasu-lab/utils/server', async () => {
 
 import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
 
-const sessionUser = { id: 'user-1', name: 'Test User', email: 'test@example.com', image: null };
 const githubProfile = { name: 'GitHub User', email: 'github@example.com', image: null };
 
 function authServicesStub(url: string): Promise<Response> {
@@ -42,14 +41,10 @@ function authServicesStub(url: string): Promise<Response> {
   const json = (body: unknown, status: number) =>
     Promise.resolve(new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } }));
 
-  if (pathname === '/api/auth/get-session') {
-    return requestCookie.value ? json({ user: sessionUser, session: { id: 'session-1', userId: sessionUser.id } }, 200) : json(null, 200);
-  }
-  if (pathname === '/api/users/me/providers/github/details') {
-    return requestCookie.value ? json(githubProfile, 200) : json({ error: 'Unauthorized' }, 401);
-  }
-  if (pathname === '/api/users/me/providers/google/details') {
-    return requestCookie.value ? json({ error: 'Not Found' }, 404) : json({ error: 'Unauthorized' }, 401);
+  if (pathname === '/api/users/me/providers') {
+    return requestCookie.value
+      ? json({ google: null, github: githubProfile, microsoft: null, xbox: null, minecraft: null }, 200)
+      : json({ error: 'Unauthorized' }, 401);
   }
   return json({ error: 'Not Found' }, 404);
 }
@@ -79,12 +74,11 @@ describe('linking page linked-state judgment', () => {
     });
   });
 
-  it('fetches no profiles without a signed-in user', async () => {
+  it('returns no profiles when the server rejects the session', async () => {
     requestCookie.value = null;
 
     const profiles = await loadLinkedProviderProfiles();
 
     expect(profiles).toEqual({});
-    expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/details'))).toBe(false);
   });
 });

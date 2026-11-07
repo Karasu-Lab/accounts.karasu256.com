@@ -17,7 +17,7 @@ import {
 import { saveOAuthClientInfo } from '@/lib/actions/developer';
 import { useAuthClient } from '@/lib/auth/client';
 import type { SettingsDialogFieldSpec, SettingsDialogSpec } from './settings-dialog';
-import { groupSectionsByOperation, usePermissionSections } from './use-permission-sections';
+import { groupSectionsByOperation, useDeveloperPermissions } from './developer-permissions-context';
 
 interface UseOAuthClientDialogArgs {
   open: boolean;
@@ -40,7 +40,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
 } {
   const auth = useAuthClient();
   const t = useTranslations();
-  const { sections, baseScopes, loaded } = usePermissionSections(open);
+  const { sections, baseScopes } = useDeveloperPermissions();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -132,8 +132,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
   const uris = parseUris(redirectUrisText);
   const typeLocked = client !== undefined;
 
-  const permissionFields: SettingsDialogFieldSpec[] = loaded
-    ? [
+  const permissionFields: SettingsDialogFieldSpec[] = [
         ...groupSectionsByOperation(sections).map((group) => ({
           key: `permissions.${group.operation}`,
           title: t.has(`permissions.operations.${group.operation}.label`)
@@ -179,8 +178,7 @@ export function useOAuthClientDialog({ open, onOpenChange, client, onSaved, onUp
             onCheckedChange: () => toggleScope(scope),
           },
         })),
-      ]
-    : [{ key: 'permissions.loading', title: '', skeleton: true }];
+      ];
 
   const spec: SettingsDialogSpec = {
     title: t(client ? 'settings.developer.editClient' : 'settings.developer.createClient'),
