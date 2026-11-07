@@ -8,6 +8,7 @@ import { useAppFlags } from '@/components/flags-client-provider';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
+import { useRuntimeClientConfig } from '@/lib/client-config';
 import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
@@ -21,48 +22,52 @@ const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/pro
   loading: () => <ProviderSectionLoading />,
 });
 
-type ProfilesState = { status: 'loading' } | { status: 'loaded'; profiles: Record<string, ProviderProfile | null> };
-
 export function ProviderSectionClient() {
   const reportError = useReportError();
+  const config = useRuntimeClientConfig();
   const flags = useAppFlags();
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
-  const [state, setState] = useState<ProfilesState>({ status: 'loading' });
-  useReportLoading('linking', state.status === 'loading');
-  const providers = useMemo<Provider[]>(
-    () => [
-      { id: 'google', label: 'Google', icon: faGoogle },
-      { id: 'github', label: 'GitHub', icon: faGithub },
-      { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft },
-      { id: 'xbox', label: 'Xbox', icon: faXbox, accountProviderId: 'xbox' },
-      {
-        id: 'minecraft',
-        label: 'Minecraft',
-        icon: faCube,
-        textureAvatar: true,
-        accountProviderId: 'xbox',
-        disabled: !minecraftAuthEnabled,
-      },
-    ],
-    [minecraftAuthEnabled]
-  );
+  const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
+  const [loaded, setLoaded] = useState(false);
+  useReportLoading('linking', !loaded);
+  const providers = useMemo<Provider[]>(() => {
+    const available: Provider[] = [];
+    if (config.googleClientId) available.push({ id: 'google', label: 'Google', icon: faGoogle });
+    if (config.githubClientId) available.push({ id: 'github', label: 'GitHub', icon: faGithub });
+    if (config.microsoftClientId) {
+      available.push(
+        { id: 'microsoft', label: 'Microsoft', icon: faMicrosoft },
+        { id: 'xbox', label: 'Xbox', icon: faXbox, accountProviderId: 'xbox' },
+        {
+          id: 'minecraft',
+          label: 'Minecraft',
+          icon: faCube,
+          textureAvatar: true,
+          accountProviderId: 'xbox',
+          disabled: !minecraftAuthEnabled,
+        }
+      );
+    }
+    return available;
+  }, [config, minecraftAuthEnabled]);
 
   useEffect(() => {
     let cancelled = false;
     loadLinkedProviderProfiles()
       .then((profiles) => {
-        if (!cancelled) setState({ status: 'loaded', profiles });
+        if (cancelled) return;
+        setProfiles(profiles);
+        setLoaded(true);
       })
       .catch((err) => {
         if (cancelled) return;
         reportError(err, 'linking');
-        setState({ status: 'loaded', profiles: {} });
+        setLoaded(true);
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (state.status === 'loading') return null;
-  return <ProviderSectionLazy providers={providers} initialProfiles={state.profiles} />;
+  return <ProviderSectionLazy providers={providers} initialProfiles={profiles} />;
 }
