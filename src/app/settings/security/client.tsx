@@ -37,7 +37,7 @@ export function SecurityClient() {
 
   return (
     <div>
-      <PasswordSection hasPasswordProvider={hasPasswordProvider} onPasswordSet={handlePasswordSet} />
+      <PasswordSection hasPasswordProvider={hasPasswordProvider} loading={providersLoading} onPasswordSet={handlePasswordSet} />
       <PasskeyList
         version={passkeyVersion}
         createAction={user.email ? <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} /> : undefined}

@@ -6,17 +6,18 @@ import { toast } from '@karasu-lab/ui';
 import { useAuthClient } from '@/lib/auth/client';
 import { setPassword as setPasswordRequest } from '@/lib/api/set-password';
 import { useSettingsUser } from '@/components/settings/user-context';
-import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Label, PasswordInput } from '@karasu-lab/ui';
+import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Label, PasswordInput, Skeleton } from '@karasu-lab/ui';
 import { LocalizedPasswordStrengthIndicator } from '@/components/auth/localized-password-strength-indicator';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
 import { useReportError } from '@/components/settings/error-context';
 
 export interface PasswordSectionProps {
   hasPasswordProvider: boolean;
+  loading: boolean;
   onPasswordSet: () => void;
 }
 
-export function PasswordSection({ hasPasswordProvider, onPasswordSet }: PasswordSectionProps) {
+export function PasswordSection({ hasPasswordProvider, loading, onPasswordSet }: PasswordSectionProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const reportError = useReportError();
@@ -71,11 +72,11 @@ export function PasswordSection({ hasPasswordProvider, onPasswordSet }: Password
     <>
       <EditableSettingsItem
         label={t('security.password')}
-        value={hasPasswordProvider ? '••••••••' : t('security.passwordNotSet')}
+        value={loading ? <Skeleton className="h-5 w-24" /> : hasPasswordProvider ? '••••••••' : t('security.passwordNotSet')}
         onEdit={() => setDialogOpen(true)}
         editLabel={actionLabel}
         pressable
-        disabled={!ready}
+        disabled={!ready || loading}
       />
       <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
         <DialogPortal>
