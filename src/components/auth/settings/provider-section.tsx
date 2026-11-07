@@ -170,12 +170,12 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                     onClick={() => setUnlinkTarget(provider)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   />
-                ) : (
+                ) : provider.disabled ? null : (
                   <SettingsItemIconButton
                     label={t('connections.link')}
                     icon={Link2}
                     loading={isLoading}
-                    disabled={provider.disabled || !guardsLoaded}
+                    disabled={!guardsLoaded}
                     onClick={() => void handleLink(provider)}
                   />
                 )
