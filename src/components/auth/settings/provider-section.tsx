@@ -25,6 +25,7 @@ export interface Provider {
 interface ProviderSectionProps {
   providers: Provider[];
   initialProfiles: Record<string, ProviderProfile | null>;
+  profilesLoaded: boolean;
 }
 
 const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
@@ -35,7 +36,7 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
   minecraft: '#6a9c3f',
 };
 
-export function ProviderSection({ providers, initialProfiles }: ProviderSectionProps) {
+export function ProviderSection({ providers, initialProfiles, profilesLoaded }: ProviderSectionProps) {
   const { authClient, config } = useAuthClient();
   const t = useTranslations();
   const router = useRouter();
@@ -161,7 +162,7 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
-                profile ? (
+                !profilesLoaded ? null : profile ? (
                   <SettingsItemIconButton
                     label={t('connections.unlink')}
                     icon={Unlink}
@@ -170,12 +171,11 @@ export function ProviderSection({ providers, initialProfiles }: ProviderSectionP
                     onClick={() => setUnlinkTarget(provider)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   />
-                ) : provider.disabled ? null : (
+                ) : provider.disabled || !guardsLoaded ? null : (
                   <SettingsItemIconButton
                     label={t('connections.link')}
                     icon={Link2}
                     loading={isLoading}
-                    disabled={!guardsLoaded}
                     onClick={() => void handleLink(provider)}
                   />
                 )

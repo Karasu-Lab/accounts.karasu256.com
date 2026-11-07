@@ -20,6 +20,7 @@ export function ProviderSectionClient() {
   const flags = useAppFlags();
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
+  const [profilesLoaded, setProfilesLoaded] = useState(false);
   const providers = useMemo<Provider[]>(() => {
     const available: Provider[] = [];
     if (config.googleClientId) available.push({ id: 'google', label: 'Google', icon: faGoogle });
@@ -45,16 +46,19 @@ export function ProviderSectionClient() {
     let cancelled = false;
     loadLinkedProviderProfiles()
       .then((profiles) => {
-        if (!cancelled) setProfiles(profiles);
+        if (cancelled) return;
+        setProfiles(profiles);
+        setProfilesLoaded(true);
       })
       .catch((err) => {
         if (cancelled) return;
         toast.error(err instanceof Error ? err.message : String(err));
+        setProfilesLoaded(true);
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  return <ProviderSectionLazy providers={providers} initialProfiles={profiles} />;
+  return <ProviderSectionLazy providers={providers} initialProfiles={profiles} profilesLoaded={profilesLoaded} />;
 }
