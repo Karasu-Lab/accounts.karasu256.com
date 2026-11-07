@@ -5,6 +5,7 @@ import { AppWindow, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Dialog, DialogBackdrop, DialogClose, DialogPopup, DialogPortal, DialogTitle } from '@karasu-lab/ui';
 import type { AuthorizedApp, AuthorizedAppSummary } from '@/lib/api/authorized-apps';
+import { FittingText } from './settings-item-container';
 
 interface AuthorizedAppInfoDialogProps {
   open: boolean;
@@ -23,6 +24,10 @@ export function AuthorizedAppInfoDialog({ open, onOpenChange, app, detail, iconS
   useEffect(() => {
     setLogoFailed(false);
   }, [logoSrc]);
+
+  useEffect(() => {
+    if (!open) setLogoFailed(false);
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,13 +50,17 @@ export function AuthorizedAppInfoDialog({ open, onOpenChange, app, detail, iconS
           </div>
 
           <dl className="space-y-1.5 text-sm">
-            <div className="flex gap-2">
+            <div className="flex items-center justify-between gap-4">
               <dt className="shrink-0 text-muted-foreground">{t('authorizedApps.clientId')}</dt>
-              <dd className="min-w-0 truncate font-mono text-xs leading-5">{app.clientId}</dd>
+              <dd className="min-w-0 flex-1">
+                <FittingText text={app.clientId} autoFit className="text-right font-mono text-xs leading-5" />
+              </dd>
             </div>
-            <div className="flex gap-2">
+            <div className="flex items-center justify-between gap-4">
               <dt className="shrink-0 text-muted-foreground">{t('authorizedApps.authorizedAt')}</dt>
-              <dd>{new Date(app.createdAt).toLocaleString()}</dd>
+              <dd className="min-w-0 flex-1">
+                <FittingText text={new Date(app.createdAt).toLocaleString()} autoFit className="text-right" />
+              </dd>
             </div>
           </dl>
 
