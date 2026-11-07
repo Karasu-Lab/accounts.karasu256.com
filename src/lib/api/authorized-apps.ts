@@ -1,15 +1,8 @@
-import type { AuthorizedApp } from '@karasu-lab/types/client';
+import type { AuthorizedApp, AuthorizedAppSummary } from '@karasu-lab/types/client';
 import { ApiError } from '@karasu-lab/utils/client';
 import type { AuthClientHandle } from '@/lib/auth/client';
 
-export type { AuthorizedApp };
-
-export interface AuthorizedAppSummary {
-  id: string;
-  clientId: string;
-  clientName?: string;
-  createdAt: string;
-}
+export type { AuthorizedApp, AuthorizedAppSummary };
 
 export async function listAuthorizedApps({ config }: AuthClientHandle): Promise<AuthorizedAppSummary[]> {
   const response = await fetch(`${config.authApiUrl.replace(/\/+$/, '')}/api/users/me/authorized-apps`, {
