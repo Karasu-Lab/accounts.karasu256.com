@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { CompleteIconUploadResult, IconFileValidationError, PreparedIconUpload } from '@karasu-lab/types/shared';
 import { deleteUploadedImage } from '@karasu-lab/utils/server';
-import { fetchSetFirebasePhoto, fetchSetUserImage, fetchUploadStatus, fetchVerifyUpload } from '@/lib/api/internal';
+import { fetchSetFirebasePhoto, fetchSetUserImage, fetchVerifyUpload } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
 import { signUploadIntent, verifyUploadIntent } from './intent';
 import { avatarCdnPath } from './paths';
@@ -73,24 +73,4 @@ export async function deleteIcon(userId: string, cookieHeader: string | null): P
   }
 }
 
-export interface VerifiedAvatar {
-  body: ReadableStream<Uint8Array>;
-  contentType: string;
-}
 
-export async function getVerifiedAvatar(userId: string, version: string | null, cdnUrl: string): Promise<VerifiedAvatar | null> {
-  const path = avatarCdnPath(userId);
-  const status = await fetchUploadStatus(path, userId);
-  if (!status) return null;
-
-  const source = new URL(`${cdnUrl}/${path}`);
-  if (version) source.searchParams.set('v', version);
-
-  const res = await fetch(source, { cache: 'no-store' });
-  if (!res.ok || !res.body) return null;
-
-  return {
-    body: res.body,
-    contentType: res.headers.get('content-type') ?? status.contentType ?? 'application/octet-stream',
-  };
-}

@@ -16,7 +16,6 @@ import {
 import { deleteUserIcon, setUserIconFromProvider, listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
 import { useSettingsUser } from '@/components/settings/user-context';
 import { useReportError } from '@/components/settings/error-context';
-import { avatarSrc } from '@/lib/avatar/avatar-src';
 import { uploadUserIcon } from '@/lib/avatar/upload-client';
 
 export interface ProfileIconHandle {
@@ -100,7 +99,7 @@ export const ProfileIcon = forwardRef<ProfileIconHandle, ProfileIconProps>(funct
           aria-disabled={disabled}
           className={disabled ? 'pointer-events-none opacity-50' : undefined}
         >
-          <UserAvatar uid={user.id} iconUrl={avatarSrc(user.image ?? null)} size={48} className="border border-border" />
+          <UserAvatar uid={user.id} iconUrl={user.image ?? null} size={48} className="border border-border" />
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={openFilePicker}>{t('profile.uploadIcon')}</ContextMenuItem>

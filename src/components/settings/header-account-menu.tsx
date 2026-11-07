@@ -16,7 +16,6 @@ import {
   UserAvatar,
 } from '@karasu-lab/ui';
 import type { AccountSummary } from '@/lib/api/accounts';
-import { avatarSrc } from '@/lib/avatar/avatar-src';
 
 export interface HeaderAccountMenuUser {
   uid: string;
@@ -89,7 +88,7 @@ export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsP
         aria-label={t('settings.accountMenu')}
         className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <UserAvatar uid={user.uid} iconUrl={avatarSrc(user.photoURL)} size={32} />
+        <UserAvatar uid={user.uid} iconUrl={user.photoURL} size={32} />
       </DropdownMenuTrigger>
       <DropdownMenuPortal>
         <DropdownMenuPositioner side="bottom" align="end" sideOffset={4}>
@@ -114,7 +113,7 @@ export function HeaderAccountMenu({ user, appUrl, onSignOut, accounts: accountsP
                   const isRemoving = removingUid === account.uid;
                   return (
                     <DropdownMenuItem key={account.uid} className="gap-2" disabled={isBusy} onClick={() => void handleSwitchAccount(account.uid)}>
-                      <UserAvatar uid={account.uid} iconUrl={avatarSrc(account.photoURL)} size={20} />
+                      <UserAvatar uid={account.uid} iconUrl={account.photoURL} size={20} />
                       <div className="grid min-w-0 flex-1 leading-tight">
                         {account.displayName && <span className="truncate text-sm">{account.displayName}</span>}
                         <span className="truncate text-xs text-muted-foreground">{account.email}</span>

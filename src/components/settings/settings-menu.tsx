@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import { SettingsItemContainer, SettingsItemGroup } from './settings-item-container';
 import { useSettingsMenu } from './settings-menu-context';
 import { useSettingsUser } from './user-context';
-import { avatarSrc } from '@/lib/avatar/avatar-src';
 
 export function SettingsMenu() {
   const t = useTranslations();
@@ -31,7 +30,7 @@ export function SettingsMenu() {
           <SettingsItemContainer
             href="/settings/profile"
             icon={User}
-            iconImageSrc={avatarSrc(user.image ?? null) ?? undefined}
+            iconImageSrc={user.image ?? undefined}
             iconBackgroundColor="#2563eb"
             title={user.name || user.email || user.id}
             description={user.email}

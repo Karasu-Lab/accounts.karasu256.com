@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuthClient } from '@/lib/auth/client';
-import { avatarSrc } from '@/lib/avatar/avatar-src';
 import { Button } from '@karasu-lab/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@karasu-lab/ui';
 import { Separator } from '@karasu-lab/ui';
@@ -65,7 +64,7 @@ export function AccountCard() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-col items-start gap-3">
-          <UserAvatar uid={session.user.id} iconUrl={avatarSrc(session.user.image ?? null)} size={64} className="border border-border" />
+          <UserAvatar uid={session.user.id} iconUrl={session.user.image ?? null} size={64} className="border border-border" />
           <p className="text-sm text-muted-foreground break-all">{session.user.email ?? session.user.id}</p>
         </div>
         <Separator />
