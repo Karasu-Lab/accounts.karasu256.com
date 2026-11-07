@@ -4,14 +4,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { AppWindow, ChevronRight, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
-import { listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp } from '@/lib/api/authorized-apps';
+import { getAuthorizedApp, listAuthorizedApps, revokeAuthorizedApp, type AuthorizedApp, type AuthorizedAppSummary } from '@/lib/api/authorized-apps';
 import { useAuthClient } from '@/lib/auth/client';
 import { SettingsItemContainer, SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { AuthorizedAppInfoDialog } from '@/components/settings/authorized-app-info-dialog';
 import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
-type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; apps: AuthorizedApp[] };
+type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; apps: AuthorizedAppSummary[] };
 
 const APP_ICON_BACKGROUND_COLOR = '#ea580c';
 
@@ -23,7 +23,7 @@ export function AuthorizedAppsClient() {
   useReportLoading('authorized-apps', state.status === 'loading');
   const [infoApp, setInfoApp] = useState<AuthorizedApp | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
-  const [pendingRevoke, setPendingRevoke] = useState<AuthorizedApp | null>(null);
+  const [pendingRevoke, setPendingRevoke] = useState<AuthorizedAppSummary | null>(null);
 
   const reload = useCallback(async () => {
     setState({ status: 'loading' });
@@ -72,9 +72,12 @@ export function AuthorizedAppsClient() {
               description={new Date(app.createdAt).toLocaleString()}
               autoFitText
               icon={AppWindow}
-              iconImageSrc={app.logoUri}
               iconBackgroundColor={APP_ICON_BACKGROUND_COLOR}
-              onClick={() => setInfoApp(app)}
+              onClick={() => {
+                getAuthorizedApp(auth, app.id)
+                  .then(setInfoApp)
+                  .catch((err) => reportError(err, 'authorized-apps'));
+              }}
               trailing={
                 <span className="flex items-center gap-1">
                   <SettingsItemIconButton

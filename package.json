@@ -28,7 +28,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
-    "firebase": "^12.15.0",
     "i": "^0.3.7",
     "jdenticon": "^3.3.0",
     "lucide-react": "^1.21.0",

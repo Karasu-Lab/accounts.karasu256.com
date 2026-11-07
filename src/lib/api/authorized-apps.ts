@@ -4,44 +4,30 @@ import type { AuthClientHandle } from '@/lib/auth/client';
 
 export type { AuthorizedApp };
 
-interface ConsentRecord {
+export interface AuthorizedAppSummary {
   id: string;
   clientId: string;
-  scopes: string[];
-  createdAt: Date;
+  clientName?: string;
+  createdAt: string;
 }
 
-interface PublicClient {
-  client_name?: string;
-  logo_uri?: string;
+export async function listAuthorizedApps({ config }: AuthClientHandle): Promise<AuthorizedAppSummary[]> {
+  const response = await fetch(`${config.authApiUrl.replace(/\/+$/, '')}/api/users/me/authorized-apps`, {
+    credentials: 'include',
+  });
+  if (!response.ok) throw new ApiError(response.status, 'Request failed');
+  return (await response.json()) as AuthorizedAppSummary[];
 }
 
-export async function listAuthorizedApps({ authClient, bridgeFirebaseSession }: AuthClientHandle): Promise<AuthorizedApp[]> {
-  await bridgeFirebaseSession();
-  const { data, error } = await authClient.oauth2.getConsents();
-  if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
-  const consents = (data ?? []) as ConsentRecord[];
-
-  return Promise.all(
-    consents.map(async (consent) => {
-      const { data: client } = await authClient.oauth2
-        .publicClient({ query: { client_id: consent.clientId } })
-        .catch(() => ({ data: null }));
-      const pub = client as PublicClient | null;
-      return {
-        id: consent.id,
-        clientId: consent.clientId,
-        clientName: pub?.client_name,
-        logoUri: pub?.logo_uri,
-        scopes: consent.scopes ?? [],
-        createdAt: new Date(consent.createdAt).toISOString(),
-      };
-    })
-  );
+export async function getAuthorizedApp({ config }: AuthClientHandle, consentId: string): Promise<AuthorizedApp> {
+  const response = await fetch(`${config.authApiUrl.replace(/\/+$/, '')}/api/users/me/authorized-apps/${encodeURIComponent(consentId)}`, {
+    credentials: 'include',
+  });
+  if (!response.ok) throw new ApiError(response.status, 'Request failed');
+  return (await response.json()) as AuthorizedApp;
 }
 
-export async function revokeAuthorizedApp({ authClient, bridgeFirebaseSession }: AuthClientHandle, consentId: string): Promise<void> {
-  await bridgeFirebaseSession();
+export async function revokeAuthorizedApp({ authClient }: AuthClientHandle, consentId: string): Promise<void> {
   const { error } = await authClient.oauth2.deleteConsent({ id: consentId });
   if (error) throw new ApiError(error.status, error.message ?? 'Request failed');
 }
