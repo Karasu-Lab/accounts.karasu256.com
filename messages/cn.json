@@ -2,6 +2,7 @@
   "Metadata": {
     "siteTitle": "Karasu Lab",
     "siteDescription": "Karasu Lab 账户门户",
+    "loading": "加载中",
     "signIn": {
       "title": "登录"
     },

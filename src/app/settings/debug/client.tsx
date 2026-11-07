@@ -2,9 +2,8 @@
 
 import { Flag, GitBranch, Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useFeatureFlags } from '@karasu-lab/flags-sdk/client';
+import { useAppFlags } from '@/components/flags-client-provider';
 import type { ApiMeta } from '@/lib/api/api-client';
-import { appFlagsSchema } from '@/lib/flags';
 import { SettingsItemContainer, SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { SwitchSettingsItem } from '@/components/settings/switch-settings-item';
 
@@ -24,7 +23,7 @@ const DEBUG_ICON_BACKGROUND_COLOR = '#dc2626';
  * takes a change handler: the values are shown, not edited, here.
  *
  * Displays the live value of this app's demo feature flags, sourced
- * from Vercel Edge Config via `useFeatureFlags`, and the API host and
+ * from the flags API via `useAppFlags`, and the API host and
  * branch exactly as api.karasu256.com reports them, since it is the
  * source of truth for both. An unavailable source keeps its own
  * message in place of its group, so a failed read never renders as an
@@ -32,7 +31,7 @@ const DEBUG_ICON_BACKGROUND_COLOR = '#dc2626';
  */
 export function DebugClient({ apiMeta }: DebugClientProps) {
   const t = useTranslations();
-  const flags = useFeatureFlags<typeof appFlagsSchema>();
+  const flags = useAppFlags();
 
   return (
     <div className="space-y-8">
@@ -65,13 +64,7 @@ export function DebugClient({ apiMeta }: DebugClientProps) {
         ) : (
           <SettingsItemGroup>
             {Object.entries(flags).map(([name, value]) => (
-              <SwitchSettingsItem
-                key={name}
-                icon={Flag}
-                iconBackgroundColor={DEBUG_ICON_BACKGROUND_COLOR}
-                title={name}
-                checked={Boolean(value)}
-              />
+              <SwitchSettingsItem key={name} icon={Flag} iconBackgroundColor={DEBUG_ICON_BACKGROUND_COLOR} title={name} checked={Boolean(value)} />
             ))}
           </SettingsItemGroup>
         )}

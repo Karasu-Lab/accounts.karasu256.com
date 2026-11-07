@@ -1,64 +1,53 @@
 import type { Metadata } from 'next';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages, getTranslations } from 'next-intl/server';
 import './globals.css';
-import { R2StorageProvider, Toaster } from '@karasu-lab/ui';
 import { geistSans, geistMono, notoSansJP } from '@karasu-lab/ui/fonts';
-import { ApiFeatureFlagsProvider } from '@karasu-lab/flags-sdk/server';
-import { appFlagsSchema, getAppFlags } from '@/lib/flags';
+import { defaultLocale } from '@/i18n/locales';
+import { LocaleProvider } from '@/components/locale-provider';
+import { RootProviders } from '@/components/root-providers';
+import jaMessages from '../../messages/ja.json';
 
 config.autoAddCss = false;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations('Metadata');
-  const siteTitle = t('siteTitle');
-  const siteDescription = t('siteDescription');
+const siteTitle = jaMessages.Metadata.siteTitle;
+const siteDescription = jaMessages.Metadata.siteDescription;
 
-  return {
-    metadataBase: new URL('https://accounts.karasu256.com'),
-    title: { default: siteTitle, template: '%s' },
+export const metadata: Metadata = {
+  metadataBase: new URL('https://accounts.karasu256.com'),
+  title: { default: siteTitle, template: '%s' },
+  description: siteDescription,
+  icons: {
+    icon: '/icons/kara_su.png',
+    shortcut: '/icons/kara_su.png',
+    apple: '/icons/kara_su.png',
+  },
+  openGraph: {
+    title: siteTitle,
     description: siteDescription,
-    icons: {
-      icon: '/icons/kara_su.png',
-      shortcut: '/icons/kara_su.png',
-      apple: '/icons/kara_su.png',
-    },
-    openGraph: {
-      title: siteTitle,
-      description: siteDescription,
-      siteName: 'Karasu Lab',
-      locale,
-      type: 'website',
-    },
-    twitter: {
-      card: 'summary',
-      title: siteTitle,
-      description: siteDescription,
-    },
-  };
-}
+    siteName: 'Karasu Lab',
+    locale: defaultLocale,
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: siteTitle,
+    description: siteDescription,
+  },
+};
 
 /** Root layout — applies Geist fonts and full-height flex column. */
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
   return (
-    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} h-full`}>
+    <html lang={defaultLocale} className={`${geistSans.variable} ${geistMono.variable} ${notoSansJP.variable} h-full`}>
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
-        <R2StorageProvider imageApiUrl={process.env.CDN_URL!}>
-          <ApiFeatureFlagsProvider flags={getAppFlags()} schema={appFlagsSchema}>
-            <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
-            <Toaster />
-          </ApiFeatureFlagsProvider>
-        </R2StorageProvider>
+        <LocaleProvider>
+          <RootProviders>{children}</RootProviders>
+        </LocaleProvider>
       </body>
     </html>
   );
