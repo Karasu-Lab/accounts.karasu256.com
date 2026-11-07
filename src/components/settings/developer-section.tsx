@@ -14,6 +14,7 @@ import {
   type OAuthClientSummary,
 } from '@/lib/api/developer';
 import { useDeveloperPermissions } from './developer-permissions-context';
+import { useReportLoading } from './loading-context';
 import type { ApiKeyEditTarget } from './use-create-api-key-dialog';
 import { useAuthClient } from '@/lib/auth/client';
 import { uploadOAuthClientIcon } from '@/lib/avatar/oauth-client-icon-upload';
@@ -37,6 +38,7 @@ export function DeveloperSection() {
 
   const [clientsState, setClientsState] = useState<ListState<OAuthClientSummary>>({ status: 'loading' });
   const [keysState, setKeysState] = useState<ListState<ApiKeySummary>>({ status: 'loading' });
+  useReportLoading('developer', clientsState.status === 'loading' || keysState.status === 'loading');
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
   const [editingClient, setEditingClient] = useState<OAuthClientSummary | null>(null);
   const [infoClient, setInfoClient] = useState<OAuthClientSummary | null>(null);

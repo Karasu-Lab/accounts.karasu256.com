@@ -10,6 +10,7 @@ import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/linked-provider-profile';
 import { loadLinkedProviderProfiles } from '@/lib/actions/linking';
 import { useRuntimeClientConfig } from '@/lib/client-config';
+import { useReportLoading } from '@/components/settings/loading-context';
 
 const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/provider-section').then((m) => m.ProviderSection), {
   ssr: false,
@@ -21,6 +22,7 @@ export function ProviderSectionClient() {
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
   const [profilesLoaded, setProfilesLoaded] = useState(false);
+  useReportLoading('linking', !profilesLoaded);
   const providers = useMemo<Provider[]>(() => {
     const available: Provider[] = [];
     if (config.googleClientId) available.push({ id: 'google', label: 'Google', icon: faGoogle });

@@ -10,6 +10,7 @@ import { unlinkProvider } from '@karasu-lab/utils/client';
 import { useAuthClient } from '@/lib/auth/client';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
+import { useReportLoading } from '@/components/settings/loading-context';
 import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
 
 export interface Provider {
@@ -52,6 +53,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
   const [hasPasskeys, setHasPasskeys] = useState(false);
   const [hasPasswordProvider, setHasPasswordProvider] = useState(false);
   const [guardsLoaded, setGuardsLoaded] = useState(false);
+  useReportLoading('linking-guards', !guardsLoaded);
   const handledParamsRef = useRef<string | null>(null);
 
   useEffect(() => {
