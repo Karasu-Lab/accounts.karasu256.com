@@ -10,7 +10,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('debug.title') };
 }
 
-/** An unreachable API is itself useful debug output, so the page still renders and says so. */
 async function loadApiMeta(): Promise<ApiMeta | null> {
   try {
     return await getApiMeta();

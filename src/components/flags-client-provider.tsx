@@ -53,7 +53,6 @@ export function FlagsClientProvider({ children }: { children: ReactNode }) {
   return <FlagsContext.Provider value={flags}>{children}</FlagsContext.Provider>;
 }
 
-/** Returns the app feature flags, or `null` when they could not be resolved. */
 export function useAppFlags(): AppFlags | null {
   return useContext(FlagsContext);
 }

@@ -11,7 +11,6 @@ export function RuntimeClientConfigProvider({ config, children }: { config: Runt
   return <RuntimeClientConfigContext.Provider value={config}>{children}</RuntimeClientConfigContext.Provider>;
 }
 
-/** Returns the runtime client configuration from the nearest {@link RuntimeClientConfigProvider}. */
 export function useRuntimeClientConfig(): RuntimeClientConfig {
   const config = useContext(RuntimeClientConfigContext);
   if (!config) throw new Error('useRuntimeClientConfig must be used within RuntimeClientConfigProvider');

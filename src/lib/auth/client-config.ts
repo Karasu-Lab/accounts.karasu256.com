@@ -60,7 +60,6 @@ export function getClientConfig(): ClientConfig {
   });
 }
 
-/** Builds the auth app's sign-in URL carrying `next` as the post-sign-in destination. */
 export function buildSignInUrl(authUrl: string, next: string): string {
   return buildUriWithNext(new URL('/sign-in', authUrl).toString(), next);
 }

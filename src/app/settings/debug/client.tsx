@@ -11,24 +11,8 @@ interface DebugClientProps {
   apiMeta: ApiMeta | null;
 }
 
-/** Icon background for this screen's items: the debug section's settings menu color. */
 const DEBUG_ICON_BACKGROUND_COLOR = '#dc2626';
 
-/**
- * The debug screen, rebuilt from {@link SettingsItemContainer}s: the
- * API section is one group of items titled with what each value is and
- * described with the value itself, and the feature flags section is
- * one group of {@link SwitchSettingsItem}s titled with the flag name
- * and carrying the flag's current value as their switch. No flag item
- * takes a change handler: the values are shown, not edited, here.
- *
- * Displays the live value of this app's demo feature flags, sourced
- * from the flags API via `useAppFlags`, and the API host and
- * branch exactly as api.karasu256.com reports them, since it is the
- * source of truth for both. An unavailable source keeps its own
- * message in place of its group, so a failed read never renders as an
- * empty list.
- */
 export function DebugClient({ apiMeta }: DebugClientProps) {
   const t = useTranslations();
   const flags = useAppFlags();

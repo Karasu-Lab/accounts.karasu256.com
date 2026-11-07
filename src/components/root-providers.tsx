@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
-import { useTranslations } from 'next-intl';
-import { LoadingView, R2StorageProvider, Toaster } from '@karasu-lab/ui';
+import { R2StorageProvider, Toaster } from '@karasu-lab/ui';
 import { RuntimeClientConfigProvider, type RuntimeClientConfig } from '@/lib/client-config';
 import { FlagsClientProvider } from './flags-client-provider';
 
@@ -16,10 +15,9 @@ function loadClientConfig(): Promise<RuntimeClientConfig> {
   return clientConfigPromise;
 }
 
-type ClientConfigState = { status: 'loading' } | { status: 'loaded'; config: RuntimeClientConfig } | { status: 'error'; message: string };
+type ClientConfigState = { status: 'loading' } | { status: 'loaded'; config: RuntimeClientConfig } | { status: 'error'; error: Error };
 
 export function RootProviders({ children }: { children: ReactNode }) {
-  const t = useTranslations();
   const [state, setState] = useState<ClientConfigState>({ status: 'loading' });
 
   useEffect(() => {
@@ -29,28 +27,16 @@ export function RootProviders({ children }: { children: ReactNode }) {
         if (!cancelled) setState({ status: 'loaded', config });
       })
       .catch((err) => {
-        if (!cancelled) setState({ status: 'error', message: err instanceof Error ? err.message : String(err) });
+        if (!cancelled) setState({ status: 'error', error: err instanceof Error ? err : new Error(String(err)) });
       });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  if (state.status === 'loading') {
-    return (
-      <main className="flex flex-1 items-center justify-center p-4">
-        <LoadingView message={t('Metadata.loading')} />
-      </main>
-    );
-  }
+  if (state.status === 'error') throw state.error;
 
-  if (state.status === 'error') {
-    return (
-      <main className="flex flex-1 items-center justify-center p-4">
-        <p className="text-sm text-destructive">{state.message}</p>
-      </main>
-    );
-  }
+  if (state.status === 'loading') return null;
 
   return (
     <RuntimeClientConfigProvider config={state.config}>
