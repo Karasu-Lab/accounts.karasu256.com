@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button, Spinner } from '@karasu-lab/ui';
+import { Button, LoadingView, Spinner } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
 import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
 import { ErrorProvider, useClearError, useErrors } from '@/components/settings/error-context';
-import { LoadingProvider, useIsLoading } from '@/components/settings/loading-context';
+import { LoadingProvider, useIsLoading, useIsLoadingKey } from '@/components/settings/loading-context';
 import { SettingsSessionProvider } from '@/components/settings/session-provider';
 import { useSettingsMenu } from '@/components/settings/settings-menu-context';
 import { UserContext, useSettingsUser } from '@/components/settings/user-context';
@@ -39,6 +39,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
   const userContext = useSettingsUser();
   const { appUrl, accounts, onAccountsMenuOpen, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
   const isLoading = useIsLoading();
+  const signingOut = useIsLoadingKey('sign-out');
   const errors = useErrors();
   const clearError = useClearError();
   const errorEntry = errors.size > 0 ? [...errors][0] : undefined;
@@ -88,7 +89,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
             </Link>
           </div>
           <h1 className="truncate text-base font-semibold">{pageTitle}</h1>
-          {isLoading && <Spinner className="ml-2 size-4 shrink-0" />}
+          {isLoading && !signingOut && <Spinner className="ml-2 size-4 shrink-0" />}
           <div className="ml-auto flex shrink-0 items-center pl-4">
             <HeaderAccountMenu
               user={headerUser}
@@ -106,6 +107,11 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
           <UserContext.Provider key={userContext.ready ? userContext.user.id : 'pending'} value={userContext}>
             {children}
           </UserContext.Provider>
+          {signingOut && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center bg-background/60">
+              <LoadingView message={t('settings.signingOut')} />
+            </div>
+          )}
           {errorEntry && (
             <div className="absolute inset-0 z-40 flex items-center justify-center bg-background/60">
               <div className="mx-4 w-full max-w-sm space-y-4 rounded-lg border border-border bg-background p-6 shadow-lg">
