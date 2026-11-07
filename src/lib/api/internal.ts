@@ -5,14 +5,13 @@ import {
   activeSessionSchema,
   type ActiveSession,
   type FirebasePhotoResult,
-  type UploadStatus,
   type UploadVerifyRequest,
   type VerifiedUpload,
 } from '@karasu-lab/types/shared';
 import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 import { InternalApiError } from './internal-api-error';
 
-export type { FirebasePhotoResult, UploadStatus, UploadVerifyRequest, VerifiedUpload };
+export type { FirebasePhotoResult, UploadVerifyRequest, VerifiedUpload };
 
 function internalUrl(path: string): string {
   const base = process.env.API_URL;
@@ -170,11 +169,3 @@ export async function fetchVerifyUpload(upload: UploadVerifyRequest): Promise<Ve
   return (await res.json()) as VerifiedUpload;
 }
 
-export async function fetchUploadStatus(path: string, uploaderId: string): Promise<UploadStatus | null> {
-  const query = new URLSearchParams({ path, uploaderId });
-  const res = await uploadFetch(`/upload/verify?${query}`);
-  if (res.status === 404 || res.status === 422) return null;
-  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
-  const status = (await res.json()) as UploadStatus;
-  return status.valid ? status : null;
-}
