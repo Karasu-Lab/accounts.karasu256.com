@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppWindow, ChevronRight, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
@@ -23,6 +23,7 @@ export function AuthorizedAppsClient() {
   useReportLoading('authorized-apps', state.status === 'loading');
   const [infoApp, setInfoApp] = useState<AuthorizedAppSummary | null>(null);
   const [infoDetail, setInfoDetail] = useState<AuthorizedApp | null>(null);
+  const infoTargetRef = useRef<string | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const [pendingRevoke, setPendingRevoke] = useState<AuthorizedAppSummary | null>(null);
 
@@ -40,14 +41,26 @@ export function AuthorizedAppsClient() {
   }, [reload]);
 
   function openInfo(app: AuthorizedAppSummary) {
+    infoTargetRef.current = app.id;
     setInfoApp(app);
     setInfoDetail(null);
     getAuthorizedApp(auth, app.id)
-      .then(setInfoDetail)
+      .then((detail) => {
+        if (infoTargetRef.current === app.id) setInfoDetail(detail);
+      })
       .catch((err) => {
+        if (infoTargetRef.current !== app.id) return;
+        infoTargetRef.current = null;
         setInfoApp(null);
+        setInfoDetail(null);
         reportError(err, 'authorized-apps');
       });
+  }
+
+  function closeInfo() {
+    infoTargetRef.current = null;
+    setInfoApp(null);
+    setInfoDetail(null);
   }
 
   async function confirmRevoke() {
@@ -108,10 +121,7 @@ export function AuthorizedAppsClient() {
         <AuthorizedAppInfoDialog
           open={infoApp !== null}
           onOpenChange={(open) => {
-            if (!open) {
-              setInfoApp(null);
-              setInfoDetail(null);
-            }
+            if (!open) closeInfo();
           }}
           app={infoApp}
           detail={infoDetail}

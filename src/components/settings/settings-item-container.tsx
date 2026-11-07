@@ -50,7 +50,7 @@ export interface SettingsItemContainerProps {
 
 const MIN_FONT_SIZE_PX = 10;
 
-function FittingText({ text, autoFit, className }: { text: string; autoFit: boolean; className?: string }) {
+export function FittingText({ text, autoFit, className }: { text: string; autoFit: boolean; className?: string }) {
   const ref = React.useRef<HTMLSpanElement>(null);
 
   React.useEffect(() => {
