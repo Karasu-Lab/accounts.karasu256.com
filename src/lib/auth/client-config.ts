@@ -1,32 +1,36 @@
 import { z } from 'zod';
 import { buildUriWithNext } from '@karasu-lab/utils/uri';
 
-/**
- * The configuration the client needs, with its single source of truth
- * in the server's environment: the server reads it here and hands it
- * to the client at request time through the auth client provider.
- * Nothing is duplicated into public, build-time variables.
- */
-const clientConfigSchema = z.object({
-  authApiUrl: z.string().url(),
-  authUrl: z.string().url(),
+const clientConfigEnvSchema = z.object({
+  AUTH_API_URL: z.url(),
+  AUTH_URL: z.url(),
+  ROOT_APP_URL: z.url(),
+  CDN_URL: z.url(),
+  FEATURE_FLAGS_API_URL: z.url(),
+  FEATURE_FLAGS_ORIGIN: z.url(),
 });
 
-export type ClientConfig = z.infer<typeof clientConfigSchema>;
-
-/**
- * Reads the client configuration from the server environment.
- *
- * @throws {z.ZodError} when a required value is missing or not a URL.
- */
-export function getClientConfig(): ClientConfig {
-  return clientConfigSchema.parse({
-    authApiUrl: process.env.AUTH_API_URL,
-    authUrl: process.env.AUTH_URL,
-  });
+export interface ClientConfig {
+  authApiUrl: string;
+  authUrl: string;
+  rootAppUrl: string;
+  cdnUrl: string;
+  featureFlagsApiUrl: string;
+  featureFlagsOrigin: string;
 }
 
-/** Builds the auth app's sign-in URL carrying `next` as the post-sign-in destination. */
+export function getClientConfig(): ClientConfig {
+  const env = clientConfigEnvSchema.parse(process.env);
+  return {
+    authApiUrl: env.AUTH_API_URL,
+    authUrl: env.AUTH_URL,
+    rootAppUrl: env.ROOT_APP_URL,
+    cdnUrl: env.CDN_URL,
+    featureFlagsApiUrl: env.FEATURE_FLAGS_API_URL,
+    featureFlagsOrigin: env.FEATURE_FLAGS_ORIGIN,
+  };
+}
+
 export function buildSignInUrl(authUrl: string, next: string): string {
   return buildUriWithNext(new URL('/sign-in', authUrl).toString(), next);
 }
