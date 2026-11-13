@@ -48,6 +48,16 @@ export interface SettingsItemContainerProps {
   className?: string;
 }
 
+interface SettingsItemPosition {
+  hasItemAbove: boolean;
+  hasItemBelow: boolean;
+}
+
+const STANDALONE_POSITION: SettingsItemPosition = { hasItemAbove: false, hasItemBelow: false };
+
+/** The position of the item inside its `SettingsItemGroup`, so any item component joins its neighbours without forwarding props. */
+const SettingsItemPositionContext = React.createContext<SettingsItemPosition>(STANDALONE_POSITION);
+
 const MIN_FONT_SIZE_PX = 10;
 
 export function FittingText({ text, autoFit, className }: { text: string; autoFit: boolean; className?: string }) {
@@ -119,10 +129,13 @@ export function SettingsItemContainer({
   items,
   children,
   disabled = false,
-  hasItemAbove = false,
-  hasItemBelow = false,
+  hasItemAbove: hasItemAboveProp,
+  hasItemBelow: hasItemBelowProp,
   className,
 }: SettingsItemContainerProps) {
+  const position = React.useContext(SettingsItemPositionContext);
+  const hasItemAbove = hasItemAboveProp ?? position.hasItemAbove;
+  const hasItemBelow = hasItemBelowProp ?? position.hasItemBelow;
   const Icon = icon === undefined ? Settings : icon;
   const isMobile = useIsMobile();
   const [expanded, setExpanded] = React.useState(false);
@@ -204,120 +217,122 @@ export function SettingsItemContainer({
         />
       ) : null}
 
-      <div className={cn('flex gap-3', children !== undefined ? 'items-start' : 'items-center')}>
-        {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
-          <span aria-hidden="true" className="pointer-events-none relative shrink-0">
-            <span
-              className="flex size-8 items-center justify-center overflow-hidden rounded-md"
-              style={{ backgroundColor: iconBackgroundColor }}
-            >
-              {iconImageSrc && !iconImageFailed ? (
-                <img src={iconImageSrc} alt="" className="size-full object-cover" onError={() => setIconImageFailed(true)} />
-              ) : iconNode !== undefined ? (
-                <span className="flex items-center justify-center text-white">{iconNode}</span>
-              ) : Icon !== null ? (
-                <Icon className="size-4.5 text-white" />
-              ) : null}
-            </span>
-            {iconBadge !== undefined && (
-              <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
-                {iconBadge}
+      <SettingsItemPositionContext.Provider value={STANDALONE_POSITION}>
+        <div className={cn('flex gap-3', children !== undefined ? 'items-start' : 'items-center')}>
+          {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
+            <span aria-hidden="true" className="pointer-events-none relative shrink-0">
+              <span
+                className="flex size-8 items-center justify-center overflow-hidden rounded-md"
+                style={{ backgroundColor: iconBackgroundColor }}
+              >
+                {iconImageSrc && !iconImageFailed ? (
+                  <img src={iconImageSrc} alt="" className="size-full object-cover" onError={() => setIconImageFailed(true)} />
+                ) : iconNode !== undefined ? (
+                  <span className="flex items-center justify-center text-white">{iconNode}</span>
+                ) : Icon !== null ? (
+                  <Icon className="size-4.5 text-white" />
+                ) : null}
               </span>
+              {iconBadge !== undefined && (
+                <span className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-background shadow ring-1 ring-border">
+                  {iconBadge}
+                </span>
+              )}
+            </span>
+          )}
+          <span className="min-w-0 flex-1">
+            <span className="pointer-events-none block">
+              <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
+              {description !== undefined && (
+                <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
+              )}
+            </span>
+            {children !== undefined && <span className="relative z-10 mt-1 block">{children}</span>}
+          </span>
+
+          {trailing !== undefined ? (
+            <span className="relative z-10 shrink-0">{trailing}</span>
+          ) : collapsible ? (
+            expanded ? (
+              <ChevronDown aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+            ) : (
+              <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+            )
+          ) : isInteractive ? (
+            <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
+          ) : null}
+        </div>
+
+        {itemsVisible && (
+          <span className="relative z-10 mt-1 ml-11 block">
+            {items?.map((item) =>
+              item.checked !== undefined && item.toggle ? (
+                <SettingsItemContainer
+                  key={item.key}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon ?? null}
+                  iconBackgroundColor={item.iconBackgroundColor}
+                  disabled={item.disabled}
+                  onClick={
+                    item.onCheckedChange !== undefined && !item.disabled
+                      ? () => item.onCheckedChange?.(!item.checked)
+                      : undefined
+                  }
+                  trailing={
+                    <Switch
+                      checked={item.checked}
+                      disabled={item.disabled || item.onCheckedChange === undefined}
+                      onCheckedChange={item.onCheckedChange}
+                      aria-label={item.title}
+                    />
+                  }
+                  className="border-0 bg-transparent px-0"
+                />
+              ) : item.checked !== undefined ? (
+                <CheckSettingsItem
+                  key={item.key}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon ?? null}
+                  iconBackgroundColor={item.iconBackgroundColor}
+                  checked={item.checked}
+                  onCheckedChange={item.onCheckedChange}
+                  disabled={item.disabled}
+                  className="border-0 bg-transparent px-0"
+                />
+              ) : item.radioValue !== undefined ? (
+                <SettingsItemContainer
+                  key={item.key}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon ?? null}
+                  iconBackgroundColor={item.iconBackgroundColor}
+                  disabled={item.disabled}
+                  onClick={item.onClick}
+                  trailing={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
+                  className="border-0 bg-transparent px-0"
+                />
+              ) : (
+                <SettingsItemContainer
+                  key={item.key}
+                  title={item.title}
+                  description={item.description}
+                  icon={item.icon ?? null}
+                  iconBackgroundColor={item.iconBackgroundColor}
+                  disabled={item.disabled}
+                  onClick={item.onClick}
+                  trailing={item.trailing}
+                  items={item.items}
+                  className="border-0 bg-transparent px-0"
+                >
+                  {item.content}
+                </SettingsItemContainer>
+              )
             )}
           </span>
         )}
-        <span className="min-w-0 flex-1">
-          <span className="pointer-events-none block">
-            <FittingText text={title} autoFit={autoFitText} className="text-sm font-medium" />
-            {description !== undefined && (
-              <FittingText text={description} autoFit={autoFitText} className="text-sm text-muted-foreground" />
-            )}
-          </span>
-          {children !== undefined && <span className="relative z-10 mt-1 block">{children}</span>}
-        </span>
-
-        {trailing !== undefined ? (
-          <span className="relative z-10 shrink-0">{trailing}</span>
-        ) : collapsible ? (
-          expanded ? (
-            <ChevronDown aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-          ) : (
-            <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-          )
-        ) : isInteractive ? (
-          <ArrowIcon aria-hidden="true" className="pointer-events-none size-4 shrink-0 text-muted-foreground" />
-        ) : null}
-      </div>
-
-      {itemsVisible && (
-        <span className="relative z-10 mt-1 ml-11 block">
-          {items?.map((item) =>
-            item.checked !== undefined && item.toggle ? (
-              <SettingsItemContainer
-                key={item.key}
-                title={item.title}
-                description={item.description}
-                icon={item.icon ?? null}
-                iconBackgroundColor={item.iconBackgroundColor}
-                disabled={item.disabled}
-                onClick={
-                  item.onCheckedChange !== undefined && !item.disabled
-                    ? () => item.onCheckedChange?.(!item.checked)
-                    : undefined
-                }
-                trailing={
-                  <Switch
-                    checked={item.checked}
-                    disabled={item.disabled || item.onCheckedChange === undefined}
-                    onCheckedChange={item.onCheckedChange}
-                    aria-label={item.title}
-                  />
-                }
-                className="border-0 bg-transparent px-0"
-              />
-            ) : item.checked !== undefined ? (
-              <CheckSettingsItem
-                key={item.key}
-                title={item.title}
-                description={item.description}
-                icon={item.icon ?? null}
-                iconBackgroundColor={item.iconBackgroundColor}
-                checked={item.checked}
-                onCheckedChange={item.onCheckedChange}
-                disabled={item.disabled}
-                className="border-0 bg-transparent px-0"
-              />
-            ) : item.radioValue !== undefined ? (
-              <SettingsItemContainer
-                key={item.key}
-                title={item.title}
-                description={item.description}
-                icon={item.icon ?? null}
-                iconBackgroundColor={item.iconBackgroundColor}
-                disabled={item.disabled}
-                onClick={item.onClick}
-                trailing={<RadioGroupItem value={item.radioValue} disabled={item.disabled} aria-label={item.title} />}
-                className="border-0 bg-transparent px-0"
-              />
-            ) : (
-              <SettingsItemContainer
-                key={item.key}
-                title={item.title}
-                description={item.description}
-                icon={item.icon ?? null}
-                iconBackgroundColor={item.iconBackgroundColor}
-                disabled={item.disabled}
-                onClick={item.onClick}
-                trailing={item.trailing}
-                items={item.items}
-                className="border-0 bg-transparent px-0"
-              >
-                {item.content}
-              </SettingsItemContainer>
-            )
-          )}
-        </span>
-      )}
+      </SettingsItemPositionContext.Provider>
     </div>
   );
 }
@@ -380,14 +395,14 @@ export function SettingsItemGroup({ children, className }: SettingsItemGroupProp
   const items = React.Children.toArray(children);
   return (
     <div className={cn('flex flex-col divide-y divide-transparent', className)}>
-      {items.map((child, index) => {
-        if (!React.isValidElement(child)) return child;
-        return React.cloneElement(child as React.ReactElement<SettingsItemContainerProps>, {
-          key: child.key ?? index,
-          hasItemAbove: index > 0,
-          hasItemBelow: index < items.length - 1,
-        });
-      })}
+      {items.map((child, index) => (
+        <SettingsItemPositionContext.Provider
+          key={React.isValidElement(child) ? (child.key ?? index) : index}
+          value={{ hasItemAbove: index > 0, hasItemBelow: index < items.length - 1 }}
+        >
+          {child}
+        </SettingsItemPositionContext.Provider>
+      ))}
     </div>
   );
 }
