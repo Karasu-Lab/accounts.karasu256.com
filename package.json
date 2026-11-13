@@ -19,7 +19,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.1",
     "@karasu-lab/api-permissions": "0.1.0-70bd6e4",
-    "@karasu-lab/flags": "workspace:*",
+    "@karasu-lab/flags": "0.1.0-190fe8c",
     "@karasu-lab/types": "0.1.0-1950a9c",
     "@karasu-lab/ui": "0.1.0-f85edee",
     "@karasu-lab/utils": "0.1.0-be51f04",
