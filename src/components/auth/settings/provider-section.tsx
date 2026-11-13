@@ -168,11 +168,12 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
+              resolved={resolved}
               disabled={provider.disabled}
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
-                !resolved ? null : profile ? (
+                profile ? (
                   <SettingsItemIconButton
                     label={t('connections.unlink')}
                     icon={Unlink}
