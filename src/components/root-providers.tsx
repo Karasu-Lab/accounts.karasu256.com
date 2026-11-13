@@ -3,7 +3,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { R2StorageProvider, Toaster } from '@karasu-lab/ui';
 import { RuntimeClientConfigProvider, type RuntimeClientConfig } from '@/lib/client-config';
+import { AuthClientProvider } from '@/lib/auth/client';
 import { FlagsClientProvider } from './flags-client-provider';
+import { SessionSourceProvider } from './session-source-provider';
 
 let clientConfigPromise: Promise<RuntimeClientConfig> | null = null;
 
@@ -40,12 +42,16 @@ export function RootProviders({ children }: { children: ReactNode }) {
 
   return (
     <RuntimeClientConfigProvider config={state.config}>
-      <R2StorageProvider imageApiUrl={state.config.cdnUrl}>
-        <FlagsClientProvider>
-          {children}
-          <Toaster />
-        </FlagsClientProvider>
-      </R2StorageProvider>
+      <AuthClientProvider config={state.config}>
+        <SessionSourceProvider>
+          <R2StorageProvider imageApiUrl={state.config.cdnUrl}>
+            <FlagsClientProvider>
+              {children}
+              <Toaster />
+            </FlagsClientProvider>
+          </R2StorageProvider>
+        </SessionSourceProvider>
+      </AuthClientProvider>
     </RuntimeClientConfigProvider>
   );
 }

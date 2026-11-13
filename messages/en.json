@@ -220,6 +220,7 @@
     "link": "Connect",
     "unlink": "Disconnect",
     "cannotUnlink": "Cannot remove your last sign-in method.",
+    "cannotUnlinkCurrentSession": "Cannot unlink the account you signed in with in this session.",
     "notLinked": "Not linked",
     "unlinkConfirm": {
       "title": "Unlink this account?",
@@ -281,11 +282,12 @@
     "createdAt": "Created on",
     "current": "Current session",
     "sources": {
-      "browser": "Browser",
-      "desktop": "Desktop",
-      "mobile": "Mobile",
-      "app": "App",
-      "api-key": "API key",
+      "google": "Google",
+      "github": "GitHub",
+      "microsoft": "Microsoft",
+      "xbox": "Xbox",
+      "credential": "Email and password",
+      "passkey": "Passkey",
       "unknown": "Unknown"
     },
     "revoke": "Revoke session",
