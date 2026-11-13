@@ -20,6 +20,7 @@
     "@fortawesome/react-fontawesome": "^3.3.1",
     "@karasu-lab/api-permissions": "0.1.0-70bd6e4",
     "@karasu-lab/flags-sdk": "0.1.0-dab071f",
+    "@karasu-lab/sdk": "workspace:*",
     "@karasu-lab/types": "0.1.0-1950a9c",
     "@karasu-lab/ui": "0.1.0-f85edee",
     "@karasu-lab/utils": "0.1.0-be51f04",
