@@ -1,4 +1,4 @@
-import { createApiFlags } from '@karasu-lab/flags-sdk/server';
+import { createApiFlags } from '@karasu-lab/flags/server';
 import { appFlagsSchema } from '@karasu-lab/types/shared';
 
 export { appFlagsSchema };

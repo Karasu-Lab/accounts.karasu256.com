@@ -17,7 +17,7 @@ const developmentTrustedHosts: string[] = (
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@karasu-lab/ui', '@karasu-lab/utils', '@karasu-lab/flags-sdk'],
+  transpilePackages: ['@karasu-lab/ui', '@karasu-lab/utils', '@karasu-lab/flags'],
   devIndicators: false,
   allowedDevOrigins: developmentTrustedHosts,
 };
