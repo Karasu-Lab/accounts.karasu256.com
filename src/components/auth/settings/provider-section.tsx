@@ -9,7 +9,6 @@ import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
 import { useAuthClient } from '@/lib/auth/client';
 import { useSessionSource } from '@/components/session-source-provider';
-import { useSessionSource } from '@/components/session-source-provider';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { useReportLoading } from '@/components/settings/loading-context';
