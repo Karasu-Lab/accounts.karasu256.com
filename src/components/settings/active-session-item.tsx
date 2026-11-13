@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { Globe, KeyRound, Mail, MonitorSmartphone, Unlink, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { parseSessionSource, type ActiveSession } from '@karasu-lab/types/shared';
+import { sessionSourceParseSchema, type ActiveSession } from '@karasu-lab/types/shared';
 import { SettingsItemContainer, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 
 function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundColor: string }> {
@@ -23,7 +23,8 @@ function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundCo
 export function useSessionProvider(session: ActiveSession | null) {
   const t = useTranslations();
   const providerIcons = useProviderIcons();
-  const providerId = session?.source ? (parseSessionSource(session.source, session.id)?.providerId ?? null) : null;
+  const parsed = sessionSourceParseSchema.safeParse({ source: session?.source, sessionId: session?.id });
+  const providerId = parsed.success ? parsed.data.providerId : null;
   const key = `activeSessions.sources.${providerId}`;
   const { icon = MonitorSmartphone, iconBackgroundColor = '#64748b' } = providerIcons[providerId ?? ''] ?? {};
   return {

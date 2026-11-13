@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import { parseSessionSource, sessionWithSourceSchema } from '@karasu-lab/types/shared';
+import { sessionSourceParseSchema, sessionWithSourceSchema } from '@karasu-lab/types/shared';
 import { useAuthClient } from '@/lib/auth/client';
 
 export interface SessionSourceValue {
@@ -21,8 +21,8 @@ export function SessionSourceProvider({ children }: { children: ReactNode }) {
     const parsed = sessionWithSourceSchema.safeParse(data);
     if (!parsed.success) return EMPTY_SESSION_SOURCE;
     const sessionId = parsed.data.session.id;
-    const source = parsed.data.source ? parseSessionSource(parsed.data.source, sessionId) : null;
-    return { providerId: source?.providerId ?? null, sessionId };
+    const source = sessionSourceParseSchema.safeParse({ source: parsed.data.source, sessionId });
+    return { providerId: source.success ? source.data.providerId : null, sessionId };
   }, [data]);
 
   return <SessionSourceContext.Provider value={value}>{children}</SessionSourceContext.Provider>;
