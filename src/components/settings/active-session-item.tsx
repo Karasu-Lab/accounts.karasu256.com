@@ -38,9 +38,11 @@ interface ActiveSessionItemProps {
   session: ActiveSession;
   revoking: boolean;
   onRevoke: (session: ActiveSession) => void;
+  hasItemAbove?: boolean;
+  hasItemBelow?: boolean;
 }
 
-export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSessionItemProps) {
+export function ActiveSessionItem({ session, revoking, onRevoke, hasItemAbove, hasItemBelow }: ActiveSessionItemProps) {
   const t = useTranslations();
   const { name, icon, iconBackgroundColor } = useSessionProvider(session);
 
@@ -55,6 +57,8 @@ export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSession
       icon={icon}
       iconBackgroundColor={iconBackgroundColor}
       disabled={session.current}
+      hasItemAbove={hasItemAbove}
+      hasItemBelow={hasItemBelow}
       trailing={
         session.current ? undefined : (
           <SettingsItemIconButton

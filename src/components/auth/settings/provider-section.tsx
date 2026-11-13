@@ -159,6 +159,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
       <SettingsItemGroup>
         {providers.map((provider) => {
           const profile = profiles[provider.id] ?? null;
+          const resolved = profilesLoaded || provider.id in profiles;
           const isLoading = loading === provider.id;
           return (
             <LinkedSettingsItem
@@ -171,7 +172,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
-                !profilesLoaded ? null : profile ? (
+                !resolved ? null : profile ? (
                   <SettingsItemIconButton
                     label={t('connections.unlink')}
                     icon={Unlink}
