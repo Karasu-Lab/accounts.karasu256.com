@@ -220,6 +220,7 @@
     "link": "連携",
     "unlink": "解除",
     "cannotUnlink": "最後のサインイン方法は解除できません。",
+    "cannotUnlinkCurrentSession": "現在のセッションでサインインしている連携は解除できません。",
     "notLinked": "連携されていません",
     "unlinkConfirm": {
       "title": "連携を解除しますか",
@@ -281,11 +282,12 @@
     "createdAt": "作成日時",
     "current": "現在のセッション",
     "sources": {
-      "browser": "ブラウザ",
-      "desktop": "デスクトップ",
-      "mobile": "モバイル",
-      "app": "アプリ",
-      "api-key": "APIキー",
+      "google": "Google",
+      "github": "GitHub",
+      "microsoft": "Microsoft",
+      "xbox": "Xbox",
+      "credential": "メールアドレスとパスワード",
+      "passkey": "パスキー",
       "unknown": "不明"
     },
     "revoke": "セッションを破棄",

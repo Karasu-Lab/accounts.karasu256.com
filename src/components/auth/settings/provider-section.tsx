@@ -8,6 +8,8 @@ import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
 import { useAuthClient } from '@/lib/auth/client';
+import { useSessionSource } from '@/components/session-source-provider';
+import { useSessionSource } from '@/components/session-source-provider';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { useReportLoading } from '@/components/settings/loading-context';
@@ -39,6 +41,7 @@ const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
 
 export function ProviderSection({ providers, initialProfiles, profilesLoaded }: ProviderSectionProps) {
   const { authClient, config } = useAuthClient();
+  const { providerId: sessionProviderId } = useSessionSource();
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -97,6 +100,11 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
 
   const linkedProviders = providers.filter((provider) => profiles[provider.id] && !provider.accountProviderId);
   const canUnlink = linkedProviders.length > 1 || hasPasskeys || hasPasswordProvider;
+  const currentSessionProviderLinked = providers.some((provider) => profiles[provider.id] && isCurrentSessionProvider(provider));
+
+  function isCurrentSessionProvider(provider: Provider): boolean {
+    return sessionProviderId !== null && (provider.accountProviderId ?? provider.id) === sessionProviderId;
+  }
 
   async function handleLink(provider: Provider) {
     if (provider.disabled) return;
@@ -169,7 +177,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
                     label={t('connections.unlink')}
                     icon={Unlink}
                     loading={isLoading}
-                    disabled={provider.disabled || !canUnlink || !guardsLoaded}
+                    disabled={provider.disabled || !canUnlink || !guardsLoaded || isCurrentSessionProvider(provider)}
                     onClick={() => setUnlinkTarget(provider)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   />
@@ -187,6 +195,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
         })}
       </SettingsItemGroup>
       {guardsLoaded && !canUnlink && linkedProviders.length > 0 && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlink')}</p>}
+      {currentSessionProviderLinked && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlinkCurrentSession')}</p>}
 
       <ConfirmDialog
         open={unlinkTarget !== null}

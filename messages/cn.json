@@ -220,6 +220,7 @@
     "link": "关联",
     "unlink": "解除关联",
     "cannotUnlink": "无法删除最后一种登录方式。",
+    "cannotUnlinkCurrentSession": "无法取消关联当前会话所使用的登录账户。",
     "notLinked": "未关联",
     "unlinkConfirm": {
       "title": "要取消关联吗",
@@ -281,11 +282,12 @@
     "createdAt": "创建日期",
     "current": "当前会话",
     "sources": {
-      "browser": "浏览器",
-      "desktop": "桌面设备",
-      "mobile": "移动设备",
-      "app": "应用",
-      "api-key": "API 密钥",
+      "google": "Google",
+      "github": "GitHub",
+      "microsoft": "Microsoft",
+      "xbox": "Xbox",
+      "credential": "邮箱和密码",
+      "passkey": "通行密钥",
       "unknown": "未知"
     },
     "revoke": "撤销会话",
