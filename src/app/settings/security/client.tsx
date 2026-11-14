@@ -1,13 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { listLinkedProviders, type ProviderProfile } from '@karasu-lab/utils/client';
+import { useEffect, useState } from 'react';
 import { PasswordSection } from '@/components/auth/settings/password-section';
 import { PasskeyList } from '@/components/auth/passkey-list';
 import { PasskeyCreateDialog } from '@/components/auth/passkey-create-dialog';
 import { DangerZone } from '@/components/auth/settings/danger-zone';
+import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 import { useSettingsUser } from '@/components/settings/user-context';
+import { getSecuritySettings, type SecuritySettings } from '@/lib/api/security';
+import { useAuthClient } from '@/lib/auth/client';
 
 /**
  * The security settings page, composed of editable settings items —
@@ -16,31 +18,31 @@ import { useSettingsUser } from '@/components/settings/user-context';
  * the spinner next to the header title.
  */
 export function SecurityClient() {
+  const authClientHandle = useAuthClient();
+  const reportError = useReportError();
   const { user } = useSettingsUser();
-  const [passkeyVersion, setPasskeyVersion] = useState(0);
-  const [linkedProviders, setLinkedProviders] = useState<Record<string, ProviderProfile>>({});
-  const [providersLoading, setProvidersLoading] = useState(true);
-  useReportLoading('security', providersLoading);
+  const [settings, setSettings] = useState<SecuritySettings | null>(null);
+  useReportLoading('security', settings === null);
+
+  function refresh() {
+    getSecuritySettings(authClientHandle)
+      .then(setSettings)
+      .catch((err) => reportError(err));
+  }
 
   useEffect(() => {
-    listLinkedProviders()
-      .then(setLinkedProviders)
-      .catch(() => {})
-      .finally(() => setProvidersLoading(false));
+    refresh();
   }, []);
 
-  const hasPasswordProvider = useMemo(() => 'credential' in linkedProviders, [linkedProviders]);
-
-  function handlePasswordSet() {
-    setLinkedProviders((prev) => ({ ...prev, credential: { name: null, email: null, avatarUrl: null } }));
-  }
+  const hasPasswordProvider = settings?.hasPassword ?? false;
 
   return (
     <div>
-      <PasswordSection hasPasswordProvider={hasPasswordProvider} loading={providersLoading} onPasswordSet={handlePasswordSet} />
+      <PasswordSection hasPasswordProvider={hasPasswordProvider} loading={settings === null} onPasswordSet={refresh} />
       <PasskeyList
-        version={passkeyVersion}
-        createAction={user.email ? <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} /> : undefined}
+        passkeys={settings?.passkeys ?? null}
+        onChanged={refresh}
+        createAction={user.email ? <PasskeyCreateDialog onSuccess={refresh} /> : undefined}
       />
       <DangerZone hasPasswordProvider={hasPasswordProvider} />
     </div>

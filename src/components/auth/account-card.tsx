@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 import { useAuthClient } from '@/lib/auth/client';
+import { getSecuritySettings, type SecuritySettings } from '@/lib/api/security';
 import { Button } from '@karasu-lab/ui';
 import { Card, CardContent, CardHeader, CardTitle } from '@karasu-lab/ui';
 import { Separator } from '@karasu-lab/ui';
@@ -14,14 +15,25 @@ import { PasskeyList } from './passkey-list';
 import { PasskeyCreateDialog } from './passkey-create-dialog';
 
 export function AccountCard() {
-  const { authClient } = useAuthClient();
+  const authClientHandle = useAuthClient();
+  const { authClient } = authClientHandle;
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [passkeyVersion, setPasskeyVersion] = useState(0);
+  const [settings, setSettings] = useState<SecuritySettings | null>(null);
+
+  function refreshPasskeys() {
+    getSecuritySettings(authClientHandle)
+      .then(setSettings)
+      .catch(() => {});
+  }
 
   useEffect(() => {
     if (!isPending && !session) router.replace('/');
   }, [isPending, session, router]);
+
+  useEffect(() => {
+    if (session) refreshPasskeys();
+  }, [session?.user.id]);
 
   async function handleSignOut() {
     await authClient.signOut();
@@ -69,8 +81,8 @@ export function AccountCard() {
         </div>
         <Separator />
         <p className="text-sm font-medium text-muted-foreground">Passkeys</p>
-        <PasskeyList version={passkeyVersion} />
-        {session.user.email && <PasskeyCreateDialog onSuccess={() => setPasskeyVersion((v) => v + 1)} />}
+        <PasskeyList passkeys={settings?.passkeys ?? null} onChanged={refreshPasskeys} />
+        {session.user.email && <PasskeyCreateDialog onSuccess={refreshPasskeys} />}
         <Separator />
         <Button variant="ghost" className="w-full" onClick={() => router.push('/settings')}>
           Settings
