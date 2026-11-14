@@ -149,6 +149,18 @@ export async function fetchSetUserImage(userId: string, image: string | null): P
   if (!res.ok) throw new InternalApiError();
 }
 
+const avatarUploadUrlSchema = z.object({ uploadUrl: z.url(), path: z.string().min(1) });
+
+export async function fetchAvatarUploadUrl(userId: string, contentType: string): Promise<z.output<typeof avatarUploadUrlSchema>> {
+  const res = await internalFetch(`/internal/users/${encodeURIComponent(userId)}/avatar-upload-url`, userId, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ contentType }),
+  });
+  if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
+  return avatarUploadUrlSchema.parse(await res.json());
+}
+
 async function uploadFetch(path: string, init: RequestInit = {}): Promise<Response> {
   const sessionToken = await fetchSessionToken();
   return fetch(internalUrl(path), {
