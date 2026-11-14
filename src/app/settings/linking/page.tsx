@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { FlagsClientProvider } from '@/components/flags-client-provider';
 import { ProviderSectionClient } from './provider-section-client';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -8,5 +9,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function LinkingPage() {
-  return <ProviderSectionClient />;
+  return (
+    <FlagsClientProvider keys={['useMinecraftAuth']}>
+      <ProviderSectionClient />
+    </FlagsClientProvider>
+  );
 }

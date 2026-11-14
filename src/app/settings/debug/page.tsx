@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
+import { FlagsClientProvider } from '@/components/flags-client-provider';
 import { getApiMeta, type ApiMeta } from '@/lib/api/api-client';
 import { DebugClient } from './client';
 
@@ -19,5 +20,9 @@ async function loadApiMeta(): Promise<ApiMeta | null> {
 }
 
 export default async function DebugPage() {
-  return <DebugClient apiMeta={await loadApiMeta()} />;
+  return (
+    <FlagsClientProvider keys={['testFlag', 'useMinecraftAuth']}>
+      <DebugClient apiMeta={await loadApiMeta()} />
+    </FlagsClientProvider>
+  );
 }

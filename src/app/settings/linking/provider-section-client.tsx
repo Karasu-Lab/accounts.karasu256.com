@@ -8,7 +8,7 @@ import { faCube } from '@fortawesome/free-solid-svg-icons';
 import { SseClient } from '@karasu-lab/sdk/sse';
 import { ProviderStreamEvent, type ProviderStreamEvents } from '@karasu-lab/types/shared';
 import { toast } from '@karasu-lab/ui';
-import { useAppFlags } from '@/components/flags-client-provider';
+import { useAppFlags, useAppFlagsReady } from '@/components/flags-client-provider';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { useRuntimeClientConfig } from '@/lib/client-config';
@@ -22,6 +22,7 @@ export function ProviderSectionClient() {
   const t = useTranslations();
   const config = useRuntimeClientConfig();
   const flags = useAppFlags();
+  const flagsReady = useAppFlagsReady();
   const minecraftAuthEnabled = flags?.useMinecraftAuth ?? false;
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
   const [profilesLoaded, setProfilesLoaded] = useState(false);
@@ -48,6 +49,7 @@ export function ProviderSectionClient() {
   }, [config, minecraftAuthEnabled]);
 
   useEffect(() => {
+    if (!flagsReady) return;
     setProfiles({});
     setProfilesLoaded(false);
     const url = new URL('/api/users/me/providers/stream', config.authApiUrl);
@@ -65,7 +67,7 @@ export function ProviderSectionClient() {
     });
 
     return () => client.close();
-  }, [config.authApiUrl, minecraftAuthEnabled, t]);
+  }, [config.authApiUrl, flagsReady, minecraftAuthEnabled, t]);
 
   return <ProviderSectionLazy providers={providers} initialProfiles={profiles} profilesLoaded={profilesLoaded} />;
 }
