@@ -14,11 +14,16 @@ const flagResponseSchema = z.discriminatedUnion('ok', [
   z.object({ ok: z.literal(false), error: z.string() }),
 ]);
 
-const FlagsContext = createContext<AppFlags | null>(null);
+interface FlagsState {
+  flags: Partial<AppFlags> | null;
+  ready: boolean;
+}
 
-async function fetchFlags(baseUrl: string, origin: string): Promise<AppFlags> {
+const FlagsContext = createContext<FlagsState>({ flags: null, ready: false });
+
+async function fetchFlags(baseUrl: string, origin: string, keys: string[]): Promise<Partial<AppFlags>> {
   const entries = await Promise.all(
-    Object.keys(appFlagsSchema.shape).map(async (key) => {
+    keys.map(async (key) => {
       const path = key.split('/').map(encodeURIComponent).join('/');
       const response = await fetch(new URL(`/api/flags/${path}`, baseUrl), {
         headers: { Origin: origin },
@@ -29,30 +34,35 @@ async function fetchFlags(baseUrl: string, origin: string): Promise<AppFlags> {
       return [key, body.value] as const;
     })
   );
-  return appFlagsSchema.parse(Object.fromEntries(entries));
+  return appFlagsSchema.partial().parse(Object.fromEntries(entries));
 }
 
-export function FlagsClientProvider({ children }: { children: ReactNode }) {
+export function FlagsClientProvider({ keys, children }: { keys: (keyof AppFlags)[]; children: ReactNode }) {
   const config = useRuntimeClientConfig();
-  const [flags, setFlags] = useState<AppFlags | null>(null);
+  const [state, setState] = useState<FlagsState>({ flags: null, ready: false });
+  const keysKey = keys.join(',');
 
   useEffect(() => {
     let cancelled = false;
-    fetchFlags(config.featureFlagsApiUrl, config.featureFlagsOrigin)
+    fetchFlags(config.featureFlagsApiUrl, config.featureFlagsOrigin, keysKey.split(','))
       .then((resolved) => {
-        if (!cancelled) setFlags(resolved);
+        if (!cancelled) setState({ flags: resolved, ready: true });
       })
       .catch(() => {
-        if (!cancelled) setFlags(null);
+        if (!cancelled) setState({ flags: null, ready: true });
       });
     return () => {
       cancelled = true;
     };
-  }, [config.featureFlagsApiUrl, config.featureFlagsOrigin]);
+  }, [config.featureFlagsApiUrl, config.featureFlagsOrigin, keysKey]);
 
-  return <FlagsContext.Provider value={flags}>{children}</FlagsContext.Provider>;
+  return <FlagsContext.Provider value={state}>{children}</FlagsContext.Provider>;
 }
 
-export function useAppFlags(): AppFlags | null {
-  return useContext(FlagsContext);
+export function useAppFlags(): Partial<AppFlags> | null {
+  return useContext(FlagsContext).flags;
+}
+
+export function useAppFlagsReady(): boolean {
+  return useContext(FlagsContext).ready;
 }
