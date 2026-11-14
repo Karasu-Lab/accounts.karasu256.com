@@ -1,11 +1,9 @@
 import { createHash } from 'node:crypto';
 import type { CompleteIconUploadResult, IconFileValidationError, PreparedIconUpload } from '@karasu-lab/types/shared';
 import { deleteUploadedImage } from '@karasu-lab/utils/server';
-import { fetchSetFirebasePhoto, fetchSetUserImage, fetchVerifyUpload } from '@/lib/api/internal';
+import { fetchAvatarUploadUrl, fetchSetFirebasePhoto, fetchSetUserImage, fetchVerifyUpload } from '@/lib/api/internal';
 import { getProviderProfile } from '@/lib/auth/provider-profile';
 import { signUploadIntent, verifyUploadIntent } from './intent';
-import { avatarCdnPath } from './paths';
-import { presignUploadUrl } from './presign';
 
 export const MAX_ICON_FILE_BYTES = 5 * 1024 * 1024;
 export const ALLOWED_ICON_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -20,8 +18,7 @@ export function validateIconFile(contentType: string, size: number): IconFileVal
 
 export async function prepareIconUpload(userId: string, bytes: Buffer, contentType: string): Promise<PreparedIconUpload> {
   const sha256 = createHash('sha256').update(bytes).digest('hex');
-  const path = avatarCdnPath(userId);
-  const uploadUrl = await presignUploadUrl(path, contentType);
+  const { uploadUrl, path } = await fetchAvatarUploadUrl(userId, contentType);
   const intent = signUploadIntent({ userId, path, sha256, contentType, size: bytes.byteLength });
   return { uploadUrl, intent };
 }
