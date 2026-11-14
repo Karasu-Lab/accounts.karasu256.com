@@ -1,8 +1,8 @@
 'use client';
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
-import { sessionSourceParseSchema, sessionWithSourceSchema } from '@karasu-lab/types/shared';
 import { useAuthClient } from '@/lib/auth/client';
+import { sessionSourceParseSchema, sessionWithSourceSchema } from '@/lib/session-schemas';
 
 export interface SessionSourceValue {
   providerId: string | null;
