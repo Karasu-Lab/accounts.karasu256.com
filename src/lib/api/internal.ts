@@ -2,13 +2,13 @@ import { createHash, createPrivateKey, randomUUID, sign } from 'node:crypto';
 import { headers } from 'next/headers';
 import { z } from 'zod';
 import {
-  activeSessionSchema,
   type ActiveSession,
   type FirebasePhotoResult,
   type UploadVerifyRequest,
   type VerifiedUpload,
 } from '@karasu-lab/types/shared';
 import { MissingEnvError, vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
+import { activeSessionSchema } from '../session-schemas';
 import { InternalApiError } from './internal-api-error';
 
 export type { FirebasePhotoResult, UploadVerifyRequest, VerifiedUpload };

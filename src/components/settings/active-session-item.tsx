@@ -3,8 +3,9 @@
 import { useMemo } from 'react';
 import { Globe, KeyRound, Mail, MonitorSmartphone, Unlink, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { sessionSourceParseSchema, type ActiveSession } from '@karasu-lab/types/shared';
+import type { ActiveSession } from '@karasu-lab/types/shared';
 import { SettingsItemContainer, SettingsItemIconButton } from '@/components/settings/settings-item-container';
+import { sessionSourceParseSchema } from '@/lib/session-schemas';
 
 function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundColor: string }> {
   return useMemo(
