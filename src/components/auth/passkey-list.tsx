@@ -1,12 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog, DeleteIconButton, AnimatedList, AnimatedListItem } from '@karasu-lab/ui';
 import { useAuthClient } from '@/lib/auth/client';
+import type { SecuritySettings } from '@/lib/api/security';
 import { EditableSettingsItem } from '@/components/settings/editable-settings-item';
-import { useReportError } from '@/components/settings/error-context';
-import { useReportLoading } from '@/components/settings/loading-context';
 
 interface CredentialSummary {
   id: string;
@@ -15,40 +14,25 @@ interface CredentialSummary {
 }
 
 interface PasskeyListProps {
-  version: number;
+  passkeys: SecuritySettings['passkeys'] | null;
+  onChanged: () => void;
   createAction?: React.ReactNode;
 }
 
-export function PasskeyList({ version, createAction }: PasskeyListProps) {
+export function PasskeyList({ passkeys, onChanged, createAction }: PasskeyListProps) {
   const { authClient } = useAuthClient();
   const t = useTranslations();
-  const reportError = useReportError();
   const [credentials, setCredentials] = useState<CredentialSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-  useReportLoading('security-passkeys', loading);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set());
   const [pendingDelete, setPendingDelete] = useState<CredentialSummary | null>(null);
-  const initialized = useRef(false);
-
-  const fetchCredentials = useCallback(async () => {
-    const { data } = await authClient.passkey.listUserPasskeys();
-    setCredentials(
-      (data ?? []).map((p) => ({ id: p.id, name: p.name ?? t('passkey.none'), createdAt: p.createdAt ? new Date(p.createdAt).getTime() : null }))
-    );
-  }, [t]);
 
   useEffect(() => {
-    if (!initialized.current) {
-      setLoading(true);
-    }
-    fetchCredentials()
-      .catch((err) => reportError(err))
-      .finally(() => {
-        initialized.current = true;
-        setLoading(false);
-      });
-  }, [fetchCredentials, version]);
+    if (!passkeys) return;
+    setCredentials(
+      passkeys.map((p) => ({ id: p.id, name: p.name ?? t('passkey.none'), createdAt: p.createdAt ? new Date(p.createdAt).getTime() : null }))
+    );
+  }, [passkeys, t]);
 
   async function handleDelete(id: string) {
     setDeletingIds((prev) => new Set(prev).add(id));
@@ -72,9 +56,10 @@ export function PasskeyList({ version, createAction }: PasskeyListProps) {
       s.delete(id);
       return s;
     });
+    onChanged();
   }
 
-  if (loading) {
+  if (!passkeys) {
     return <EditableSettingsItem label={t('passkey.title')} value="" />;
   }
 
