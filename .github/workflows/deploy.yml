@@ -34,7 +34,7 @@ jobs:
           secrets-json: ${{ toJSON(secrets) }}
 
   preview:
-    if: github.ref_name != 'main'
+    if: github.ref_name != 'main' && github.actor != 'dependabot[bot]'
     environment: preview
     runs-on: ubuntu-latest
     permissions:
