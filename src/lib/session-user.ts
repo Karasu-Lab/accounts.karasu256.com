@@ -17,9 +17,17 @@ async function fetchSessionUser(cookie: string): Promise<SessionUser> {
   });
   if (!res.ok) throw new Error(`get-session responded ${res.status}`);
 
-  const data = (await res.json()) as { user?: { id: string; email?: string | null; name?: string | null; image?: string | null } } | null;
+  const data = (await res.json()) as {
+    user?: { id: string; email?: string | null; name?: string | null; image?: string | null; emailVerified?: boolean };
+  } | null;
   if (!data?.user) throw new Error('No session');
-  return { id: data.user.id, email: data.user.email ?? null, name: data.user.name ?? null, image: data.user.image ?? null };
+  return {
+    id: data.user.id,
+    email: data.user.email ?? null,
+    name: data.user.name ?? null,
+    image: data.user.image ?? null,
+    emailVerified: data.user.emailVerified,
+  };
 }
 
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {

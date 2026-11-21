@@ -199,8 +199,8 @@ importers:
         specifier: 0.1.0-b98320f
         version: 0.1.0-b98320f(3a7365069b796faab48971cef12e160a)
       '@karasu-lab/types':
-        specifier: 0.1.0-80684cd
-        version: 0.1.0-80684cd
+        specifier: 0.1.0-4644ed3
+        version: 0.1.0-4644ed3
       '@karasu-lab/ui':
         specifier: 0.1.0-cff91d7
         version: 0.1.0-cff91d7(@types/react@19.3.0)(next@16.4.6(@babel/core@7.29.7(supports-color@10.2.2))(@opentelemetry/api@1.10.0)(@playwright/test@1.65.1)(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(supports-color@10.2.2)
@@ -1340,8 +1340,8 @@ packages:
   '@karasu-lab/sse@0.1.0-c5de6bd':
     resolution: {integrity: sha512-fO3SdfMLI9Hnq0tKSIffm1JKH781FUtYPISpO6y0kzpeAM08xBQYRIkSjpzBVeA14LHLmwK6DiN6uus0CDzCHw==, tarball: https://npm.pkg.github.com/download/@karasu-lab/sse/0.1.0-c5de6bd/c2babb5a55fd18925b611fcffa3a14f3d7cb1acb}
 
-  '@karasu-lab/types@0.1.0-80684cd':
-    resolution: {integrity: sha512-xSeug6wB234+0U0vHOF3Hq/tC4gz+a58vIAUGazJjxnR/47me9fgVMNv3sAENxY++ORB1hWyVsBtdU2H7zCkgQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-80684cd/501b3544b685b602e86023746fe6bc6221751489}
+  '@karasu-lab/types@0.1.0-4644ed3':
+    resolution: {integrity: sha512-44MhHrITreyG3jwYdx/uBxCLmLmuHobjF4OZVaOC/csLqckFIJBZf5faCZ5kW2oIzWMJzvkRXDFVeVSuqqSqrA==, tarball: https://npm.pkg.github.com/download/@karasu-lab/types/0.1.0-4644ed3/c0699ad50a590f74475dc1cdbd2780f3f3b59973}
 
   '@karasu-lab/ui@0.1.0-cff91d7':
     resolution: {integrity: sha512-8HW2OeLgBMSrs4kusoLHHInQ5y5VMbsPdVz7tbC0vYE1iPWVVxmzfSgtwgOXFdgaNIaDaNlhxkmi4uhy37HVUQ==, tarball: https://npm.pkg.github.com/download/@karasu-lab/ui/0.1.0-cff91d7/ce09bf3055d399ee4769cbd61178a2d8770cd964}
@@ -5861,7 +5861,7 @@ snapshots:
 
   '@karasu-lab/sse@0.1.0-c5de6bd': {}
 
-  '@karasu-lab/types@0.1.0-80684cd':
+  '@karasu-lab/types@0.1.0-4644ed3':
     dependencies:
       zod: 4.6.7
 
