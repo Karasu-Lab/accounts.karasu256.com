@@ -228,6 +228,14 @@
       "cancel": "取消"
     },
     "linked": "已关联 {provider}。",
+    "minecraftVerify": {
+      "title": "验证 Minecraft 账号",
+      "description": "加入 Minecraft 服务器后，请输入显示的 6 位验证码。",
+      "codeLabel": "验证码",
+      "verify": "验证",
+      "cancel": "取消",
+      "failed": "验证失败，请检查验证码后重试。"
+    },
     "error": {
       "provider_already_linked": "此账户已关联至其他用户。",
       "missing_token": "认证失败，请重试。",

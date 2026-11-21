@@ -228,6 +228,14 @@
       "cancel": "Cancel"
     },
     "linked": "{provider} connected.",
+    "minecraftVerify": {
+      "title": "Verify your Minecraft account",
+      "description": "Join the Minecraft server to get a 6-character code, then enter it here.",
+      "codeLabel": "Verification code",
+      "verify": "Verify",
+      "cancel": "Cancel",
+      "failed": "Verification failed. Check the code and try again."
+    },
     "error": {
       "provider_already_linked": "This account is already connected to another user.",
       "missing_token": "Authentication failed. Please try again.",

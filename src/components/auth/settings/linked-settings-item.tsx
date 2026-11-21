@@ -41,7 +41,7 @@ export function LinkedSettingsItem({
   return (
     <SettingsItemContainer
       title={profile ? (profile.name ?? profile.email ?? providerLabel) : providerLabel}
-      description={profile ? (profile.email ?? '') : notLinkedDescription}
+      description={profile ? (profile.email ?? profile.accountId ?? '') : notLinkedDescription}
       autoFitText={profile !== null}
       disabled={disabled}
       iconNode={
@@ -54,9 +54,7 @@ export function LinkedSettingsItem({
         )
       }
       iconImageSrc={showTextureAvatar ? undefined : avatarUrl}
-      iconBadge={
-        avatarUrl ? <FontAwesomeIcon icon={providerIcon} className="size-2.5 text-foreground" /> : undefined
-      }
+      iconBadge={avatarUrl ? <FontAwesomeIcon icon={providerIcon} className="size-2.5 text-foreground" /> : undefined}
       iconBackgroundColor={iconBackgroundColor}
       trailing={resolved ? trailing : undefined}
       hasItemAbove={hasItemAbove}

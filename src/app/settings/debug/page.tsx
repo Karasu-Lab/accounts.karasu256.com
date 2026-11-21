@@ -21,7 +21,7 @@ async function loadApiMeta(): Promise<ApiMeta | null> {
 
 export default async function DebugPage() {
   return (
-    <FlagsClientProvider keys={['testFlag', 'useMinecraftAuth']}>
+    <FlagsClientProvider keys={['testFlag']}>
       <DebugClient apiMeta={await loadApiMeta()} />
     </FlagsClientProvider>
   );

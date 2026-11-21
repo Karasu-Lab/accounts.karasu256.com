@@ -3,6 +3,7 @@ import { buildUriWithNext } from '@karasu-lab/utils/uri';
 
 const clientConfigEnvSchema = z.object({
   AUTH_API_URL: z.url(),
+  MC_AUTH_URL: z.url(),
   AUTH_URL: z.url(),
   ROOT_APP_URL: z.url(),
   CDN_URL: z.url(),
@@ -15,6 +16,7 @@ const clientConfigEnvSchema = z.object({
 
 export interface ClientConfig {
   authApiUrl: string;
+  mcAuthUrl: string;
   authUrl: string;
   rootAppUrl: string;
   cdnUrl: string;
@@ -29,6 +31,7 @@ export function getClientConfig(): ClientConfig {
   const env = clientConfigEnvSchema.parse(process.env);
   return {
     authApiUrl: env.AUTH_API_URL,
+    mcAuthUrl: env.MC_AUTH_URL,
     authUrl: env.AUTH_URL,
     rootAppUrl: env.ROOT_APP_URL,
     cdnUrl: env.CDN_URL,

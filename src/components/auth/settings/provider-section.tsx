@@ -13,6 +13,7 @@ import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemGroup, SettingsItemIconButton } from '@/components/settings/settings-item-container';
 import { useReportLoading } from '@/components/settings/loading-context';
 import { LinkedSettingsItem } from '@/components/auth/settings/linked-settings-item';
+import { MinecraftVerifyDialog } from '@/components/settings/minecraft-verify-dialog';
 
 export interface Provider {
   id: string;
@@ -21,7 +22,6 @@ export interface Provider {
   textureAvatar?: boolean;
   accountProviderId?: string;
   linkedAccountProviderIds?: string[];
-  disabled?: boolean;
 }
 
 interface ProviderSectionProps {
@@ -52,6 +52,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
   }, [initialProfiles]);
   const [loading, setLoading] = useState<string | null>(null);
   const [unlinkTarget, setUnlinkTarget] = useState<Provider | null>(null);
+  const [minecraftVerifyOpen, setMinecraftVerifyOpen] = useState(false);
   const [hasPasskeys, setHasPasskeys] = useState(false);
   const [hasPasswordProvider, setHasPasswordProvider] = useState(false);
   const [guardsLoaded, setGuardsLoaded] = useState(false);
@@ -105,8 +106,18 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
     return sessionProviderId !== null && (provider.accountProviderId ?? provider.id) === sessionProviderId;
   }
 
+  async function refreshMinecraftProfile() {
+    const res = await fetch('/api/users/me/providers/minecraft/details');
+    if (!res.ok) return;
+    const profile = (await res.json()) as ProviderProfile;
+    setProfiles((prev) => ({ ...prev, minecraft: profile }));
+  }
+
   async function handleLink(provider: Provider) {
-    if (provider.disabled) return;
+    if (provider.id === 'minecraft') {
+      setMinecraftVerifyOpen(true);
+      return;
+    }
     setLoading(provider.id);
     if (provider.accountProviderId) {
       window.location.assign(`${config.authApiUrl.replace(/\/+$/, '')}/api/${provider.accountProviderId}/link`);
@@ -131,7 +142,6 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
   }
 
   async function handleUnlink(provider: Provider) {
-    if (provider.disabled) return;
     setLoading(provider.id);
     try {
       const accountProviderId = provider.accountProviderId ?? provider.id;
@@ -169,7 +179,6 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               providerIcon={provider.icon}
               profile={profile}
               resolved={resolved}
-              disabled={provider.disabled}
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
@@ -178,11 +187,11 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
                     label={t('connections.unlink')}
                     icon={Unlink}
                     loading={isLoading}
-                    disabled={provider.disabled || !canUnlink || !guardsLoaded || isCurrentSessionProvider(provider)}
+                    disabled={!canUnlink || !guardsLoaded || isCurrentSessionProvider(provider)}
                     onClick={() => setUnlinkTarget(provider)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   />
-                ) : provider.disabled || !guardsLoaded ? null : (
+                ) : !guardsLoaded ? null : (
                   <SettingsItemIconButton
                     label={t('connections.link')}
                     icon={Link2}
@@ -197,6 +206,8 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
       </SettingsItemGroup>
       {guardsLoaded && !canUnlink && linkedProviders.length > 0 && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlink')}</p>}
       {currentSessionProviderLinked && <p className="text-xs text-muted-foreground">{t('connections.cannotUnlinkCurrentSession')}</p>}
+
+      <MinecraftVerifyDialog open={minecraftVerifyOpen} onOpenChange={setMinecraftVerifyOpen} onVerified={refreshMinecraftProfile} />
 
       <ConfirmDialog
         open={unlinkTarget !== null}
