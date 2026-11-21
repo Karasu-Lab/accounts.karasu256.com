@@ -48,8 +48,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       const result = await listAccounts();
       accountsLoadedRef.current = true;
       setAccounts(result.accounts.filter((a) => a.uid !== activeUid));
-    } catch {
-    }
+    } catch {}
   }, []);
 
   const ensureAccounts = useCallback(() => {
@@ -155,7 +154,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       const baseUser: SettingsUser = {
         id: initialUser.id,
         email: initialUser.email ?? '',
-        emailVerified: false,
+        emailVerified: initialUser.emailVerified ?? true,
         name: initialUser.name ?? '',
         image: initialUser.image,
       };

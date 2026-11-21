@@ -215,6 +215,13 @@
       "unknown": "发生错误，请重试。"
     }
   },
+  "emailVerification": {
+    "banner": "您的邮箱地址尚未验证。",
+    "send": "发送验证邮件",
+    "sent": "验证邮件已发送。",
+    "rateLimited": "验证邮件请求过于频繁，请稍后再试。",
+    "failed": "无法发送验证邮件。"
+  },
   "connections": {
     "title": "关联账户",
     "link": "关联",

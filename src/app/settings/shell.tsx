@@ -7,6 +7,7 @@ import { ChevronLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, LoadingView, Spinner } from '@karasu-lab/ui';
 import { cn } from '@/lib/utils';
+import { EmailVerificationBanner } from '@/components/settings/email-verification-banner';
 import { HeaderAccountMenu } from '@/components/settings/header-account-menu';
 import { ErrorProvider, useClearError, useErrors } from '@/components/settings/error-context';
 import { LoadingProvider, useIsLoading, useIsLoadingKey } from '@/components/settings/loading-context';
@@ -103,6 +104,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
             />
           </div>
         </header>
+        {userContext.ready && !userContext.user.emailVerified && <EmailVerificationBanner />}
         <main className="relative min-h-0 flex-1 overflow-auto px-6 py-8 lg:px-10">
           <UserContext.Provider key={userContext.ready ? userContext.user.id : 'pending'} value={userContext}>
             {children}

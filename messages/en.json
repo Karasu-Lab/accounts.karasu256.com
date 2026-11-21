@@ -215,6 +215,13 @@
       "unknown": "An error occurred. Please try again."
     }
   },
+  "emailVerification": {
+    "banner": "Your email address is not verified.",
+    "send": "Send verification email",
+    "sent": "Verification email sent.",
+    "rateLimited": "Too many verification emails were requested. Please try again later.",
+    "failed": "Could not send the verification email."
+  },
   "connections": {
     "title": "Connected accounts",
     "link": "Connect",
