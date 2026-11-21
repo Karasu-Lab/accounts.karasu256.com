@@ -38,7 +38,7 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const t = useTranslations();
   const userContext = useSettingsUser();
-  const { appUrl, onSignOut, onAddAccount } = useSettingsMenu();
+  const { appUrl, accounts, onAccountsMenuOpen, onSignOut, onSwitchAccount, onAddAccount, onRemoveAccount } = useSettingsMenu();
   const isLoading = useIsLoading();
   const signingOut = useIsLoadingKey('sign-out');
   const errors = useErrors();
@@ -92,7 +92,16 @@ function SettingsShellChrome({ children }: { children: ReactNode }) {
           <h1 className="truncate text-base font-semibold">{pageTitle}</h1>
           {isLoading && !signingOut && <Spinner className="ml-2 size-4 shrink-0" />}
           <div className="ml-auto flex shrink-0 items-center pl-4">
-            <HeaderAccountMenu user={headerUser} appUrl={appUrl} onSignOut={onSignOut} onAddAccount={onAddAccount} />
+            <HeaderAccountMenu
+              user={headerUser}
+              appUrl={appUrl}
+              onSignOut={onSignOut}
+              accounts={accounts}
+              onAccountsMenuOpen={onAccountsMenuOpen}
+              onSwitchAccount={onSwitchAccount}
+              onAddAccount={onAddAccount}
+              onRemoveAccount={onRemoveAccount}
+            />
           </div>
         </header>
         {userContext.ready && !userContext.user.emailVerified && <EmailVerificationBanner />}
