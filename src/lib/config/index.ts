@@ -1,6 +1,3 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { parse as parseYaml } from 'yaml';
 import { z } from 'zod';
 
 const webauthnSchema = z.object({
@@ -21,38 +18,23 @@ export type ServerConfig = {
 
 let cached: ServerConfig | undefined;
 
-/** Reads and validates one `config/*.yml` file as a partial config. */
-function readConfigFile(fileName: string) {
-  const filePath = path.join(process.cwd(), 'config', fileName);
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  return configFileSchema.parse(parseYaml(raw));
+function parseConfig(raw: string | undefined, name: string) {
+  if (raw === undefined) throw new Error(`The ${name} server config was not inlined at build time.`);
+  return configFileSchema.parse(JSON.parse(raw));
 }
 
-/**
- * Selects the environment-specific config file name: `config.preview.yml` on
- * preview deployments (`APP_ENV=preview`, set by the worker's vars for the
- * preview environment, e.g. dev.accounts.karasu256.com, which serves a real
- * host distinct from both localhost and production), otherwise
- * `config.production.yml` or `config.development.yml` by `NODE_ENV`.
- */
-function getEnvConfigFileName(): string {
-  if (process.env.APP_ENV === 'preview') return 'config.preview.yml';
-  return process.env.NODE_ENV === 'production' ? 'config.production.yml' : 'config.development.yml';
+function getEnvConfig() {
+  if (process.env.APP_ENV === 'preview') return parseConfig(process.env.SERVER_CONFIG_PREVIEW, 'preview');
+  return process.env.NODE_ENV === 'production'
+    ? parseConfig(process.env.SERVER_CONFIG_PRODUCTION, 'production')
+    : parseConfig(process.env.SERVER_CONFIG_DEVELOPMENT, 'development');
 }
 
-/**
- * Returns the validated server configuration, merging `config/config.default.yml`
- * with the environment-specific config file (the latter overriding the
- * former) and server-only environment variables. Result is cached for the
- * lifetime of the Node.js process.
- *
- * @throws when a config file is missing or the merged result fails validation.
- */
 export function getServerConfig(): ServerConfig {
   if (cached !== undefined) return cached;
 
-  const defaults = readConfigFile('config.default.yml');
-  const overrides = readConfigFile(getEnvConfigFileName());
+  const defaults = parseConfig(process.env.SERVER_CONFIG_DEFAULT, 'default');
+  const overrides = getEnvConfig();
 
   const webauthn = webauthnSchema.parse({
     ...defaults.webauthn,

@@ -1,7 +1,5 @@
-import { createHash } from 'node:crypto';
 import { cache } from 'react';
 import { headers } from 'next/headers';
-import { unstable_cache } from 'next/cache';
 import { getSessionCookie } from 'better-auth/cookies';
 import { vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
 import type { SessionUser } from '@karasu-lab/types/shared';
@@ -14,6 +12,7 @@ async function fetchSessionUser(cookie: string): Promise<SessionUser> {
       cookie,
       ...vercelProtectionBypassHeaders(process.env.VERCEL_PROTECTION_BYPASS_SECRET),
     },
+    cache: 'no-store',
   });
   if (!res.ok) throw new Error(`get-session responded ${res.status}`);
 
@@ -35,7 +34,5 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const sessionCookie = getSessionCookie(requestHeaders);
   if (!sessionCookie) return null;
 
-  const cookie = requestHeaders.get('cookie') ?? '';
-  const cookieHash = createHash('sha256').update(sessionCookie).digest('hex');
-  return unstable_cache(() => fetchSessionUser(cookie), ['session-user', cookieHash], { revalidate: 30 })().catch(() => null);
+  return fetchSessionUser(requestHeaders.get('cookie') ?? '').catch(() => null);
 });
