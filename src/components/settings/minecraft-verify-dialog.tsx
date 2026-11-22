@@ -51,7 +51,7 @@ export function MinecraftVerifyDialog({ open, onOpenChange, onVerified }: Minecr
       url.searchParams.set('code', code);
       const res = await fetch(url, { credentials: 'include' });
       if (!res.ok) {
-        toast.error(t('failed'));
+        toast.error(res.status === 409 ? t('alreadyLinked') : t('failed'));
         return;
       }
       await onVerified();
