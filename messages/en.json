@@ -245,7 +245,8 @@
       "codeLabel": "Verification code",
       "verify": "Verify",
       "cancel": "Cancel",
-      "failed": "Verification failed. Check the code and try again."
+      "failed": "Verification failed. Check the code and try again.",
+      "alreadyLinked": "This player is already linked to another account."
     },
     "error": {
       "provider_already_linked": "This account is already connected to another user.",
