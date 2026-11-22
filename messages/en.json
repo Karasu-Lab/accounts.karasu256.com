@@ -238,6 +238,10 @@
     "minecraftVerify": {
       "title": "Verify your Minecraft account",
       "description": "Join the Minecraft server to get a 6-character code, then enter it here.",
+      "serverAddress": "Server address",
+      "copyAddress": "Copy server address",
+      "addressCopied": "Copied the server address.",
+      "copyFailed": "Failed to copy.",
       "codeLabel": "Verification code",
       "verify": "Verify",
       "cancel": "Cancel",
