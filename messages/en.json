@@ -246,7 +246,7 @@
       "verify": "Verify",
       "cancel": "Cancel",
       "failed": "Verification failed. Check the code and try again.",
-      "alreadyLinked": "This player is already linked to another account."
+      "alreadyLinked": "This player is already linked to another user."
     },
     "error": {
       "provider_already_linked": "This account is already connected to another user.",
