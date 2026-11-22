@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp';
+import { Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button, Dialog, DialogBackdrop, DialogPopup, DialogPortal, DialogTitle, Label, toast } from '@karasu-lab/ui';
 import { useRuntimeClientConfig } from '@/lib/client-config';
+import { loadMinecraftServerAddress } from '@/lib/actions/minecraft';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { LoadingButton } from '@/components/ui/loading-button';
 
@@ -21,10 +23,25 @@ export function MinecraftVerifyDialog({ open, onOpenChange, onVerified }: Minecr
   const config = useRuntimeClientConfig();
   const [code, setCode] = useState('');
   const [verifying, setVerifying] = useState(false);
+  const [address, setAddress] = useState<string | null>(null);
 
   useEffect(() => {
-    if (open) setCode('');
+    if (!open) return;
+    setCode('');
+    loadMinecraftServerAddress()
+      .then(setAddress)
+      .catch(() => setAddress(null));
   }, [open]);
+
+  async function handleCopyAddress() {
+    if (!address) return;
+    try {
+      await navigator.clipboard.writeText(address);
+      toast.success(t('addressCopied'));
+    } catch {
+      toast.error(t('copyFailed'));
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,6 +77,17 @@ export function MinecraftVerifyDialog({ open, onOpenChange, onVerified }: Minecr
           <DialogTitle>{t('title')}</DialogTitle>
           <form onSubmit={handleSubmit} className="space-y-4 pt-4">
             <p className="text-sm text-muted-foreground">{t('description')}</p>
+            {address && (
+              <div className="space-y-1">
+                <p className="text-sm font-medium">{t('serverAddress')}</p>
+                <div className="flex items-center justify-between gap-2 rounded-md border py-1 pl-3 pr-1">
+                  <code className="truncate text-sm">{address}</code>
+                  <Button type="button" size="icon" variant="ghost" aria-label={t('copyAddress')} onClick={() => void handleCopyAddress()}>
+                    <Copy className="size-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
             <div className="space-y-1">
               <Label htmlFor="minecraft-verify-code" className="sr-only">
                 {t('codeLabel')}

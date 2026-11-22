@@ -238,6 +238,10 @@
     "minecraftVerify": {
       "title": "Minecraft アカウントを認証",
       "description": "Minecraft サーバーに参加して表示された 6 桁のコードを入力してください。",
+      "serverAddress": "サーバーアドレス",
+      "copyAddress": "サーバーアドレスをコピー",
+      "addressCopied": "サーバーアドレスをコピーしました。",
+      "copyFailed": "コピーに失敗しました。",
       "codeLabel": "認証コード",
       "verify": "認証",
       "cancel": "キャンセル",
