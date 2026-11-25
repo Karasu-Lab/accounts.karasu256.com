@@ -23,7 +23,7 @@ export type OAuthProvider = z.infer<typeof oauthProvidersSchema>['providers'][nu
 export async function fetchOAuthProviders(): Promise<OAuthProvider[]> {
   const base = process.env.API_URL;
   if (!base) throw new MissingEnvError('API_URL');
-  const res = await fetch(`${base}/api/oauth/providers?usage=link`, { next: { revalidate: 300 } });
+  const res = await fetch(`${base}/api/oauth/providers?usage=link`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`api.karasu256.com responded ${res.status} for ${res.url}`);
   return oauthProvidersSchema.parse(await res.json()).providers;
 }
