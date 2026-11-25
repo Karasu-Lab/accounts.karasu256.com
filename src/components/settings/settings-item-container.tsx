@@ -36,6 +36,7 @@ export interface SettingsItemContainerProps {
   iconNode?: React.ReactNode;
   iconBadge?: React.ReactNode;
   iconBackgroundColor?: string;
+  iconBackgroundColorDark?: string;
   arrowIcon?: LucideIcon;
   href?: string;
   onClick?: () => void | Promise<void>;
@@ -122,6 +123,7 @@ export function SettingsItemContainer({
   iconNode,
   iconBadge,
   iconBackgroundColor = DEFAULT_ICON_BACKGROUND_COLOR,
+  iconBackgroundColorDark = iconBackgroundColor,
   arrowIcon: ArrowIcon = ChevronRight,
   href,
   onClick,
@@ -222,8 +224,8 @@ export function SettingsItemContainer({
           {(Icon !== null || iconImageSrc !== undefined || iconNode !== undefined) && (
             <span aria-hidden="true" className="pointer-events-none relative shrink-0">
               <span
-                className="flex size-8 items-center justify-center overflow-hidden rounded-md"
-                style={{ backgroundColor: iconBackgroundColor }}
+                className="flex size-8 items-center justify-center overflow-hidden rounded-md bg-(--icon-background) dark:bg-(--icon-background-dark)"
+                style={{ '--icon-background': iconBackgroundColor, '--icon-background-dark': iconBackgroundColorDark } as React.CSSProperties}
               >
                 {iconImageSrc && !iconImageFailed ? (
                   <img src={iconImageSrc} alt="" className="size-full object-cover" onError={() => setIconImageFailed(true)} />

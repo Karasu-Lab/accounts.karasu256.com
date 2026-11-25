@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Link2, Unlink } from 'lucide-react';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
@@ -18,7 +17,9 @@ import { MinecraftVerifyDialog } from '@/components/settings/minecraft-verify-di
 export interface Provider {
   id: string;
   label: string;
-  icon: IconDefinition;
+  iconUrl: string;
+  backgroundColor: { default: string; dark: string };
+  foregroundColor: { default: string; dark: string };
   textureAvatar?: boolean;
   accountProviderId?: string;
   linkedAccountProviderIds?: string[];
@@ -29,16 +30,6 @@ interface ProviderSectionProps {
   initialProfiles: Record<string, ProviderProfile | null>;
   profilesLoaded: boolean;
 }
-
-const PROVIDER_ICON_BACKGROUND_COLORS: Record<string, string> = {
-  google: '#4285f4',
-  github: '#24292f',
-  microsoft: '#00adef',
-  twitter: '#000000',
-  discord: '#5865f2',
-  xbox: '#107c10',
-  minecraft: '#6a9c3f',
-};
 
 export function ProviderSection({ providers, initialProfiles, profilesLoaded }: ProviderSectionProps) {
   const { authClient, config } = useAuthClient();
@@ -178,10 +169,11 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               key={provider.id}
               textureAvatar={provider.textureAvatar}
               providerLabel={provider.label}
-              providerIcon={provider.icon}
+              providerIconUrl={provider.iconUrl}
               profile={profile}
               notLinkedDescription={t('connections.notLinked')}
-              iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
+              iconBackgroundColor={provider.backgroundColor}
+              iconForegroundColor={provider.foregroundColor}
               trailing={
                 profile ? (
                   <SettingsItemIconButton

@@ -1,17 +1,17 @@
 'use client';
 
 import * as React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemContainer } from '@/components/settings/settings-item-container';
 import { MinecraftAvatar } from './minecraft-avatar';
+import { ProviderIcon } from './provider-icon';
 
 export interface LinkedSettingsItemProps {
   textureAvatar?: boolean;
   providerLabel: string;
-  providerIcon: IconDefinition;
-  iconBackgroundColor?: string;
+  providerIconUrl: string;
+  iconBackgroundColor: { default: string; dark: string };
+  iconForegroundColor: { default: string; dark: string };
   profile: ProviderProfile | null;
   notLinkedDescription: string;
   disabled?: boolean;
@@ -23,8 +23,9 @@ export interface LinkedSettingsItemProps {
 export function LinkedSettingsItem({
   textureAvatar,
   providerLabel,
-  providerIcon,
+  providerIconUrl,
   iconBackgroundColor,
+  iconForegroundColor,
   profile,
   notLinkedDescription,
   disabled,
@@ -47,12 +48,13 @@ export function LinkedSettingsItem({
             <MinecraftAvatar textureUrl={avatarUrl} />
           </span>
         ) : (
-          <FontAwesomeIcon icon={providerIcon} className="size-4" />
+          <ProviderIcon iconUrl={providerIconUrl} className="size-4" color={iconForegroundColor} />
         )
       }
       iconImageSrc={showTextureAvatar ? undefined : avatarUrl}
-      iconBadge={avatarUrl ? <FontAwesomeIcon icon={providerIcon} className="size-2.5 text-foreground" /> : undefined}
-      iconBackgroundColor={iconBackgroundColor}
+      iconBadge={avatarUrl ? <ProviderIcon iconUrl={providerIconUrl} className="size-2.5 text-foreground" /> : undefined}
+      iconBackgroundColor={iconBackgroundColor.default}
+      iconBackgroundColorDark={iconBackgroundColor.dark}
       trailing={trailing}
       hasItemAbove={hasItemAbove}
       hasItemBelow={hasItemBelow}

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import { getTranslations } from 'next-intl/server';
+import { fetchOAuthProviders } from '@/lib/api/oauth-providers';
 import { ProviderSectionClient } from './provider-section-client';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -7,6 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('connections.title') };
 }
 
-export default function LinkingPage() {
-  return <ProviderSectionClient />;
+export default async function LinkingPage() {
+  await connection();
+  const providers = await fetchOAuthProviders();
+  return <ProviderSectionClient providers={providers} />;
 }
