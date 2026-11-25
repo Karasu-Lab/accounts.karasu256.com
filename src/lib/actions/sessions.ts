@@ -15,7 +15,7 @@ type CurrentSession = z.infer<typeof currentSessionSchema>;
 
 async function fetchCurrentSession(): Promise<CurrentSession | null> {
   const requestHeaders = await headers();
-  if (!getSessionCookie(requestHeaders)) return null;
+  if (!getSessionCookie(requestHeaders, { cookiePrefix: process.env.APP_ENV })) return null;
 
   const res = await fetch(`${process.env.AUTH_API_URL ?? ''}/api/auth/get-session`, {
     headers: {

@@ -18,9 +18,9 @@ function getPublicOrigin(request: NextRequest): string {
  * Next.js 16 proxy (formerly middleware).
  *
  * A request counts as authenticated if the better-auth session cookie is
- * present, checked via `getSessionCookie()` — this app no longer overrides
- * better-auth's own session cookie naming, so the helper's default lookup
- * (accounting for the `__Secure-` prefix under HTTPS) matches directly.
+ * present, checked via `getSessionCookie()` with the same cookie prefix
+ * (`APP_ENV`) that api-auth names its session cookies with, accounting for
+ * the `__Secure-` prefix under HTTPS.
  *
  * Cookie verification (signature + expiry) is intentionally skipped here. Full
  * verification is performed inside each protected API route and server
@@ -33,7 +33,7 @@ export function proxy(request: NextRequest): NextResponse {
     return NextResponse.rewrite(new URL(`/api/auth${pathname}`, process.env.AUTH_API_URL));
   }
 
-  const hasSession = Boolean(getSessionCookie(request));
+  const hasSession = Boolean(getSessionCookie(request, { cookiePrefix: process.env.APP_ENV }));
   const publicOrigin = getPublicOrigin(request);
 
   if (hasSession && pathname === '/') {

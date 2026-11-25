@@ -31,7 +31,7 @@ async function fetchSessionUser(cookie: string): Promise<SessionUser> {
 
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
   const requestHeaders = await headers();
-  const sessionCookie = getSessionCookie(requestHeaders);
+  const sessionCookie = getSessionCookie(requestHeaders, { cookiePrefix: process.env.APP_ENV });
   if (!sessionCookie) return null;
 
   return fetchSessionUser(requestHeaders.get('cookie') ?? '').catch(() => null);
