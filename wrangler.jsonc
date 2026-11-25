@@ -8,6 +8,14 @@
     "nodejs_compat"
   ],
   "env": {
+    "local": {
+      "vars": {
+        "WEBAUTHN_RP_ID": "karasu256.com",
+        "WEBAUTHN_RP_NAME": "Karasu Lab",
+        "WEBAUTHN_EXPECTED_ORIGINS": "https://local-accounts.karasu256.com,https://local-auth.karasu256.com",
+        "TRUSTED_ORIGINS": "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:3004,https://local.karasu256.com,https://local-accounts.karasu256.com,https://local-qr.karasu256.com,https://local-auth.karasu256.com"
+      }
+    },
     "preview": {
       "name": "accounts-karasu256-com",
       "vars": {
@@ -19,6 +27,10 @@
         "MC_AUTH_URL": "https://dev-mc-auth.karasu256.com",
         "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
         "FEATURE_FLAGS_ORIGIN": "https://dev-accounts.karasu256.com",
+        "WEBAUTHN_RP_ID": "karasu256.com",
+        "WEBAUTHN_RP_NAME": "Karasu Lab",
+        "WEBAUTHN_EXPECTED_ORIGINS": "https://dev-accounts.karasu256.com,https://dev-auth.karasu256.com,https://dev.karasu256.com",
+        "TRUSTED_ORIGINS": "https://dev-accounts.karasu256.com,https://*.dev-accounts.karasu256.com,https://dev-auth.karasu256.com,https://dev.karasu256.com,https://dev-qr.karasu256.com",
         "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
         "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
         "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"
@@ -43,6 +55,10 @@
       "MC_AUTH_URL": "https://dev-mc-auth.karasu256.com",
       "FEATURE_FLAGS_API_URL": "https://dev-flags.karasu256.com",
       "FEATURE_FLAGS_ORIGIN": "https://dev-accounts.karasu256.com",
+      "WEBAUTHN_RP_ID": "karasu256.com",
+      "WEBAUTHN_RP_NAME": "Karasu Lab",
+      "WEBAUTHN_EXPECTED_ORIGINS": "https://dev-accounts.karasu256.com,https://dev-auth.karasu256.com,https://dev.karasu256.com",
+      "TRUSTED_ORIGINS": "https://dev-accounts.karasu256.com,https://*.dev-accounts.karasu256.com,https://dev-auth.karasu256.com,https://dev.karasu256.com,https://dev-qr.karasu256.com",
       "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
       "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
       "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"
@@ -57,6 +73,10 @@
     "MC_AUTH_URL": "https://mc-auth.karasu256.com",
     "FEATURE_FLAGS_API_URL": "https://flags.karasu256.com",
     "FEATURE_FLAGS_ORIGIN": "https://accounts.karasu256.com",
+    "WEBAUTHN_RP_ID": "karasu256.com",
+    "WEBAUTHN_RP_NAME": "Karasu Lab",
+    "WEBAUTHN_EXPECTED_ORIGINS": "https://accounts.karasu256.com,https://auth.karasu256.com,https://karasu256.com",
+    "TRUSTED_ORIGINS": "https://accounts.karasu256.com,https://auth.karasu256.com,https://karasu256.com,https://qr.karasu256.com",
     "GOOGLE_CLIENT_ID": "291377837692-haa4bsiure8qm70ionnaamb356qf6uca.apps.googleusercontent.com",
     "GITHUB_CLIENT_ID": "Iv23li7uADcoFUaks9lE",
     "MICROSOFT_CLIENT_ID": "3f583452-5b65-49a0-8df6-99264d2d876f"
