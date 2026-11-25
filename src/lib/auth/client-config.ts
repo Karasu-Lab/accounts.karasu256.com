@@ -12,6 +12,8 @@ const clientConfigEnvSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
   GITHUB_CLIENT_ID: z.string().min(1).optional(),
   MICROSOFT_CLIENT_ID: z.string().min(1).optional(),
+  X_CLIENT_ID: z.string().min(1).optional(),
+  DISCORD_CLIENT_ID: z.string().min(1).optional(),
 });
 
 export interface ClientConfig {
@@ -25,6 +27,8 @@ export interface ClientConfig {
   googleClientId?: string;
   githubClientId?: string;
   microsoftClientId?: string;
+  xClientId?: string;
+  discordClientId?: string;
 }
 
 export function getClientConfig(): ClientConfig {
@@ -40,6 +44,8 @@ export function getClientConfig(): ClientConfig {
     googleClientId: env.GOOGLE_CLIENT_ID,
     githubClientId: env.GITHUB_CLIENT_ID,
     microsoftClientId: env.MICROSOFT_CLIENT_ID,
+    xClientId: env.X_CLIENT_ID,
+    discordClientId: env.DISCORD_CLIENT_ID,
   };
 }
 

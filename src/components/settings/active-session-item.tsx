@@ -13,6 +13,8 @@ function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundCo
       google: { icon: Globe, iconBackgroundColor: '#4285f4' },
       github: { icon: Globe, iconBackgroundColor: '#24292f' },
       microsoft: { icon: Globe, iconBackgroundColor: '#00adef' },
+      twitter: { icon: Globe, iconBackgroundColor: '#000000' },
+      discord: { icon: Globe, iconBackgroundColor: '#5865f2' },
       xbox: { icon: Globe, iconBackgroundColor: '#107c10' },
       credential: { icon: Mail, iconBackgroundColor: '#2563eb' },
       passkey: { icon: KeyRound, iconBackgroundColor: '#9333ea' },

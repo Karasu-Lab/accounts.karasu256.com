@@ -305,6 +305,8 @@
       "google": "Google",
       "github": "GitHub",
       "microsoft": "Microsoft",
+      "twitter": "X",
+      "discord": "Discord",
       "xbox": "Xbox",
       "credential": "Email and password",
       "passkey": "Passkey",
