@@ -60,7 +60,7 @@ async function fetchSessionToken(): Promise<string> {
   if (!cookie) {
     const authorization = requestHeaders.get('authorization');
     if (authorization?.startsWith('Bearer ')) {
-      cookie = `better-auth.session_token=${authorization.slice('Bearer '.length)}`;
+      cookie = `${process.env.APP_ENV}.session_token=${authorization.slice('Bearer '.length)}`;
     }
   }
   if (!cookie) throw new Error('api-auth session token exchange failed: the request has no session cookie');
