@@ -6,7 +6,35 @@ on:
   workflow_dispatch:
 
 jobs:
+  names:
+    runs-on: ubuntu-latest
+    outputs:
+      secret-names: ${{ steps.names.outputs.value }}
+    steps:
+      - name: Expand the names passed to the worker
+        id: names
+        env:
+          NAMES: |
+            INTERNAL_API_SECRET
+            APP_ID
+            APP_PRIVATE_KEY
+            FIREBASE_PROJECT_ID
+            CDN_URL
+            MC_AUTH_ADDRESS
+            MCP_OAUTH_CLIENT_ID
+            STORAGE_ENDPOINT
+            STORAGE_BUCKET
+            STORAGE_ACCESS_KEY_ID
+            STORAGE_SECRET_ACCESS_KEY
+        run: |
+          {
+            echo 'value<<NAMES'
+            echo "$NAMES"
+            echo 'NAMES'
+          } >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: names
     if: github.ref_name == 'main'
     environment: production
     runs-on: ubuntu-latest
@@ -18,15 +46,16 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Deploy the worker
-        uses: Karasu-Lab/WorkersDeploy@v1.0.12
+        uses: Karasu-Lab/WorkersDeploy@v2.0.1
         with:
           mode: production
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID
+          secret-names: ${{ needs.names.outputs.secret-names }}
           vars-json: ${{ toJSON(vars) }}
           secrets-json: ${{ toJSON(secrets) }}
 
   preview:
+    needs: names
     if: github.ref_name != 'main'
     environment: preview
     runs-on: ubuntu-latest
@@ -38,10 +67,10 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Deploy the worker
-        uses: Karasu-Lab/WorkersDeploy@v1.0.12
+        uses: Karasu-Lab/WorkersDeploy@v2.0.1
         with:
           mode: preview
           worker-name: accounts-karasu256-com
-          secret-names: INTERNAL_API_SECRET APP_ID APP_PRIVATE_KEY FIREBASE_PROJECT_ID
+          secret-names: ${{ needs.names.outputs.secret-names }}
           vars-json: ${{ toJSON(vars) }}
           secrets-json: ${{ toJSON(secrets) }}
