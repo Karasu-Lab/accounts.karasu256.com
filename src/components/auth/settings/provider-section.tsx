@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Link2, Unlink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -38,11 +38,8 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>(initialProfiles);
-
-  useEffect(() => {
-    setProfiles(initialProfiles);
-  }, [initialProfiles]);
+  const [overrides, setOverrides] = useState<Record<string, ProviderProfile | null>>({});
+  const profiles = useMemo(() => ({ ...initialProfiles, ...overrides }), [initialProfiles, overrides]);
   const [loading, setLoading] = useState<string | null>(null);
   const [unlinkTarget, setUnlinkTarget] = useState<Provider | null>(null);
   const [minecraftVerifyOpen, setMinecraftVerifyOpen] = useState(false);
@@ -103,7 +100,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
     const res = await fetch('/api/users/me/providers/minecraft/details');
     if (!res.ok) return;
     const profile = (await res.json()) as ProviderProfile;
-    setProfiles((prev) => ({ ...prev, minecraft: profile }));
+    setOverrides((prev) => ({ ...prev, minecraft: profile }));
   }
 
   async function handleLink(provider: Provider) {
@@ -143,7 +140,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
         await unlinkProvider(extra).catch(() => {});
       }
       const removed = new Set([accountProviderId, ...(provider.linkedAccountProviderIds ?? [])]);
-      setProfiles((prev) => {
+      setOverrides((prev) => {
         const next = { ...prev };
         for (const row of providers) {
           if (removed.has(row.accountProviderId ?? row.id)) next[row.id] = null;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { SseClient } from '@karasu-lab/sdk/sse';
@@ -36,9 +36,12 @@ export function ProviderSectionClient({ providers: availableProviders }: { provi
     [availableProviders]
   );
 
+  const tRef = useRef(t);
   useEffect(() => {
-    setProfiles({});
-    setProfilesLoaded(false);
+    tRef.current = t;
+  }, [t]);
+
+  useEffect(() => {
     const url = new URL('/api/users/me/providers/stream', config.authApiUrl);
     const client = new SseClient<ProviderStreamEvents>(url, {
       withCredentials: true,
@@ -47,13 +50,13 @@ export function ProviderSectionClient({ providers: availableProviders }: { provi
       },
       onDone: () => setProfilesLoaded(true),
       onError: () => {
-        toast.error(t('connections.error.unknown'));
+        toast.error(tRef.current('connections.error.unknown'));
         setProfilesLoaded(true);
       },
     });
 
     return () => client.close();
-  }, [config.authApiUrl, t]);
+  }, [config.authApiUrl]);
 
   return <ProviderSectionLazy providers={providers} initialProfiles={profiles} profilesLoaded={profilesLoaded} />;
 }
