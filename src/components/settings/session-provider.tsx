@@ -56,6 +56,19 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     void refreshAccounts(session?.user.id);
   }, [refreshAccounts, session?.user.id]);
 
+  const [freshEmailVerified, setFreshEmailVerified] = useState<{ userId: string; verified: boolean } | null>(null);
+  const activeUserId = session?.user.id ?? initialUser?.id;
+  useEffect(() => {
+    if (!activeUserId) return;
+    let cancelled = false;
+    void authClient.getSession({ query: { disableCookieCache: true } }).then(({ data }) => {
+      if (!cancelled && data?.user.id === activeUserId) setFreshEmailVerified({ userId: activeUserId, verified: Boolean(data.user.emailVerified) });
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [authClient, activeUserId]);
+
   const sessionRetriedRef = useRef(false);
 
   useEffect(() => {
@@ -154,7 +167,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       const baseUser: SettingsUser = {
         id: initialUser.id,
         email: initialUser.email ?? '',
-        emailVerified: initialUser.emailVerified ?? true,
+        emailVerified: freshEmailVerified?.userId === initialUser.id ? freshEmailVerified.verified : true,
         name: initialUser.name ?? '',
         image: initialUser.image,
       };
@@ -166,8 +179,9 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       return { user: pendingUser, ready: false, updateUser };
     }
     const userOverride = userOverrideState.userId === session.user.id ? userOverrideState.patch : {};
-    return { user: { ...session.user, ...userOverride }, ready: true, updateUser };
-  }, [session, initialUser, userOverrideState, updateUser]);
+    const emailVerified = freshEmailVerified?.userId === session.user.id ? freshEmailVerified.verified : true;
+    return { user: { ...session.user, ...userOverride, emailVerified }, ready: true, updateUser };
+  }, [session, initialUser, userOverrideState, updateUser, freshEmailVerified]);
 
   const menuContextValue = useMemo(
     () => ({
