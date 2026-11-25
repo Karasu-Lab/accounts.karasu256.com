@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthClient } from '@/lib/auth/client';
+import { useUser } from '@/lib/auth/use-user';
 import { buildSignInUrl } from '@/lib/auth/client-config';
 import { takePendingAddAccount } from '@/lib/add-account';
 import { listAccounts, switchAccount, removeAccount, type AccountSummary } from '@/lib/api/accounts';
@@ -26,7 +27,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations();
-  const { data: session, isPending, refetch } = authClient.useSession();
+  const { user, isPending, refetch } = useUser();
   const reportError = useReportError();
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -53,27 +54,14 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
 
   const ensureAccounts = useCallback(() => {
     if (accountsLoadedRef.current) return;
-    void refreshAccounts(session?.user.id);
-  }, [refreshAccounts, session?.user.id]);
-
-  const [freshEmailVerified, setFreshEmailVerified] = useState<{ userId: string; verified: boolean } | null>(null);
-  const activeUserId = session?.user.id ?? initialUser?.id;
-  useEffect(() => {
-    if (!activeUserId) return;
-    let cancelled = false;
-    void authClient.getSession({ query: { disableCookieCache: true } }).then(({ data }) => {
-      if (!cancelled && data?.user.id === activeUserId) setFreshEmailVerified({ userId: activeUserId, verified: Boolean(data.user.emailVerified) });
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [authClient, activeUserId]);
+    void refreshAccounts(user?.id);
+  }, [refreshAccounts, user?.id]);
 
   const sessionRetriedRef = useRef(false);
 
   useEffect(() => {
     if (isPending) return;
-    if (!session) {
+    if (!user) {
       if (!initialUser) {
         window.location.replace(buildSignInUrl(config.authUrl, window.location.href));
         return;
@@ -84,7 +72,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       }
       return;
     }
-  }, [isPending, session, router, initialUser, refetch]);
+  }, [isPending, user, router, initialUser, refetch]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -128,7 +116,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       await refreshAccounts(result.uid);
     } catch (err) {
       reportError(err);
-      await refreshAccounts(session?.user.id);
+      await refreshAccounts(user?.id);
     } finally {
       setSwitchingAccount(false);
     }
@@ -145,43 +133,42 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
     if (!target) return;
     try {
       await removeAccount(target.sessionToken);
-      await refreshAccounts(session?.user.id);
+      await refreshAccounts(user?.id);
     } catch (err) {
       reportError(err);
-      await refreshAccounts(session?.user.id);
+      await refreshAccounts(user?.id);
     }
   }
 
   const updateUser = useCallback(
     (patch: Partial<SettingsUser>) => {
       setUserOverrideState((prev) => ({
-        userId: session?.user.id,
-        patch: prev.userId === session?.user.id ? { ...prev.patch, ...patch } : patch,
+        userId: user?.id,
+        patch: prev.userId === user?.id ? { ...prev.patch, ...patch } : patch,
       }));
     },
-    [session?.user.id]
+    [user?.id]
   );
 
   const contextValue = useMemo(() => {
-    if (!session && initialUser) {
+    if (!user && initialUser) {
       const baseUser: SettingsUser = {
         id: initialUser.id,
         email: initialUser.email ?? '',
-        emailVerified: freshEmailVerified?.userId === initialUser.id ? freshEmailVerified.verified : true,
+        emailVerified: initialUser.emailVerified ?? true,
         name: initialUser.name ?? '',
         image: initialUser.image,
       };
       const userOverride = userOverrideState.userId === initialUser.id ? userOverrideState.patch : {};
       return { user: { ...baseUser, ...userOverride }, ready: true, updateUser };
     }
-    if (!session) {
+    if (!user) {
       const pendingUser: SettingsUser = { id: '', email: '', emailVerified: false, name: '', image: null };
       return { user: pendingUser, ready: false, updateUser };
     }
-    const userOverride = userOverrideState.userId === session.user.id ? userOverrideState.patch : {};
-    const emailVerified = freshEmailVerified?.userId === session.user.id ? freshEmailVerified.verified : true;
-    return { user: { ...session.user, ...userOverride, emailVerified }, ready: true, updateUser };
-  }, [session, initialUser, userOverrideState, updateUser, freshEmailVerified]);
+    const userOverride = userOverrideState.userId === user.id ? userOverrideState.patch : {};
+    return { user: { ...user, ...userOverride }, ready: true, updateUser };
+  }, [user, initialUser, userOverrideState, updateUser]);
 
   const menuContextValue = useMemo(
     () => ({
@@ -193,7 +180,7 @@ export function SettingsSessionProvider({ children, appUrl, initialUser }: Setti
       onAddAccount: () => setAddDialogOpen(true),
       onRemoveAccount: handleRemoveAccount,
     }),
-    [appUrl, accounts, ensureAccounts, session?.user.id]
+    [appUrl, accounts, ensureAccounts, user?.id]
   );
 
   return (
