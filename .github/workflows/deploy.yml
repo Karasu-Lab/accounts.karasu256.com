@@ -19,7 +19,7 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Deploy the worker
-        uses: Karasu-Lab/WorkersDeploy@v1
+        uses: Karasu-Lab/WorkersDeploy@v1.0.11
         with:
           mode: production
           worker-name: accounts-karasu256-com
@@ -40,7 +40,7 @@ jobs:
       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Deploy the worker
-        uses: Karasu-Lab/WorkersDeploy@v1
+        uses: Karasu-Lab/WorkersDeploy@v1.0.11
         with:
           mode: preview
           worker-name: accounts-karasu256-com
