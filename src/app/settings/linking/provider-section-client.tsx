@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { faGoogle, faGithub, faMicrosoft, faXbox } from '@fortawesome/free-brands-svg-icons';
+import { faGoogle, faGithub, faMicrosoft, faXbox, faXTwitter, faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faCube } from '@fortawesome/free-solid-svg-icons';
 import { SseClient } from '@karasu-lab/sdk/sse';
 import { ProviderStreamEvent, type ProviderStreamEvents } from '@karasu-lab/types/shared';
@@ -33,6 +33,8 @@ export function ProviderSectionClient() {
         { id: 'xbox', label: 'Xbox', icon: faXbox, accountProviderId: 'xbox' }
       );
     }
+    if (config.xClientId) available.push({ id: 'twitter', label: 'X', icon: faXTwitter });
+    if (config.discordClientId) available.push({ id: 'discord', label: 'Discord', icon: faDiscord });
     available.push({ id: 'minecraft', label: 'Minecraft', icon: faCube, textureAvatar: true });
     return available;
   }, [config]);
