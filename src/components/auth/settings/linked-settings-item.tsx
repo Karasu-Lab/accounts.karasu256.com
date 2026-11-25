@@ -1,8 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import type { ProviderProfile } from '@/lib/auth/provider-profile';
 import { SettingsItemContainer } from '@/components/settings/settings-item-container';
 import { MinecraftAvatar } from './minecraft-avatar';
@@ -10,7 +8,7 @@ import { MinecraftAvatar } from './minecraft-avatar';
 export interface LinkedSettingsItemProps {
   textureAvatar?: boolean;
   providerLabel: string;
-  providerIcon: IconDefinition;
+  providerIconUrl: string;
   iconBackgroundColor?: string;
   profile: ProviderProfile | null;
   notLinkedDescription: string;
@@ -23,7 +21,7 @@ export interface LinkedSettingsItemProps {
 export function LinkedSettingsItem({
   textureAvatar,
   providerLabel,
-  providerIcon,
+  providerIconUrl,
   iconBackgroundColor,
   profile,
   notLinkedDescription,
@@ -34,6 +32,8 @@ export function LinkedSettingsItem({
 }: LinkedSettingsItemProps) {
   const avatarUrl = profile?.avatarUrl ?? undefined;
   const showTextureAvatar = textureAvatar && avatarUrl !== undefined;
+  const whiteIconUrl = new URL(providerIconUrl);
+  whiteIconUrl.searchParams.set('color', 'ffffff');
 
   return (
     <SettingsItemContainer
@@ -47,11 +47,11 @@ export function LinkedSettingsItem({
             <MinecraftAvatar textureUrl={avatarUrl} />
           </span>
         ) : (
-          <FontAwesomeIcon icon={providerIcon} className="size-4" />
+          <img src={whiteIconUrl.toString()} alt="" className="size-4" />
         )
       }
       iconImageSrc={showTextureAvatar ? undefined : avatarUrl}
-      iconBadge={avatarUrl ? <FontAwesomeIcon icon={providerIcon} className="size-2.5 text-foreground" /> : undefined}
+      iconBadge={avatarUrl ? <img src={providerIconUrl} alt="" className="size-2.5" /> : undefined}
       iconBackgroundColor={iconBackgroundColor}
       trailing={trailing}
       hasItemAbove={hasItemAbove}

@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Link2, Unlink } from 'lucide-react';
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { useTranslations } from 'next-intl';
 import { toast, ConfirmDialog } from '@karasu-lab/ui';
 import { unlinkProvider } from '@karasu-lab/utils/client';
@@ -18,7 +17,7 @@ import { MinecraftVerifyDialog } from '@/components/settings/minecraft-verify-di
 export interface Provider {
   id: string;
   label: string;
-  icon: IconDefinition;
+  iconUrl: string;
   textureAvatar?: boolean;
   accountProviderId?: string;
   linkedAccountProviderIds?: string[];
@@ -178,7 +177,7 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               key={provider.id}
               textureAvatar={provider.textureAvatar}
               providerLabel={provider.label}
-              providerIcon={provider.icon}
+              providerIconUrl={provider.iconUrl}
               profile={profile}
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
