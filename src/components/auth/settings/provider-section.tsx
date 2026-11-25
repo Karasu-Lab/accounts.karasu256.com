@@ -180,7 +180,6 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
               providerLabel={provider.label}
               providerIcon={provider.icon}
               profile={profile}
-              resolved={resolved}
               notLinkedDescription={t('connections.notLinked')}
               iconBackgroundColor={PROVIDER_ICON_BACKGROUND_COLORS[provider.id] ?? '#8e8e93'}
               trailing={
@@ -193,11 +192,12 @@ export function ProviderSection({ providers, initialProfiles, profilesLoaded }: 
                     onClick={() => setUnlinkTarget(provider)}
                     className="hover:bg-destructive/10 hover:text-destructive"
                   />
-                ) : !guardsLoaded ? null : (
+                ) : (
                   <SettingsItemIconButton
                     label={t('connections.link')}
                     icon={Link2}
                     loading={isLoading}
+                    disabled={!resolved || !guardsLoaded}
                     onClick={() => void handleLink(provider)}
                   />
                 )

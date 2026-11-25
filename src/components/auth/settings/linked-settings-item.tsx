@@ -15,8 +15,6 @@ export interface LinkedSettingsItemProps {
   profile: ProviderProfile | null;
   notLinkedDescription: string;
   disabled?: boolean;
-  /** Whether the profile has been resolved; the trailing action is withheld until then. */
-  resolved?: boolean;
   trailing?: React.ReactNode;
   hasItemAbove?: boolean;
   hasItemBelow?: boolean;
@@ -30,7 +28,6 @@ export function LinkedSettingsItem({
   profile,
   notLinkedDescription,
   disabled,
-  resolved = true,
   trailing,
   hasItemAbove,
   hasItemBelow,
@@ -41,7 +38,7 @@ export function LinkedSettingsItem({
   return (
     <SettingsItemContainer
       title={profile ? (profile.name ?? profile.email ?? providerLabel) : providerLabel}
-      description={profile ? (profile.email ?? profile.accountId ?? '') : notLinkedDescription}
+      description={profile ? ((profile.email ?? profile.accountId) || ' ') : notLinkedDescription}
       autoFitText={profile !== null}
       disabled={disabled}
       iconNode={
@@ -56,9 +53,10 @@ export function LinkedSettingsItem({
       iconImageSrc={showTextureAvatar ? undefined : avatarUrl}
       iconBadge={avatarUrl ? <FontAwesomeIcon icon={providerIcon} className="size-2.5 text-foreground" /> : undefined}
       iconBackgroundColor={iconBackgroundColor}
-      trailing={resolved ? trailing : undefined}
+      trailing={trailing}
       hasItemAbove={hasItemAbove}
       hasItemBelow={hasItemBelow}
+      className="h-17"
     />
   );
 }
