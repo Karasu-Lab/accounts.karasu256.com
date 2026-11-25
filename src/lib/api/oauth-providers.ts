@@ -1,12 +1,16 @@
 import { z } from 'zod';
 import { MissingEnvError } from '@karasu-lab/utils/server';
 
+const themeColorSchema = z.object({ default: z.string(), dark: z.string() });
+
 const oauthProvidersSchema = z.object({
   providers: z.array(
     z.object({
       id: z.string(),
       label: z.string(),
       kind: z.enum(['social', 'derived']),
+      backgroundColor: themeColorSchema,
+      foregroundColor: themeColorSchema,
       iconUrl: z.url(),
     })
   ),

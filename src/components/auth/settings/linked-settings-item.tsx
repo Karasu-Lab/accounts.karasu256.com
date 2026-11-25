@@ -10,7 +10,8 @@ export interface LinkedSettingsItemProps {
   textureAvatar?: boolean;
   providerLabel: string;
   providerIconUrl: string;
-  iconBackgroundColor?: string;
+  iconBackgroundColor: { default: string; dark: string };
+  iconForegroundColor: { default: string; dark: string };
   profile: ProviderProfile | null;
   notLinkedDescription: string;
   disabled?: boolean;
@@ -24,6 +25,7 @@ export function LinkedSettingsItem({
   providerLabel,
   providerIconUrl,
   iconBackgroundColor,
+  iconForegroundColor,
   profile,
   notLinkedDescription,
   disabled,
@@ -46,12 +48,13 @@ export function LinkedSettingsItem({
             <MinecraftAvatar textureUrl={avatarUrl} />
           </span>
         ) : (
-          <ProviderIcon iconUrl={providerIconUrl} className="size-4" />
+          <ProviderIcon iconUrl={providerIconUrl} className="size-4" color={iconForegroundColor} />
         )
       }
       iconImageSrc={showTextureAvatar ? undefined : avatarUrl}
       iconBadge={avatarUrl ? <ProviderIcon iconUrl={providerIconUrl} className="size-2.5 text-foreground" /> : undefined}
-      iconBackgroundColor={iconBackgroundColor}
+      iconBackgroundColor={iconBackgroundColor.default}
+      iconBackgroundColorDark={iconBackgroundColor.dark}
       trailing={trailing}
       hasItemAbove={hasItemAbove}
       hasItemBelow={hasItemBelow}

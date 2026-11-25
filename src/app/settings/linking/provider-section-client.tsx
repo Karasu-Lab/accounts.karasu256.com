@@ -24,10 +24,12 @@ export function ProviderSectionClient({ providers: availableProviders }: { provi
   useReportLoading('linking', !profilesLoaded);
   const providers = useMemo<Provider[]>(
     () =>
-      availableProviders.map(({ id, label, iconUrl }) => ({
+      availableProviders.map(({ id, label, iconUrl, backgroundColor, foregroundColor }) => ({
         id,
         label,
         iconUrl,
+        backgroundColor,
+        foregroundColor,
         ...(id === 'xbox' ? { accountProviderId: id } : {}),
         ...(id === 'minecraft' ? { textureAvatar: true } : {}),
       })),
