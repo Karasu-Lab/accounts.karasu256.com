@@ -6,11 +6,6 @@ const webauthnSchema = z.object({
   expectedOrigins: z.array(z.string().url()).min(1),
 });
 
-const configFileSchema = z.object({
-  webauthn: webauthnSchema.partial(),
-  trustedOrigins: z.array(z.string().url()).optional(),
-});
-
 export type ServerConfig = {
   webauthn: z.infer<typeof webauthnSchema>;
   trustedOrigins: string[];
@@ -18,29 +13,22 @@ export type ServerConfig = {
 
 let cached: ServerConfig | undefined;
 
-function parseConfig(raw: string | undefined, name: string) {
-  if (raw === undefined) throw new Error(`The ${name} server config was not inlined at build time.`);
-  return configFileSchema.parse(JSON.parse(raw));
-}
-
-function getEnvConfig() {
-  if (process.env.APP_ENV === 'preview') return parseConfig(process.env.SERVER_CONFIG_PREVIEW, 'preview');
-  return process.env.NODE_ENV === 'production'
-    ? parseConfig(process.env.SERVER_CONFIG_PRODUCTION, 'production')
-    : parseConfig(process.env.SERVER_CONFIG_DEVELOPMENT, 'development');
+function parseList(raw: string | undefined): string[] {
+  return (raw ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter((value) => value.length > 0);
 }
 
 export function getServerConfig(): ServerConfig {
   if (cached !== undefined) return cached;
 
-  const defaults = parseConfig(process.env.SERVER_CONFIG_DEFAULT, 'default');
-  const overrides = getEnvConfig();
-
   const webauthn = webauthnSchema.parse({
-    ...defaults.webauthn,
-    ...overrides.webauthn,
+    rpId: process.env.WEBAUTHN_RP_ID,
+    rpName: process.env.WEBAUTHN_RP_NAME,
+    expectedOrigins: parseList(process.env.WEBAUTHN_EXPECTED_ORIGINS),
   });
-  const trustedOrigins = [...(overrides.trustedOrigins ?? defaults.trustedOrigins ?? [])];
+  const trustedOrigins = z.array(z.string().url()).parse(parseList(process.env.TRUSTED_ORIGINS));
 
   cached = { webauthn, trustedOrigins };
   return cached;
