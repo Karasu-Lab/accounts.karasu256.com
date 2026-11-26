@@ -391,6 +391,7 @@
       "insufficient_scope": "トークンに必要な権限がありません",
       "token_verification_failed": "トークンの検証に失敗しました",
       "access_denied": "アクセスが拒否されました",
+      "state_mismatch": "state が一致しません。もう一度お試しください",
       "network_error": "ネットワークエラーが発生しました"
     }
   },

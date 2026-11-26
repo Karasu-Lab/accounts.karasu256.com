@@ -102,6 +102,7 @@ export function OAuthClientTestDialog({
   const clientRef = useRef(client);
   const secretRef = useRef(secret);
   const verifierRef = useRef('');
+  const stateRef = useRef('');
   const runIdRef = useRef(0);
 
   useEffect(() => {
@@ -137,7 +138,19 @@ export function OAuthClientTestDialog({
     const handler = (event: MessageEvent) => {
       if (!event.data || (event.data as Record<string, unknown>).type !== 'oauth_test_callback') return;
 
-      const { code, error, errorDescription } = event.data as { type: string; code?: string; error?: string; errorDescription?: string };
+      const { code, state, error, errorDescription } = event.data as {
+        type: string;
+        code?: string;
+        state?: string;
+        error?: string;
+        errorDescription?: string;
+      };
+
+      if (!stateRef.current || state !== stateRef.current) {
+        appendLog('callback: the state did not match the one sent with the authorization request');
+        setSteps(failStep('authorize', 'state_mismatch'));
+        return;
+      }
 
       if (error || !code) {
         appendLog(`callback: error=${error ?? 'access_denied'}${errorDescription ? ` (${errorDescription})` : ''}`);
@@ -374,6 +387,7 @@ export function OAuthClientTestDialog({
 
     const { verifier, challenge } = await createPkcePair();
     verifierRef.current = verifier;
+    stateRef.current = crypto.randomUUID();
 
     const url =
       `${authApiBase(config.authApiUrl)}/api/auth/oauth2/authorize?` +
@@ -382,7 +396,7 @@ export function OAuthClientTestDialog({
         redirect_uri: redirectUri,
         response_type: 'code',
         scope: client.scope ?? '',
-        state: crypto.randomUUID(),
+        state: stateRef.current,
         code_challenge: challenge,
         code_challenge_method: 'S256',
       }).toString();
@@ -401,6 +415,7 @@ export function OAuthClientTestDialog({
 
   function cancelTest() {
     runIdRef.current += 1;
+    stateRef.current = '';
     popupRef.current?.close();
     popupRef.current = null;
     setSteps(makeInitialSteps(isDevice));
@@ -411,6 +426,7 @@ export function OAuthClientTestDialog({
   function handleOpenChange(next: boolean) {
     if (!next) {
       runIdRef.current += 1;
+      stateRef.current = '';
       popupRef.current?.close();
       popupRef.current = null;
       setSteps(makeInitialSteps(isDevice));
