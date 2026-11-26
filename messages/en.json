@@ -391,6 +391,7 @@
       "insufficient_scope": "The token does not have the required permissions",
       "token_verification_failed": "Token verification failed",
       "access_denied": "Access was denied",
+      "state_mismatch": "The state did not match. Please try again",
       "network_error": "A network error occurred"
     }
   },
