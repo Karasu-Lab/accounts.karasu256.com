@@ -56,6 +56,11 @@ describe('proxy session detection', () => {
     expect(response.headers.get('location')).toContain('https://dev-auth.karasu256.com/sign-in');
   });
 
+  it('rewrites Android asset links to api-auth', () => {
+    const response = proxy(new NextRequest('https://dev-accounts.karasu256.com/.well-known/assetlinks.json'));
+    expect(response.headers.get('x-middleware-rewrite')).toBe('https://dev-api-auth.karasu256.com/.well-known/assetlinks.json');
+  });
+
   it('lets a request through when the cookie is shared across the subdomains', async () => {
     const setCookies = await signUpSetCookies('preview', 'karasu256.com');
     const cookie = cookieHeaderFor(setCookies, 'fix-session-cookie-name-from-app-env.dev-accounts.karasu256.com');
