@@ -29,6 +29,17 @@ function getPublicOrigin(request: NextRequest): string {
 export function proxy(request: NextRequest): NextResponse {
   const { pathname, search } = request.nextUrl;
 
+  if (pathname === '/.well-known/assetlinks.json') {
+    const authApiUrl = process.env.AUTH_API_URL;
+    if (!authApiUrl) {
+      return NextResponse.json(
+        { error: 'android_asset_links_unavailable', reason: 'AUTH_API_URL is not configured.' },
+        { status: 503 },
+      );
+    }
+    return NextResponse.rewrite(new URL(pathname, authApiUrl));
+  }
+
   if (pathname === '/.well-known/oauth-authorization-server' || pathname === '/.well-known/openid-configuration') {
     return NextResponse.rewrite(new URL(`/api/auth${pathname}`, process.env.AUTH_API_URL));
   }
