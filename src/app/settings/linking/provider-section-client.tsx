@@ -4,12 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { SseClient } from '@karasu-lab/sdk/sse';
-import {
-  ProviderStreamClientsEvent,
-  ProviderStreamEvent,
-  type ProviderClient,
-  type ProviderStreamEventsWithClients,
-} from '@karasu-lab/types/shared';
+import { ProviderStreamEvent, type ProviderStreamEvents } from '@karasu-lab/types/shared';
 import { toast } from '@karasu-lab/ui';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { OAuthProvider } from '@/lib/api/oauth-providers';
@@ -20,6 +15,16 @@ import { useReportLoading } from '@/components/settings/loading-context';
 const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/provider-section').then((m) => m.ProviderSection), {
   ssr: false,
 });
+
+interface ProviderClient {
+  providerId: string;
+  clientId: string | null;
+  iconPath: string;
+}
+
+type ProviderStreamEventsWithClients = ProviderStreamEvents & {
+  clients: { clients: ProviderClient[] };
+};
 
 export function ProviderSectionClient({ providers: availableProviders }: { providers: OAuthProvider[] }) {
   const t = useTranslations();
@@ -56,7 +61,7 @@ export function ProviderSectionClient({ providers: availableProviders }: { provi
     const client = new SseClient<ProviderStreamEventsWithClients>(url, {
       withCredentials: true,
       on: {
-        [ProviderStreamClientsEvent]: ({ clients }) => setClients(clients),
+        clients: ({ clients }) => setClients(clients),
         [ProviderStreamEvent.Profile]: ({ providerId, profile }) => setProfiles((prev) => ({ ...prev, [providerId]: profile })),
       },
       onDone: () => setProfilesLoaded(true),
