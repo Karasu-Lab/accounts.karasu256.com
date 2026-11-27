@@ -1,11 +1,19 @@
 import { z } from 'zod';
+import type { ActiveSession } from '@karasu-lab/types/shared';
 
 const sessionSourceSchema = z.string().min(1);
+
+export const sessionSourceInfoSchema = z.object({
+  raw: z.string().min(1),
+  providerId: z.string().min(1),
+});
+
+export type SessionSourceInfo = z.infer<typeof sessionSourceInfoSchema>;
 
 export const sessionWithSourceSchema = z.object({
   session: z.looseObject({ id: z.string().min(1) }),
   user: z.looseObject({ id: z.string().min(1) }),
-  source: sessionSourceSchema.nullable(),
+  source: sessionSourceInfoSchema.nullable(),
 });
 
 export const sessionSourceParseSchema = z
@@ -34,3 +42,8 @@ export const activeSessionSchema = z.object({
   source: sessionSourceSchema.nullable(),
   current: z.boolean(),
 });
+
+export type ActiveSessionListItem = Omit<ActiveSession, 'source'> & {
+  source: SessionSourceInfo | null;
+  disabled: boolean;
+};

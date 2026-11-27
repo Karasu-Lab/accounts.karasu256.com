@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, ConfirmDialog, toast } from '@karasu-lab/ui';
-import type { ActiveSession } from '@karasu-lab/types/shared';
 import { loadActiveSessions, revokeActiveSession } from '@/lib/actions/sessions';
+import type { ActiveSessionListItem } from '@/lib/session-schemas';
 import { SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { ActiveSessionItem, useSessionProvider } from '@/components/settings/active-session-item';
 import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
-type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; sessions: ActiveSession[] };
+type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded'; sessions: ActiveSessionListItem[] };
 
 export function ActiveSessionsClient() {
   const t = useTranslations();
@@ -18,7 +18,7 @@ export function ActiveSessionsClient() {
   const [state, setState] = useState<ListState>({ status: 'loading' });
   useReportLoading('active-sessions', state.status === 'loading');
   const [revokingId, setRevokingId] = useState<string | null>(null);
-  const [pendingRevoke, setPendingRevoke] = useState<ActiveSession | null>(null);
+  const [pendingRevoke, setPendingRevoke] = useState<ActiveSessionListItem | null>(null);
   const pendingProvider = useSessionProvider(pendingRevoke);
 
   const reload = useCallback(async () => {
@@ -35,7 +35,7 @@ export function ActiveSessionsClient() {
   }, [reload]);
 
   async function confirmRevoke() {
-    if (!pendingRevoke || pendingRevoke.current) return;
+    if (!pendingRevoke || pendingRevoke.disabled) return;
     setRevokingId(pendingRevoke.id);
     try {
       await revokeActiveSession(pendingRevoke.id);
