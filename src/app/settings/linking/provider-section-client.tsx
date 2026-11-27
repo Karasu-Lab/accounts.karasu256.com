@@ -4,7 +4,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { SseClient } from '@karasu-lab/sdk/sse';
-import { ProviderStreamEvent, type ProviderStreamEvents } from '@karasu-lab/types/shared';
+import {
+  ProviderStreamClientsEvent,
+  ProviderStreamEvent,
+  type ProviderClient,
+  type ProviderStreamEventsWithClients,
+} from '@karasu-lab/types/shared';
 import { toast } from '@karasu-lab/ui';
 import type { Provider } from '@/components/auth/settings/provider-section';
 import type { OAuthProvider } from '@/lib/api/oauth-providers';
@@ -19,22 +24,27 @@ const ProviderSectionLazy = dynamic(() => import('@/components/auth/settings/pro
 export function ProviderSectionClient({ providers: availableProviders }: { providers: OAuthProvider[] }) {
   const t = useTranslations();
   const config = useRuntimeClientConfig();
+  const [clients, setClients] = useState<ProviderClient[] | null>(null);
   const [profiles, setProfiles] = useState<Record<string, ProviderProfile | null>>({});
   const [profilesLoaded, setProfilesLoaded] = useState(false);
   useReportLoading('linking', !profilesLoaded);
-  const providers = useMemo<Provider[]>(
-    () =>
-      availableProviders.map(({ id, label, iconUrl, backgroundColor, foregroundColor }) => ({
-        id,
-        label,
-        iconUrl,
-        backgroundColor,
-        foregroundColor,
-        ...(id === 'xbox' ? { accountProviderId: id } : {}),
-        ...(id === 'minecraft' ? { textureAvatar: true } : {}),
-      })),
-    [availableProviders]
-  );
+  const providers = useMemo<Provider[]>(() => {
+    const toProvider = ({ id, label, iconUrl, backgroundColor, foregroundColor }: OAuthProvider): Provider => ({
+      id,
+      label,
+      iconUrl,
+      backgroundColor,
+      foregroundColor,
+      ...(id === 'xbox' ? { accountProviderId: id } : {}),
+      ...(id === 'minecraft' ? { textureAvatar: true } : {}),
+    });
+    if (!clients) return availableProviders.map(toProvider);
+    const catalog = new Map(availableProviders.map((provider) => [provider.id, provider]));
+    return clients.flatMap((client) => {
+      const entry = catalog.get(client.providerId);
+      return entry ? [toProvider(entry)] : [];
+    });
+  }, [availableProviders, clients]);
 
   const tRef = useRef(t);
   useEffect(() => {
@@ -43,9 +53,10 @@ export function ProviderSectionClient({ providers: availableProviders }: { provi
 
   useEffect(() => {
     const url = new URL('/api/users/me/providers/stream', config.authApiUrl);
-    const client = new SseClient<ProviderStreamEvents>(url, {
+    const client = new SseClient<ProviderStreamEventsWithClients>(url, {
       withCredentials: true,
       on: {
+        [ProviderStreamClientsEvent]: ({ clients }) => setClients(clients),
         [ProviderStreamEvent.Profile]: ({ providerId, profile }) => setProfiles((prev) => ({ ...prev, [providerId]: profile })),
       },
       onDone: () => setProfilesLoaded(true),
