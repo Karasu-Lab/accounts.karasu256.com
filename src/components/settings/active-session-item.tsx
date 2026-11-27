@@ -3,9 +3,8 @@
 import { useMemo } from 'react';
 import { Globe, KeyRound, Mail, MonitorSmartphone, Unlink, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { ActiveSession } from '@karasu-lab/types/shared';
 import { SettingsItemContainer, SettingsItemIconButton } from '@/components/settings/settings-item-container';
-import { sessionSourceParseSchema } from '@/lib/session-schemas';
+import type { ActiveSessionListItem } from '@/lib/session-schemas';
 
 function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundColor: string }> {
   return useMemo(
@@ -23,11 +22,10 @@ function useProviderIcons(): Record<string, { icon: LucideIcon; iconBackgroundCo
   );
 }
 
-export function useSessionProvider(session: ActiveSession | null) {
+export function useSessionProvider(session: ActiveSessionListItem | null) {
   const t = useTranslations();
   const providerIcons = useProviderIcons();
-  const parsed = sessionSourceParseSchema.safeParse({ source: session?.source, sessionId: session?.id });
-  const providerId = parsed.success ? parsed.data.providerId : null;
+  const providerId = session?.source?.providerId ?? null;
   const key = `activeSessions.sources.${providerId}`;
   const { icon = MonitorSmartphone, iconBackgroundColor = '#64748b' } = providerIcons[providerId ?? ''] ?? {};
   return {
@@ -38,9 +36,9 @@ export function useSessionProvider(session: ActiveSession | null) {
 }
 
 interface ActiveSessionItemProps {
-  session: ActiveSession;
+  session: ActiveSessionListItem;
   revoking: boolean;
-  onRevoke: (session: ActiveSession) => void;
+  onRevoke: (session: ActiveSessionListItem) => void;
 }
 
 export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSessionItemProps) {
@@ -57,9 +55,9 @@ export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSession
       description={parts.join(' • ')}
       icon={icon}
       iconBackgroundColor={iconBackgroundColor}
-      disabled={session.current}
+      disabled={session.disabled}
       trailing={
-        session.current ? undefined : (
+        session.disabled ? undefined : (
           <SettingsItemIconButton
             label={t('activeSessions.revoke')}
             icon={Unlink}

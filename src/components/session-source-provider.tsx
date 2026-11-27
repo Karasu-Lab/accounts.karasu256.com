@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useAuthClient } from '@/lib/auth/client';
-import { sessionSourceParseSchema, sessionWithSourceSchema } from '@/lib/session-schemas';
+import { sessionWithSourceSchema } from '@/lib/session-schemas';
 
 export interface SessionSourceValue {
   providerId: string | null;
@@ -20,9 +20,7 @@ export function SessionSourceProvider({ children }: { children: ReactNode }) {
   const value = useMemo<SessionSourceValue>(() => {
     const parsed = sessionWithSourceSchema.safeParse(data);
     if (!parsed.success) return EMPTY_SESSION_SOURCE;
-    const sessionId = parsed.data.session.id;
-    const source = sessionSourceParseSchema.safeParse({ source: parsed.data.source, sessionId });
-    return { providerId: source.success ? source.data.providerId : null, sessionId };
+    return { providerId: parsed.data.source?.providerId ?? null, sessionId: parsed.data.session.id };
   }, [data]);
 
   return <SessionSourceContext.Provider value={value}>{children}</SessionSourceContext.Provider>;

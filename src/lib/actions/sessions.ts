@@ -4,7 +4,8 @@ import { headers } from 'next/headers';
 import { getSessionCookie } from 'better-auth/cookies';
 import { z } from 'zod';
 import { vercelProtectionBypassHeaders } from '@karasu-lab/utils/server';
-import { fetchActiveSessions, fetchRevokeActiveSession, type ActiveSession } from '@/lib/api/internal';
+import { fetchActiveSessions, fetchRevokeActiveSession } from '@/lib/api/internal';
+import { sessionSourceParseSchema, type ActiveSessionListItem } from '@/lib/session-schemas';
 
 const currentSessionSchema = z.object({
   session: z.object({ id: z.string().min(1) }),
@@ -30,11 +31,21 @@ async function fetchCurrentSession(): Promise<CurrentSession | null> {
   return parsed.success ? parsed.data : null;
 }
 
-export async function loadActiveSessions(): Promise<ActiveSession[]> {
+export async function loadActiveSessions(): Promise<ActiveSessionListItem[]> {
   const current = await fetchCurrentSession();
   if (!current) throw new Error('api-auth.karasu256.com did not return the current session');
   const sessions = await fetchActiveSessions(current.user.id);
-  return sessions.map((session) => ({ ...session, current: session.id === current.session.id }));
+  return sessions.map((session) => {
+    const parsed = session.source ? sessionSourceParseSchema.safeParse({ source: session.source, sessionId: session.id }) : null;
+    const providerId = parsed?.success ? parsed.data.providerId : null;
+    const isCurrent = session.id === current.session.id;
+    return {
+      ...session,
+      current: isCurrent,
+      source: providerId && session.source ? { raw: session.source, providerId } : null,
+      disabled: isCurrent || providerId === null || providerId === 'unknown',
+    };
+  });
 }
 
 export async function revokeActiveSession(sessionId: string): Promise<void> {
