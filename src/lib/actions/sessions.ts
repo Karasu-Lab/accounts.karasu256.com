@@ -38,12 +38,9 @@ export async function loadActiveSessions(): Promise<ActiveSessionListItem[]> {
   return sessions.map((session) => {
     const parsed = session.source ? sessionSourceParseSchema.safeParse({ source: session.source, sessionId: session.id }) : null;
     const providerId = parsed?.success ? parsed.data.providerId : null;
-    const isCurrent = session.id === current.session.id;
     return {
       ...session,
-      current: isCurrent,
       source: providerId && session.source ? { raw: session.source, providerId } : null,
-      disabled: isCurrent || providerId === null || providerId === 'unknown',
     };
   });
 }
@@ -51,7 +48,6 @@ export async function loadActiveSessions(): Promise<ActiveSessionListItem[]> {
 export async function revokeActiveSession(sessionId: string): Promise<void> {
   const current = await fetchCurrentSession();
   if (!current) throw new Error('api-auth.karasu256.com did not return the current session');
-  if (sessionId === current.session.id) throw new Error('The current session cannot be revoked');
   const revoked = await fetchRevokeActiveSession(current.user.id, sessionId);
   if (!revoked) throw new Error(`api.karasu256.com did not revoke the session ${sessionId}`);
 }

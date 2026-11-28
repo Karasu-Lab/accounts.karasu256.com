@@ -7,6 +7,7 @@ import { loadActiveSessions, revokeActiveSession } from '@/lib/actions/sessions'
 import type { ActiveSessionListItem } from '@/lib/session-schemas';
 import { SettingsItemGroup } from '@/components/settings/settings-item-container';
 import { ActiveSessionItem, useSessionProvider } from '@/components/settings/active-session-item';
+import { useSessionSource } from '@/components/session-source-provider';
 import { useReportError } from '@/components/settings/error-context';
 import { useReportLoading } from '@/components/settings/loading-context';
 
@@ -15,6 +16,7 @@ type ListState = { status: 'loading' } | { status: 'error' } | { status: 'loaded
 export function ActiveSessionsClient() {
   const t = useTranslations();
   const reportError = useReportError();
+  const { sessionId: browserSessionId } = useSessionSource();
   const [state, setState] = useState<ListState>({ status: 'loading' });
   useReportLoading('active-sessions', state.status === 'loading');
   const [revokingId, setRevokingId] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export function ActiveSessionsClient() {
   }, [reload]);
 
   async function confirmRevoke() {
-    if (!pendingRevoke || pendingRevoke.disabled) return;
+    if (!pendingRevoke || pendingRevoke.id === browserSessionId) return;
     setRevokingId(pendingRevoke.id);
     try {
       await revokeActiveSession(pendingRevoke.id);
@@ -65,7 +67,13 @@ export function ActiveSessionsClient() {
       ) : state.status === 'loaded' ? (
         <SettingsItemGroup>
           {state.sessions.map((session) => (
-            <ActiveSessionItem key={session.id} session={session} revoking={revokingId === session.id} onRevoke={setPendingRevoke} />
+            <ActiveSessionItem
+              key={session.id}
+              session={session}
+              current={session.id === browserSessionId}
+              revoking={revokingId === session.id}
+              onRevoke={setPendingRevoke}
+            />
           ))}
         </SettingsItemGroup>
       ) : null}

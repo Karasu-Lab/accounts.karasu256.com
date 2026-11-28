@@ -37,17 +37,18 @@ export function useSessionProvider(session: ActiveSessionListItem | null) {
 
 interface ActiveSessionItemProps {
   session: ActiveSessionListItem;
+  current: boolean;
   revoking: boolean;
   onRevoke: (session: ActiveSessionListItem) => void;
 }
 
-export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSessionItemProps) {
+export function ActiveSessionItem({ session, current, revoking, onRevoke }: ActiveSessionItemProps) {
   const t = useTranslations();
   const { name, icon, iconBackgroundColor } = useSessionProvider(session);
 
   const parts = [`${t('activeSessions.createdAt')}: ${new Date(session.createdAt).toLocaleString()}`];
   if (session.ipAddress) parts.push(session.ipAddress);
-  if (session.current) parts.push(t('activeSessions.current'));
+  if (current) parts.push(t('activeSessions.current'));
 
   return (
     <SettingsItemContainer
@@ -55,9 +56,9 @@ export function ActiveSessionItem({ session, revoking, onRevoke }: ActiveSession
       description={parts.join(' • ')}
       icon={icon}
       iconBackgroundColor={iconBackgroundColor}
-      disabled={session.disabled}
+      disabled={current}
       trailing={
-        session.disabled ? undefined : (
+        current ? undefined : (
           <SettingsItemIconButton
             label={t('activeSessions.revoke')}
             icon={Unlink}
