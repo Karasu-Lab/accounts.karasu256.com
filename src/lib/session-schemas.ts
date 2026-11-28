@@ -43,7 +43,6 @@ export const activeSessionSchema = z.object({
   current: z.boolean(),
 });
 
-export type ActiveSessionListItem = Omit<ActiveSession, 'source'> & {
+export type ActiveSessionListItem = Omit<ActiveSession, 'source' | 'current'> & {
   source: SessionSourceInfo | null;
-  disabled: boolean;
 };
